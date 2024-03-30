@@ -21,6 +21,10 @@ class Settings(BaseSettings):
     DB_HOST: str
     DB_PORT: int
 
+    # DB schemas
+    DB_ALEMBIC_SCHEMA: str = "alembic"
+    DB_BOOKING_SCHEMA: str = "booking"
+
     MODE: str
 
     @property
