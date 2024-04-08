@@ -22,4 +22,3 @@ class HotelsModel(Base):
         Integer,
         index=True,
     )
-    rooms_quantity: Mapped[int]
