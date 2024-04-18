@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:15
+    container_name: db_for_pytest
+    env_file: 
+      - ../.env
+    ports: 
+      - 5632:5432
+    volumes:
+      - db_for_pytest:/var/lib/postgresql/data
+    networks:
+      - pytest_network
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  db_for_pytest:
+    name: db_for_pytest
+
+networks:
+  pytest_network:
+    name: pytest_network

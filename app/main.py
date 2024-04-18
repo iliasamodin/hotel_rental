@@ -4,10 +4,21 @@ import uvicorn
 import sys
 import os
 
-from settings import settings
+from app.settings import settings
+
+from app.web.api.router import api_router
+from app.web.api.handlers import registering_exception_handlers
+
+from app.tools import ic, get_data_to_display_in_openapi
+
+openapi_params = get_data_to_display_in_openapi()
 
 # FastAPI instance declaration
-app = FastAPI()
+app = FastAPI(**openapi_params)
+app.include_router(router=api_router, prefix=settings.API_PREFIX)
+
+# Registering exception handlers
+registering_exception_handlers(app=app)
 
 if __name__ == "__main__":
     # Getting the project directory 

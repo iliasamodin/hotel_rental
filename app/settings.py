@@ -1,3 +1,5 @@
+from typing import Literal
+
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import SecretStr
@@ -10,6 +12,7 @@ class Settings(BaseSettings):
     HOST: str = "127.0.0.1"
     PORT: int = 1500
     API_PREFIX: str = "/api/v1"
+    PATH_OF_PYPROJECT: str = "pyproject.toml"
 
     # Unicorn
     RELOAD: bool = False
@@ -25,7 +28,10 @@ class Settings(BaseSettings):
     DB_ALEMBIC_SCHEMA: str = "alembic"
     DB_BOOKING_SCHEMA: str = "booking"
 
-    MODE: str
+    # Tests
+    MODE: Literal["dev", "test", "stage", "prod"] = "prod"
+    COMPOSE_FILE: str = "./docker/docker-compose.test.yaml"
+    PATH_OF_TEST_DUMP: str = "tests/db_dumps/dump_of_lookup_tables.sql"
 
     @property
     def DB_URL(self):
