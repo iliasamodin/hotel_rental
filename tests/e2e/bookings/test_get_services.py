@@ -1,7 +1,7 @@
 from typing import Any
 
 from fastapi import FastAPI
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 from icecream import ic
 
 import pytest
@@ -56,18 +56,19 @@ service_2_of_rooms_for_test = [
 @pytest.mark.asyncio
 class TestGetServices:
     """
-    E2E test for endpoint /services.
+    E2E tests for endpoint /get-services.
     """
 
     @pytest.fixture(autouse=True)
-    @pytest.mark.anyio
     def init(
         self,
         app: FastAPI,
+        transport_for_client: ASGITransport,
         client_maker: AsyncClient = AsyncClient,
         db_preparer: DBPreparer = DBPreparer,
     ):
         self.app = app
+        self.transport_for_client = transport_for_client
         self.client_maker = client_maker
         self.db_preparer = db_preparer()
         self.url = app.url_path_for("get_services")
@@ -78,7 +79,7 @@ class TestGetServices:
             "hotels_for_test",
             "services_of_hotels_for_test",
             "rooms_for_test",
-            "service_1_of_rooms_for_test",
+            "services_of_rooms_for_test",
             "expected_result",
             "test_description",
         ),
@@ -218,7 +219,7 @@ class TestGetServices:
         hotels_for_test: list[dict[str, Any]],
         services_of_hotels_for_test: list[dict[str, Any]],
         rooms_for_test: list[dict[str, Any]],
-        service_1_of_rooms_for_test: list[dict[str, Any]],
+        services_of_rooms_for_test: list[dict[str, Any]],
         expected_result: list[dict[str, Any]] | dict[str, Any],
         test_description: str,
     ):
@@ -235,12 +236,15 @@ class TestGetServices:
             self.db_preparer.insert_test_data(orm_model=RoomsModel, data_for_insert=rooms_for_test),
             self.db_preparer.insert_test_data(
                 orm_model=RoomsServicesModel,
-                data_for_insert=service_1_of_rooms_for_test,
+                data_for_insert=services_of_rooms_for_test,
             ),
         ):
             # Client for test requests to API
-            async with self.client_maker(app=self.app, base_url="http://test") as client:
-                api_response = await client.get(self.url, params=parameters_of_get)
+            async with self.client_maker(transport=self.transport_for_client) as client:
+                api_response = await client.get(
+                    url=f"http://test{self.url}",
+                    params=parameters_of_get,
+                )
                 dict_of_response = api_response.json()
                 ic(dict_of_response)
 

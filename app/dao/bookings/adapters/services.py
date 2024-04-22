@@ -36,6 +36,8 @@ async def get_services(
             RoomsServicesModel.service_variety_id == ServiceVarietiesModel.id
         )
 
+    query.order_by(ServiceVarietiesModel.id)
+
     query_result = await session.execute(query)
 
     return query_result
