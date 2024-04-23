@@ -1,12 +1,13 @@
 from sqlalchemy.orm import sessionmaker
 
 from app.dao.bookings.dao import BookingDAO
-from app.dao.bookings.schemas import ServiceVarietyDTO, ExtendedHotelDTO
+from app.dao.bookings.schemas import ServiceVarietyDTO, ExtendedHotelDTO, PremiumLevelVarietyDTO
 
 from app.services.bookings.schemas import (
     ServiceVarietyResponseSchema,
     ListOfServicesRequestSchema,
     ExtendedHotelResponseSchema,
+    PremiumLevelVarietyResponseSchema,
 )
 from app.services.check.schemas import HotelsOrRoomsValidator
 
@@ -95,3 +96,33 @@ class BookingService:
                 )
 
         return hotels
+
+    async def get_premium_levels(
+        self,
+        hotel_id: int | None = None,
+        connected_with_rooms: bool = False,
+    ) -> list[PremiumLevelVarietyResponseSchema]:
+        """
+        Get all variations of room's premium levels.
+
+        :return: list of premium levels.
+        """
+
+        async with self.session_maker.begin() as session:
+            self.booking_dao = BookingDAO(session=session)
+            premium_levels_dto: list[PremiumLevelVarietyDTO] = await self.booking_dao.get_premium_levels(
+                hotel_id=hotel_id,
+                connected_with_rooms=connected_with_rooms,
+            )
+
+            premium_levels = [
+                PremiumLevelVarietyResponseSchema(
+                    id=premium_level.id,
+                    key=premium_level.key,
+                    name=premium_level.name,
+                    desc=premium_level.desc,
+                )
+                for premium_level in premium_levels_dto
+            ]
+
+        return premium_levels

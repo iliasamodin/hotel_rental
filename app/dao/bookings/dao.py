@@ -1,8 +1,8 @@
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.dao.bookings.adapters import get_services, get_hotels
-from app.dao.bookings.schemas import ServiceVarietyDTO, ExtendedHotelDTO
+from app.dao.bookings.adapters import get_services, get_hotels, get_premium_levels
+from app.dao.bookings.schemas import ServiceVarietyDTO, ExtendedHotelDTO, PremiumLevelVarietyDTO
 
 from app.services.check.schemas import HotelsOrRoomsValidator
 from app.services.bookings.schemas import ListOfServicesRequestSchema
@@ -75,3 +75,28 @@ class BookingDAO:
                 map_of_hotels_services[hotel.id].services.extend(hotel.services)
 
         return map_of_hotels_services.values()
+
+    async def get_premium_levels(
+        self,
+        hotel_id: int | None = None,
+        connected_with_rooms: bool = False,
+    ) -> list[PremiumLevelVarietyDTO]:
+        """
+        Get all variations of room's premium levels.
+
+        :return: list of premium levels.
+        """
+
+        query_result_of_premium_levels: Result = await get_premium_levels(
+            session=self.session,
+            hotel_id=hotel_id,
+            connected_with_rooms=connected_with_rooms,
+        )
+        rows_with_premium_levels = query_result_of_premium_levels.fetchall()
+
+        premium_levels = [
+            PremiumLevelVarietyDTO.model_validate(row.PremiumLevelVarietiesModel)
+            for row in rows_with_premium_levels
+        ]
+
+        return premium_levels

@@ -7,6 +7,7 @@ from app.db.models.rooms_services_model import RoomsServicesModel
 from app.db.models.service_varieties_model import ServiceVarietiesModel
 from app.db.models.hotels_model import HotelsModel
 from app.db.models.rooms_model import RoomsModel
+from app.db.models.premium_level_varieties_model import PremiumLevelVarietiesModel
 
 from app.dao.bookings.helpers import get_hotels_with_requested_services_query, get_filters_for_hotels
 
@@ -100,6 +101,49 @@ async def get_hotels(
         .where(*query_filters)
         .order_by(HotelsModel.id, ServiceVarietiesModel.id)
     )
+
+    query_result = await session.execute(query)
+
+    return query_result
+
+
+async def get_premium_levels(
+    session: AsyncSession,
+    hotel_id: int | None = None,
+    connected_with_rooms: bool = False,
+) -> Result:
+    """
+    Get result of query for premium levels from database.
+
+    :return: result of query for premium levels.
+    """
+
+    query = (
+        select(PremiumLevelVarietiesModel)
+        .select_from(PremiumLevelVarietiesModel)
+        .distinct(PremiumLevelVarietiesModel.id)
+    )
+
+    if hotel_id:
+        query = (
+            query
+            .join(
+                RoomsModel,
+                RoomsModel.premium_level_id == PremiumLevelVarietiesModel.id
+            )
+            .join(
+                HotelsModel,
+                RoomsModel.hotel_id == HotelsModel.id,
+            )
+            .where(HotelsModel.id == hotel_id)
+        )
+    elif connected_with_rooms:
+        query = query.join(
+            RoomsModel,
+            RoomsModel.premium_level_id == PremiumLevelVarietiesModel.id
+        )
+
+    query.order_by(PremiumLevelVarietiesModel.id)
 
     query_result = await session.execute(query)
 

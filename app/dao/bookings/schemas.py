@@ -24,3 +24,13 @@ class HotelDTO(BaseModel):
 class ExtendedHotelDTO(HotelDTO):
     rooms_quantity: int | None = None
     services: list[ServiceVarietyDTO] | None = None
+
+
+class PremiumLevelVarietyDTO(BaseModel):
+    id: int
+    key: str
+    name: str | None = None
+    desc: str | None = None
+
+    class Config:
+        from_attributes = True

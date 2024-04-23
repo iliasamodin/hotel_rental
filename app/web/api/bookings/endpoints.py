@@ -7,6 +7,7 @@ from app.services.bookings.schemas import (
     ServiceVarietyResponseSchema,
     ListOfServicesRequestSchema,
     ExtendedHotelResponseSchema,
+    PremiumLevelVarietyResponseSchema,
 )
 from app.services.check.services import get_session_maker, get_only_for_hotels_and_only_for_rooms
 from app.services.check.schemas import HotelsOrRoomsValidator
@@ -52,3 +53,21 @@ async def get_hotels(
     )
 
     return hotels
+
+
+@router.get(
+    path="/get-premium-levels",
+    summary="Get all variations of room's premium levels.",
+)
+async def get_premium_levels(
+    hotel_id: int = None,
+    connected_with_rooms: bool = False,
+    session_maker: sessionmaker = Depends(get_session_maker),
+) -> list[PremiumLevelVarietyResponseSchema]:
+    booking_service = BookingService(session_maker=session_maker)
+    premium_levels: list[PremiumLevelVarietyResponseSchema] = await booking_service.get_premium_levels(
+        hotel_id=hotel_id,
+        connected_with_rooms=connected_with_rooms,
+    )
+
+    return premium_levels
