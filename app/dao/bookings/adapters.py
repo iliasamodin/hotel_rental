@@ -1,38 +1,51 @@
 from sqlalchemy import select, func
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql.elements import BinaryExpression
 
+from app.db.models.hotels_services_model import HotelsServicesModel
+from app.db.models.rooms_services_model import RoomsServicesModel
+from app.db.models.service_varieties_model import ServiceVarietiesModel
 from app.db.models.hotels_model import HotelsModel
 from app.db.models.rooms_model import RoomsModel
-from app.db.models.hotels_services_model import HotelsServicesModel
-from app.db.models.service_varieties_model import ServiceVarietiesModel
 
-from app.dao.bookings.helpers import get_hotels_with_requested_services_query
+from app.dao.bookings.helpers import get_hotels_with_requested_services_query, get_filters_for_hotels
 
+from app.services.check.schemas import HotelsOrRoomsValidator
 from app.services.bookings.schemas import ListOfServicesRequestSchema
 
 
-def get_filters_for_hotels(
-    location: str | None = None,
-    number_of_guests: int | None = None,
-    stars: int | None = None,
-) -> list[BinaryExpression]:
+async def get_services(
+    session: AsyncSession,
+    only_for_hotels_and_only_for_rooms: HotelsOrRoomsValidator,
+) -> Result:
     """
-    Get sqlalchemy filters for hotel query.
+    Get the result of a hotel services query from the database.
 
-    :return: list of sqlalchemy filters.
+    :return: result of a hotel services query.
     """
 
-    query_filters = []
-    if location is not None:
-        query_filters.append(HotelsModel.location.ilike(f"%{location}%"))
-    if number_of_guests is not None:
-        query_filters.append(RoomsModel.maximum_persons >= number_of_guests)
-    if stars is not None:
-        query_filters.append(HotelsModel.stars == stars)
+    query = (
+        select(ServiceVarietiesModel)
+        .select_from(ServiceVarietiesModel)
+        .distinct(ServiceVarietiesModel.id)
+    )
 
-    return query_filters
+    if only_for_hotels_and_only_for_rooms.only_for_hotels:
+        query = query.join(
+            HotelsServicesModel,
+            HotelsServicesModel.service_variety_id == ServiceVarietiesModel.id
+        )
+    elif only_for_hotels_and_only_for_rooms.only_for_rooms:
+        query = query.join(
+            RoomsServicesModel,
+            RoomsServicesModel.service_variety_id == ServiceVarietiesModel.id
+        )
+
+    query.order_by(ServiceVarietiesModel.id)
+
+    query_result = await session.execute(query)
+
+    return query_result
 
 
 async def get_hotels(

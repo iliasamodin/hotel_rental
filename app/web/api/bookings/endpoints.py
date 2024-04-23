@@ -21,12 +21,12 @@ router = APIRouter(prefix="/bookings")
     summary="Get all service options.",
 )
 async def get_services(
-    boolean_constraints_for_filters: HotelsOrRoomsValidator = Depends(get_only_for_hotels_and_only_for_rooms),
+    only_for_hotels_and_only_for_rooms: HotelsOrRoomsValidator = Depends(get_only_for_hotels_and_only_for_rooms),
     session_maker: sessionmaker = Depends(get_session_maker),
 ) -> list[ServiceVarietyResponseSchema]:
     booking_service = BookingService(session_maker=session_maker)
     services: list[ServiceVarietyResponseSchema] = await booking_service.get_services(
-        boolean_constraints_for_filters=boolean_constraints_for_filters
+        only_for_hotels_and_only_for_rooms=only_for_hotels_and_only_for_rooms
     )
 
     return services
@@ -37,10 +37,10 @@ async def get_services(
     summary="Get a list of hotels in accordance with filters.",
 )
 async def get_hotels(
-    location: str | None = None,
-    number_of_guests: int | None = None,
+    location: str = None,
+    number_of_guests: int = None,
     stars: hotel_stars_annotated = None,
-    services: ListOfServicesRequestSchema | None = None,
+    services: ListOfServicesRequestSchema = None,
     session_maker: sessionmaker = Depends(get_session_maker),
 ) -> list[ExtendedHotelResponseSchema]:
     booking_service = BookingService(session_maker=session_maker)

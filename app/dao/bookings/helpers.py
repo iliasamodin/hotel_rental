@@ -2,6 +2,7 @@ from sqlalchemy import select, Select, func
 from sqlalchemy.sql.elements import BinaryExpression
 
 from app.db.models.hotels_model import HotelsModel
+from app.db.models.rooms_model import RoomsModel
 from app.db.models.hotels_services_model import HotelsServicesModel
 from app.db.models.service_varieties_model import ServiceVarietiesModel
 
@@ -57,3 +58,25 @@ def get_hotels_with_requested_services_query(
     )
 
     return query
+
+
+def get_filters_for_hotels(
+    location: str | None = None,
+    number_of_guests: int | None = None,
+    stars: int | None = None,
+) -> list[BinaryExpression]:
+    """
+    Get sqlalchemy filters for hotel query.
+
+    :return: list of sqlalchemy filters.
+    """
+
+    query_filters = []
+    if location is not None:
+        query_filters.append(HotelsModel.location.ilike(f"%{location}%"))
+    if number_of_guests is not None:
+        query_filters.append(RoomsModel.maximum_persons >= number_of_guests)
+    if stars is not None:
+        query_filters.append(HotelsModel.stars == stars)
+
+    return query_filters

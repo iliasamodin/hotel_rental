@@ -1,7 +1,7 @@
+from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.dao.bookings.adapters.services import get_services
-from app.dao.bookings.adapters.hotels import get_hotels
+from app.dao.bookings.adapters import get_services, get_hotels
 from app.dao.bookings.schemas import ServiceVarietyDTO, ExtendedHotelDTO
 
 from app.services.check.schemas import HotelsOrRoomsValidator
@@ -18,7 +18,7 @@ class BookingDAO:
 
     async def get_services(
         self,
-        boolean_constraints_for_filters: HotelsOrRoomsValidator,
+        only_for_hotels_and_only_for_rooms: HotelsOrRoomsValidator,
     ) -> list[ServiceVarietyDTO]:
         """
         Get all service options.
@@ -26,9 +26,9 @@ class BookingDAO:
         :return: list of services.
         """
 
-        query_result_of_services = await get_services(
+        query_result_of_services: Result = await get_services(
             session=self.session,
-            boolean_constraints_for_filters=boolean_constraints_for_filters,
+            only_for_hotels_and_only_for_rooms=only_for_hotels_and_only_for_rooms,
         )
         rows_with_services = query_result_of_services.fetchall()
 
@@ -52,7 +52,7 @@ class BookingDAO:
         :return: list of hotels.
         """
 
-        query_result_of_hotels = await get_hotels(
+        query_result_of_hotels: Result = await get_hotels(
             session=self.session,
             location=location,
             number_of_guests=number_of_guests,

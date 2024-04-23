@@ -8,7 +8,7 @@ class ServiceVarietyDTO(BaseModel):
     desc: str | None = None
 
     class Config:
-        from_attributes=True
+        from_attributes = True
 
 
 class HotelDTO(BaseModel):
@@ -18,7 +18,7 @@ class HotelDTO(BaseModel):
     stars: int | None = None
 
     class Config:
-        from_attributes=True
+        from_attributes = True
 
 
 class ExtendedHotelDTO(HotelDTO):
