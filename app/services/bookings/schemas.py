@@ -22,3 +22,10 @@ class HotelSchema(BaseModel):
 class ExtendedHotelResponseSchema(HotelSchema):
     rooms_quantity: int | None = None
     services: list[ServiceVarietyResponseSchema]
+
+
+class PremiumLevelVarietyResponseSchema(BaseModel):
+    id: int
+    key: str
+    name: str | None = None
+    desc: str | None = None

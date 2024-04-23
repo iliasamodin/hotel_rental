@@ -411,7 +411,7 @@ class TestGetHotels:
     @pytest.mark.asyncio
     async def test_get_hotels(
         self,
-        parameters_of_get: dict[str, bool],
+        parameters_of_get: dict[str, bool] | None,
         body_of_request: dict[str, list[int]] | None,
         hotels_for_test: list[dict[str, Any]],
         services_of_hotels_for_test: list[dict[str, Any]],
