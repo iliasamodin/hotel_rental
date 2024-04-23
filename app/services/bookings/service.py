@@ -23,7 +23,7 @@ class BookingService:
 
     async def get_services(
         self,
-        boolean_constraints_for_filters: HotelsOrRoomsValidator,
+        only_for_hotels_and_only_for_rooms: HotelsOrRoomsValidator,
     ) -> list[ServiceVarietyResponseSchema]:
         """
         Get all service options.
@@ -34,7 +34,7 @@ class BookingService:
         async with self.session_maker.begin() as session:
             self.booking_dao = BookingDAO(session=session)
             services_dto: list[ServiceVarietyDTO] = await self.booking_dao.get_services(
-                boolean_constraints_for_filters=boolean_constraints_for_filters,
+                only_for_hotels_and_only_for_rooms=only_for_hotels_and_only_for_rooms,
             )
 
             services = [
