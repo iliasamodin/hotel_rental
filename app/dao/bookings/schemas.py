@@ -14,6 +14,7 @@ class ServiceVarietyDTO(BaseModel):
 class HotelDTO(BaseModel):
     id: int
     name: str
+    desc: str | None = None
     location: str
     stars: int | None = None
 

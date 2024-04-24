@@ -88,6 +88,7 @@ class BookingService:
                     ExtendedHotelResponseSchema(
                         id=hotel.id,
                         name=hotel.name,
+                        desc=hotel.desc,
                         location=hotel.location,
                         stars=hotel.stars,
                         rooms_quantity=hotel.rooms_quantity,

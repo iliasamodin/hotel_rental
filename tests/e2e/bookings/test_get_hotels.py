@@ -16,18 +16,21 @@ hotels_for_test = [
     {
         "id": 1,
         "name": "Test hotel #1",
+        "desc": "Colorful description for hotel #1.",
         "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
         "stars": 5,
     },
     {
         "id": 2,
         "name": "Test hotel #2",
+        "desc": "Colorful description for hotel #2.",
         "location": "Altai Republic, Maiminsky district, Barangol village, Chuyskaya street 40a",
         "stars": None,
     },
     {
         "id": 3,
         "name": "Test hotel #3",
+        "desc": "Colorful description for hotel #3.",
         "location": "Komi Republic, Syktyvkar, Kommunisticheskaya street, 67",
         "stars": 4,
     }
@@ -112,6 +115,7 @@ class TestGetHotels:
                     {
                         "id": 1,
                         "name": "Test hotel #1",
+                        "desc": "Colorful description for hotel #1.",
                         "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
                         "stars": 5,
                         "rooms_quantity": 1,
@@ -133,6 +137,7 @@ class TestGetHotels:
                     {
                         "id": 2,
                         "name": "Test hotel #2",
+                        "desc": "Colorful description for hotel #2.",
                         "location": "Altai Republic, Maiminsky district, Barangol village, Chuyskaya street 40a",
                         "stars": None,
                         "rooms_quantity": 1,
@@ -148,6 +153,7 @@ class TestGetHotels:
                     {
                         "id": 3,
                         "name": "Test hotel #3",
+                        "desc": "Colorful description for hotel #3.",
                         "location": "Komi Republic, Syktyvkar, Kommunisticheskaya street, 67",
                         "stars": 4,
                         "rooms_quantity": 1,
@@ -169,6 +175,7 @@ class TestGetHotels:
                     {
                         "id": 3,
                         "name": "Test hotel #3",
+                        "desc": "Colorful description for hotel #3.",
                         "location": "Komi Republic, Syktyvkar, Kommunisticheskaya street, 67",
                         "stars": 4,
                         "rooms_quantity": 1,
@@ -204,6 +211,7 @@ class TestGetHotels:
                     {
                         "id": 2,
                         "name": "Test hotel #2",
+                        "desc": "Colorful description for hotel #2.",
                         "location": "Altai Republic, Maiminsky district, Barangol village, Chuyskaya street 40a",
                         "stars": None,
                         "rooms_quantity": 1,
@@ -219,6 +227,7 @@ class TestGetHotels:
                     {
                         "id": 3,
                         "name": "Test hotel #3",
+                        "desc": "Colorful description for hotel #3.",
                         "location": "Komi Republic, Syktyvkar, Kommunisticheskaya street, 67",
                         "stars": 4,
                         "rooms_quantity": 1,
@@ -254,6 +263,7 @@ class TestGetHotels:
                     {
                         "id": 1,
                         "name": "Test hotel #1",
+                        "desc": "Colorful description for hotel #1.",
                         "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
                         "stars": 5,
                         "rooms_quantity": 1,
@@ -303,6 +313,7 @@ class TestGetHotels:
                     {
                         "id": 1,
                         "name": "Test hotel #1",
+                        "desc": "Colorful description for hotel #1.",
                         "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
                         "stars": 5,
                         "rooms_quantity": 1,
@@ -355,6 +366,7 @@ class TestGetHotels:
                     {
                         "id": 1,
                         "name": "Test hotel #1",
+                        "desc": "Colorful description for hotel #1.",
                         "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
                         "stars": 5,
                         "rooms_quantity": 1,
