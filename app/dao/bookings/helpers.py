@@ -20,7 +20,7 @@ def get_filters_by_services_of_hotels(
 
     query_filters = []
     query_having = []
-    if services is not None:
+    if services is not None and services.service_ids:
         query_filters.append(ServiceVarietiesModel.id.in_(services.service_ids))
         query_having.append(func.count(ServiceVarietiesModel.id) == len(services.service_ids))
 

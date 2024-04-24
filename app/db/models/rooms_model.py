@@ -17,6 +17,8 @@ class RoomsModel(Base):
         index=True,
         unique=True,
     )
+    name: Mapped[str | None]
+    desc: Mapped[str | None]
     hotel_id: Mapped[int] = mapped_column(
         ForeignKey(
             HotelsModel.id, 

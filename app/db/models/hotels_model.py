@@ -14,6 +14,7 @@ class HotelsModel(Base):
         unique=True,
     )
     name: Mapped[str]
+    desc: Mapped[str | None]
     location: Mapped[str] = mapped_column(
         String,
         index=True,
