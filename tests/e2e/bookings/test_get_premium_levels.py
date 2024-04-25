@@ -30,7 +30,7 @@ rooms_for_test = [
         "premium_level_id": 1,
         "ordinal_number": 1,
         "maximum_persons": 2,
-        "price": 5000,
+        "price": 5_000,
     },
     {
         "id": 2,
@@ -38,7 +38,7 @@ rooms_for_test = [
         "premium_level_id": 2,
         "ordinal_number": 2,
         "maximum_persons": 2,
-        "price": 5000,
+        "price": 5_000,
     },
     {
         "id": 3,
@@ -46,7 +46,7 @@ rooms_for_test = [
         "premium_level_id": 3,
         "ordinal_number": 1,
         "maximum_persons": 2,
-        "price": 5000,
+        "price": 5_000,
     },
 ]
 
@@ -202,7 +202,7 @@ class TestPremiumLevels:
     @pytest.mark.asyncio
     async def test_get_premium_levels(
         self,
-        parameters_of_get: dict[str, bool] | None,
+        parameters_of_get: dict[str, Any] | None,
         hotels_for_test: list[dict[str, Any]],
         rooms_for_test: list[dict[str, Any]],
         expected_result: list[dict[str, Any]],

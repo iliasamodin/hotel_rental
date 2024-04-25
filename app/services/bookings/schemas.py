@@ -30,3 +30,28 @@ class PremiumLevelVarietyResponseSchema(BaseModel):
     key: str
     name: str | None = None
     desc: str | None = None
+
+
+class ListOfPremiumLevelsSchema(BaseModel):
+    premium_level_ids: list[int]
+
+
+class ServicesAndLevelsRequestSchema(ListOfServicesRequestSchema, ListOfPremiumLevelsSchema):
+    pass
+
+
+class RoomSchema(BaseModel):
+    id: int
+    name: str | None = None
+    desc: str | None = None
+    hotel_id: int
+    premium_level_id: int | None = None
+    ordinal_number: int
+    maximum_persons: int
+    price: float
+
+
+class ExtendedRoomResponseSchema(RoomSchema):
+    hotel: HotelSchema | None = None
+    premium_level: PremiumLevelVarietyResponseSchema | None = None
+    services: list[ServiceVarietyResponseSchema]

@@ -36,7 +36,7 @@ rooms_for_test = [
         "hotel_id": 1,
         "ordinal_number": 1,
         "maximum_persons": 2,
-        "price": 5000,
+        "price": 5_000,
     },
 ]
 service_1_of_rooms_for_test = [

@@ -9,10 +9,15 @@ from app.db.models.hotels_model import HotelsModel
 from app.db.models.rooms_model import RoomsModel
 from app.db.models.premium_level_varieties_model import PremiumLevelVarietiesModel
 
-from app.dao.bookings.helpers import get_hotels_with_requested_services_query, get_filters_for_hotels
+from app.dao.bookings.helpers import (
+    get_hotels_with_requested_services_query,
+    get_filters_for_hotels,
+    get_rooms_with_requested_services_and_levels_query,
+    get_filters_for_rooms,
+)
 
-from app.services.check.schemas import HotelsOrRoomsValidator
-from app.services.bookings.schemas import ListOfServicesRequestSchema
+from app.services.check.schemas import HotelsOrRoomsValidator, PriceRangeValidator
+from app.services.bookings.schemas import ListOfServicesRequestSchema, ServicesAndLevelsRequestSchema
 
 
 async def get_services(
@@ -144,6 +149,66 @@ async def get_premium_levels(
         )
 
     query.order_by(PremiumLevelVarietiesModel.id)
+
+    query_result = await session.execute(query)
+
+    return query_result
+
+
+async def get_rooms(
+    session: AsyncSession,
+    min_price_and_max_price: PriceRangeValidator,
+    hotel_id: int = None,
+    number_of_guests: int = None,
+    services_and_levels: ServicesAndLevelsRequestSchema = None,
+) -> Result:
+    """
+    Get the result of a room query from the database.
+
+    :return: result of a room query.
+    """
+
+    rooms_with_requested_services_sbq = get_rooms_with_requested_services_and_levels_query(
+        services_and_levels=services_and_levels,
+    ).subquery()
+
+    query_filters = get_filters_for_rooms(
+        min_price_and_max_price=min_price_and_max_price,
+        hotel_id=hotel_id,
+        number_of_guests=number_of_guests,
+    )
+
+    query = (
+        select(
+            RoomsModel,
+            HotelsModel,
+            PremiumLevelVarietiesModel,
+            ServiceVarietiesModel,
+        )
+        .select_from(RoomsModel)
+        .join(
+            HotelsModel,
+            RoomsModel.hotel_id == HotelsModel.id
+        )
+        .join(
+            rooms_with_requested_services_sbq,
+            rooms_with_requested_services_sbq.c.room_id == RoomsModel.id,
+        )
+        .outerjoin(
+            PremiumLevelVarietiesModel,
+            RoomsModel.premium_level_id == PremiumLevelVarietiesModel.id,
+        )
+        .outerjoin(
+            RoomsServicesModel,
+            RoomsServicesModel.room_id == RoomsModel.id,
+        )
+        .outerjoin(
+            ServiceVarietiesModel,
+            RoomsServicesModel.service_variety_id == ServiceVarietiesModel.id,
+        )
+        .where(*query_filters)
+        .order_by(RoomsModel.id)
+    )
 
     query_result = await session.execute(query)
 

@@ -27,3 +27,28 @@ class HotelsOrRoomsValidator(BaseModel):
             )
 
         return self
+
+
+class PriceRangeValidator(BaseModel):
+    min_price: float | None = None
+    max_price: float | None = None
+
+    @model_validator(mode="after")
+    def price_boundary_consistency_validator(self) -> "PriceRangeValidator":
+        """
+        Check the consistency of price limits relative to each other.
+
+        :return: scheme for limiting room query.
+        :raise: DataValidationError
+        """
+
+        if self.min_price is not None and self.max_price is not None and self.min_price > self.max_price:
+            raise DataValidationError(
+                message="The minimum room price filter must be less than the maximum room price filter.",
+                extras={
+                    "min_price": self.min_price,
+                    "max_price": self.max_price,
+                },
+            )
+
+        return self
