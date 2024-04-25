@@ -8,9 +8,15 @@ from app.services.bookings.schemas import (
     ListOfServicesRequestSchema,
     ExtendedHotelResponseSchema,
     PremiumLevelVarietyResponseSchema,
+    ServicesAndLevelsRequestSchema,
+    ExtendedRoomResponseSchema,
 )
-from app.services.check.services import get_session_maker, get_only_for_hotels_and_only_for_rooms
-from app.services.check.schemas import HotelsOrRoomsValidator
+from app.services.check.services import (
+    get_session_maker,
+    get_only_for_hotels_and_only_for_rooms,
+    get_min_price_and_max_price,
+)
+from app.services.check.schemas import HotelsOrRoomsValidator, PriceRangeValidator
 
 from app.web.api.bookings.types import hotel_stars_annotated
 
@@ -71,3 +77,25 @@ async def get_premium_levels(
     )
 
     return premium_levels
+
+
+@router.post(
+    path="/get-rooms",
+    summary="Get a list of rooms in accordance with filters.",
+)
+async def get_rooms(
+    min_price_and_max_price: PriceRangeValidator = Depends(get_min_price_and_max_price),
+    hotel_id: int = None,
+    number_of_guests: int = None,
+    services_and_levels: ServicesAndLevelsRequestSchema = None,
+    session_maker: sessionmaker = Depends(get_session_maker),
+) -> list[ExtendedRoomResponseSchema]:
+    booking_service = BookingService(session_maker=session_maker)
+    rooms: list[ExtendedRoomResponseSchema] = await booking_service.get_rooms(
+        min_price_and_max_price=min_price_and_max_price,
+        hotel_id=hotel_id,
+        number_of_guests=number_of_guests,
+        services_and_levels=services_and_levels,
+    )
+
+    return rooms

@@ -55,21 +55,21 @@ rooms_for_test = [
         "hotel_id": 1,
         "ordinal_number": 1,
         "maximum_persons": 2,
-        "price": 5000,
+        "price": 5_000,
     },
     {
         "id": 2,
         "hotel_id": 2,
         "ordinal_number": 1,
         "maximum_persons": 3,
-        "price": 5000,
+        "price": 5_000,
     },
     {
         "id": 3,
         "hotel_id": 3,
         "ordinal_number": 1,
         "maximum_persons": 3,
-        "price": 5000,
+        "price": 5_000,
     },
 ]
 
@@ -423,7 +423,7 @@ class TestGetHotels:
     @pytest.mark.asyncio
     async def test_get_hotels(
         self,
-        parameters_of_get: dict[str, bool] | None,
+        parameters_of_get: dict[str, Any] | None,
         body_of_request: dict[str, list[int]] | None,
         hotels_for_test: list[dict[str, Any]],
         services_of_hotels_for_test: list[dict[str, Any]],

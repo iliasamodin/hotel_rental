@@ -35,3 +35,23 @@ class PremiumLevelVarietyDTO(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class RoomDTO(BaseModel):
+    id: int
+    name: str | None = None
+    desc: str | None = None
+    hotel_id: int
+    premium_level_id: int | None = None
+    ordinal_number: int
+    maximum_persons: int
+    price: float
+
+    class Config:
+        from_attributes = True
+
+
+class ExtendedRoomDTO(RoomDTO):
+    hotel: HotelDTO | None = None
+    premium_level: PremiumLevelVarietyDTO | None = None
+    services: list[ServiceVarietyDTO] | None = None

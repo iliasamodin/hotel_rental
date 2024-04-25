@@ -1,15 +1,18 @@
 from sqlalchemy.orm import sessionmaker
 
 from app.dao.bookings.dao import BookingDAO
-from app.dao.bookings.schemas import ServiceVarietyDTO, ExtendedHotelDTO, PremiumLevelVarietyDTO
+from app.dao.bookings.schemas import ServiceVarietyDTO, ExtendedHotelDTO, PremiumLevelVarietyDTO, ExtendedRoomDTO
 
 from app.services.bookings.schemas import (
     ServiceVarietyResponseSchema,
     ListOfServicesRequestSchema,
     ExtendedHotelResponseSchema,
     PremiumLevelVarietyResponseSchema,
+    ServicesAndLevelsRequestSchema,
+    ExtendedRoomResponseSchema,
+    HotelSchema,
 )
-from app.services.check.schemas import HotelsOrRoomsValidator
+from app.services.check.schemas import HotelsOrRoomsValidator, PriceRangeValidator
 
 
 class BookingService:
@@ -127,3 +130,69 @@ class BookingService:
             ]
 
         return premium_levels
+
+    async def get_rooms(
+        self,
+        min_price_and_max_price: PriceRangeValidator,
+        hotel_id: int = None,
+        number_of_guests: int = None,
+        services_and_levels: ServicesAndLevelsRequestSchema = None,
+    ) -> list[ExtendedRoomResponseSchema]:
+        """
+        Get a list of rooms in accordance with filters.
+
+        :return: list of rooms.
+        """
+
+        async with self.session_maker.begin() as session:
+            self.booking_dao = BookingDAO(session=session)
+            rooms_dto: list[ExtendedRoomDTO] = await self.booking_dao.get_rooms(
+                min_price_and_max_price=min_price_and_max_price,
+                hotel_id=hotel_id,
+                number_of_guests=number_of_guests,
+                services_and_levels=services_and_levels,
+            )
+
+            rooms: list[ExtendedRoomResponseSchema] = []
+            for room in rooms_dto:
+                hotel = HotelSchema(
+                    id=room.hotel.id,
+                    name=room.hotel.name,
+                    desc=room.hotel.desc,
+                    location=room.hotel.location,
+                    stars=room.hotel.stars,
+                )
+                premium_level = room.premium_level and PremiumLevelVarietyResponseSchema(
+                    id=room.premium_level.id,
+                    key=room.premium_level.key,
+                    name=room.premium_level.name,
+                    desc=room.premium_level.desc,
+                )
+
+                services = [
+                    ServiceVarietyResponseSchema(
+                        id=service.id,
+                        key=service.key,
+                        name=service.name,
+                        desc=service.desc,
+                    )
+                    for service in room.services
+                ]
+
+                rooms.append(
+                    ExtendedRoomResponseSchema(
+                        id=room.id,
+                        name=room.name,
+                        desc=room.desc,
+                        hotel_id=room.hotel_id,
+                        premium_level_id=room.premium_level_id,
+                        ordinal_number=room.ordinal_number,
+                        maximum_persons=room.maximum_persons,
+                        price=room.price,
+                        hotel=hotel,
+                        premium_level=premium_level,
+                        services=services,
+                    )
+                )
+
+        return rooms
