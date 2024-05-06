@@ -1,11 +1,11 @@
-class BaseServiceError(Exception):
+class BaseDAOError(Exception):
     """
-    Basic exception at service level.
+    Basic exception at database level.
     """
 
     def __init__(
         self, 
-        message: str | None = "Unspecified service level error.", 
+        message: str | None = "Unspecified DAO level error.", 
         extras: dict | str | Exception | None = None, 
         *args,
         **kwargs,

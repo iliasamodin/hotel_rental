@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Sequence
 
 from contextlib import asynccontextmanager
 
@@ -28,7 +28,7 @@ class DBPreparer:
         session_maker: sessionmaker = get_async_session_maker(), 
         path_of_test_dump: str = settings.PATH_OF_TEST_DUMP,
         base_class_of_models: DeclarativeBase = Base,
-        classes_of_models: list[DeclarativeAttributeIntercept] = classes_of_models,
+        classes_of_models: Sequence[DeclarativeAttributeIntercept] = classes_of_models,
     ):
         self.session_maker = session_maker
         self.engine = session_maker.kw["bind"]
@@ -70,11 +70,11 @@ class DBPreparer:
                             await session.commit()
 
         except IntegrityError as error:
-            ic(f"The database is already full:\n{error._sql_message}")
+            ic(f"The database is already full:\n{error._message()}")
         except ProgrammingError as error:
-            pytest.exit(f"Error in startup conditions:\n{error._sql_message}")
+            pytest.exit(f"Error in startup conditions:\n{error._message()}")
         except DBAPIError as error:
-            pytest.exit(f"Error in startup conditions:\n{error._sql_message}")
+            pytest.exit(f"Error in startup conditions:\n{error._message()}")
 
     async def setup_db(
         self,
@@ -161,15 +161,96 @@ class DBPreparer:
                 )
 
                 query_result: Result = await session.execute(query)
-                current_value_of_seq = query_result.fetchone()[0]
+                current_value_of_seq = query_result.scalar_one()
 
         return pk_of_orm_model, current_value_of_seq
+
+    def _get_set_of_pk_values(
+        self,
+        pk_of_orm_model: Sequence[Column],
+        data_to_convert: Sequence[dict[str, Any]],
+    ) -> set[tuple[tuple[Any]]]:
+        """
+        Get set of tuples with primary keys.
+
+        :returns: set of tuples with primary keys.
+        """
+
+        set_with_column_names_of_pk = {
+            column.name
+            for column in pk_of_orm_model
+        }
+
+        # Generate a set with the primary key values ​​of all rows
+        set_of_pk_values: set[tuple[tuple[Any]]] = set()
+        for map_of_columns_and_values in data_to_convert:
+            pk_of_row = [
+                (column_name, value)
+                for column_name, value in map_of_columns_and_values.items()
+                if column_name in set_with_column_names_of_pk
+            ]
+
+            if pk_of_row:
+                set_of_pk_values.add(tuple(pk_of_row))
+
+        return set_of_pk_values
+
+    async def delete_test_data(
+        self,
+        orm_model: DeclarativeAttributeIntercept,
+        data_for_delete: Sequence[dict[str, Any]],
+        need_to_check_deletion: bool = True,
+    ):
+        """
+        Remove test data from database.
+        """
+
+        pk_of_orm_model = inspect(orm_model).primary_key
+
+        async with self.session_maker.begin() as session:
+            # Preparing filters to remove test data from database
+            query_filters: list[ColumnElement[bool]] = []
+            for map_of_columns_and_values in data_for_delete:
+                filters_for_deleting_the_row: list[BinaryExpression] = []
+                for column_of_pk in pk_of_orm_model:
+                    filters_for_deleting_the_row.append(
+                        column_of_pk == map_of_columns_and_values.get(column_of_pk.name),
+                    )
+
+                query_filters.append(and_(*filters_for_deleting_the_row))
+
+            # Delete rows from database
+            query = (
+                delete(orm_model)
+                .where(or_(*query_filters))
+                .returning(*pk_of_orm_model)
+            )
+            query_result: Result = await session.execute(query)
+
+        # Verifying that only test data has been removed 
+        #   from the database
+        if need_to_check_deletion:
+            maps_of_pks_and_values_for_deleted_rows = query_result.mappings().fetchall()
+
+            # Changing the data structure of rows to be deleted
+            #   and deleted rows for their further comparison
+            rows_to_be_deleted = self._get_set_of_pk_values(
+                pk_of_orm_model=pk_of_orm_model,
+                data_to_convert=data_for_delete,
+            )
+            deleted_rows = self._get_set_of_pk_values(
+                pk_of_orm_model=pk_of_orm_model,
+                data_to_convert=maps_of_pks_and_values_for_deleted_rows,
+            )
+
+            if deleted_rows != rows_to_be_deleted:
+                pytest.exit("The preparer was unable to remove all test data")
 
     @asynccontextmanager
     async def insert_test_data(
         self,
         orm_model: DeclarativeAttributeIntercept,
-        data_for_insert: list[dict[str, Any]],
+        data_for_insert: Sequence[dict[str, Any]],
         need_to_delete: bool = True,
         need_to_check_deletion: bool = True,
     ):
@@ -177,50 +258,32 @@ class DBPreparer:
         Add data to the database before the test 
         and delete it after the test.
 
-        :return: list of row's indices.
+        :return: list of primary keys for rows.
         """
 
         pk_of_orm_model, _ = await self.restore_seq_in_table(orm_model=orm_model)
 
-        async with self.session_maker() as session:
+        async with self.session_maker.begin() as session:
             # Add rows to the database
-            insert_query = insert(orm_model).values(data_for_insert).returning(*pk_of_orm_model)
-            insert_query_result = await session.execute(insert_query)
-            await session.commit()
+            query = (
+                insert(orm_model)
+                .values(data_for_insert)
+                .returning(*pk_of_orm_model)
+            )
+            query_result: Result = await session.execute(query)
 
-            maps_of_pks_and_values_for_new_rows = insert_query_result.mappings().fetchall()
+        await self.restore_seq_in_table(orm_model=orm_model)
 
-            try:
-                yield maps_of_pks_and_values_for_new_rows
+        maps_of_pks_and_values_for_new_rows = query_result.mappings().fetchall()
 
-            finally:
-                if need_to_delete:
-                    # Preparing filters to remove test data from database
-                    delete_query_filters: list[ColumnElement[bool]] = []
-                    for map_of_pks_and_values_for_new_row in maps_of_pks_and_values_for_new_rows:
-                        filters_for_deleting_the_row: list[BinaryExpression] = []
-                        for column_of_pk in pk_of_orm_model:
-                            filters_for_deleting_the_row.append(
-                                column_of_pk == map_of_pks_and_values_for_new_row.get(column_of_pk.name)
-                            )
+        try:
+            yield maps_of_pks_and_values_for_new_rows
 
-                        delete_query_filters.append(and_(*filters_for_deleting_the_row))
-
-                    # Delete rows from database
-                    delete_query = (
-                        delete(orm_model)
-                        .where(or_(*delete_query_filters))
-                        .returning(*pk_of_orm_model)
-                    )
-                    delete_query_result = await session.execute(delete_query)
-                    await session.commit()
-
-                    maps_of_pks_and_values_for_deleted_rows = delete_query_result.mappings().fetchall()
-
-                    # Verifying that only test data has been removed 
-                    #   from the database
-                    if (
-                        need_to_check_deletion
-                        and maps_of_pks_and_values_for_deleted_rows != maps_of_pks_and_values_for_new_rows
-                    ):
-                        pytest.exit("The preparer was unable to remove all test data")
+        finally:
+            # Call a method to remove test data from the database
+            if need_to_delete:
+                await self.delete_test_data(
+                    orm_model=orm_model,
+                    data_for_delete=maps_of_pks_and_values_for_new_rows,
+                    need_to_check_deletion=need_to_check_deletion,
+                )
