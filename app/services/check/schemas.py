@@ -1,5 +1,6 @@
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, model_validator, EmailStr
 
+from app.services.base.mixins import PhoneValidatorMixin, PasswordValidatorMixin
 from app.services.check.exceptions import DataValidationError
 
 
@@ -48,6 +49,32 @@ class PriceRangeValidator(BaseModel):
                 extras={
                     "min_price": self.min_price,
                     "max_price": self.max_price,
+                },
+            )
+
+        return self
+
+
+class UserAuthenticationValidator(BaseModel, PhoneValidatorMixin, PasswordValidatorMixin):
+    email: EmailStr | None = None
+    phone: str | None = None
+    password: str
+
+    @model_validator(mode="after")
+    def email_or_phone_validator(self) -> "UserAuthenticationValidator":
+        """
+        Check if there is a value for email or phone.
+
+        :return: scheme for authentication.
+        :raise: DataValidationError
+        """
+
+        if self.email is None and self.phone is None:
+            raise DataValidationError(
+                message="To identify the user, you need to pass the email or phone value.",
+                extras={
+                    "email": self.email,
+                    "phone": self.phone,
                 },
             )
 

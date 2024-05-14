@@ -25,3 +25,9 @@ class AlreadyExistsError(NotUniqueError):
     Exception of adding row with a non-unique value
     to the database.
     """
+
+
+class NotExistsError(BaseAuthorizationDAOError):
+    """
+    Exception of getting non-existent row from the database.
+    """

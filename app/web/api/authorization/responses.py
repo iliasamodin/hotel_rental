@@ -1,9 +1,9 @@
 from starlette import status
 
-from app.services.authorization.schemas import UserResponseSchema
+from app.services.authorization.schemas import UserResponseSchema, TokenResponseSchema
 
 from app.web.api.base.schemas import BaseErrorResponseSchema
-from app.web.api.authorization.docs import RegistrationEnum
+from app.web.api.authorization.docs import RegistrationEnum, AuthenticationEnum
 
 
 registration_responses = {
@@ -45,6 +45,52 @@ registration_responses = {
                     RegistrationEnum.SERVER_ERR.name: {
                         "summary": RegistrationEnum.SERVER_ERR.name,
                         "value": RegistrationEnum.SERVER_ERR.value,
+                    },
+                },
+            },
+        },
+    },
+}
+
+authentication_responses = {
+    status.HTTP_201_CREATED: {
+        "model": TokenResponseSchema,
+        "content": {
+            "application/json": {
+                "examples": {
+                    AuthenticationEnum.SUCCESS.name: {
+                        "summary": AuthenticationEnum.SUCCESS.name,
+                        "value": AuthenticationEnum.SUCCESS.value,
+                    },
+                },
+            },
+        },
+    },
+    status.HTTP_409_CONFLICT: {
+        "model": BaseErrorResponseSchema,
+        "content": {
+            "application/json": {
+                "examples": {
+                    AuthenticationEnum.NOT_EXISTS_ERR.name: {
+                        "summary": AuthenticationEnum.NOT_EXISTS_ERR.name,
+                        "value": AuthenticationEnum.NOT_EXISTS_ERR.value,
+                    },
+                    AuthenticationEnum.INVALID_PASSWORD_ERR.name: {
+                        "summary": AuthenticationEnum.INVALID_PASSWORD_ERR.name,
+                        "value": AuthenticationEnum.INVALID_PASSWORD_ERR.value,
+                    },
+                },
+            },
+        },
+    },
+    status.HTTP_500_INTERNAL_SERVER_ERROR: {
+        "model": BaseErrorResponseSchema,
+        "content": {
+            "application/json": {
+                "examples": {
+                    AuthenticationEnum.SERVER_ERR.name: {
+                        "summary": AuthenticationEnum.SERVER_ERR.name,
+                        "value": AuthenticationEnum.SERVER_ERR.value,
                     },
                 },
             },

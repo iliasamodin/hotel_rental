@@ -1,4 +1,4 @@
-from sqlalchemy import insert
+from sqlalchemy import insert, select
 from sqlalchemy.engine import Result
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,8 +9,10 @@ import re
 from app.db.models.users_model import UsersModel
 
 from app.dao.authorization.exceptions import BaseAuthorizationDAOError, AlreadyExistsError
+from app.dao.authorization.helpers import get_filters_by_email_or_password
 
 from app.services.authorization.schemas import UserRequestSchema
+from app.services.check.schemas import UserAuthenticationValidator
 
 
 async def add_user(
@@ -61,5 +63,27 @@ async def add_user(
             raise BaseAuthorizationDAOError(
                 message="Registration error at database query level.",
             )
+
+    return query_result
+
+
+async def get_user(
+    session: AsyncSession,
+    authentication_data: UserAuthenticationValidator,
+) -> Result:
+    """
+    Get the result of a query to select a user by his unique field.
+
+    :return: result of user query.
+    """
+
+    query_filters = get_filters_by_email_or_password(authentication_data=authentication_data)
+
+    query = (
+        select(UsersModel)
+        .where(*query_filters)
+    )
+
+    query_result = await session.execute(query)
 
     return query_result

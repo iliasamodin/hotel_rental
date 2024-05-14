@@ -240,7 +240,7 @@ class TestRegistration:
     @pytest.mark.asyncio
     async def test_registration(
         self,
-        body_of_request: dict[str, list[int]] | None,
+        body_of_request: dict[str, str],
         users_for_test: list[dict[str, Any]],
         expected_result: dict[str, Any],
         test_description: str,

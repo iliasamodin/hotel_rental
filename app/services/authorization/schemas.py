@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, EmailStr
 
 from app.services.base.mixins import PhoneValidatorMixin, PasswordValidatorMixin
@@ -16,3 +18,8 @@ class UserRequestSchema(BaseUserSchema, PasswordValidatorMixin):
 
 class UserResponseSchema(BaseUserSchema):
     id: int
+
+
+class TokenResponseSchema(BaseModel):
+    token: str
+    expires: datetime

@@ -33,6 +33,12 @@ class Settings(BaseSettings):
     COMPOSE_FILE: str = "./docker/docker-compose.test.yaml"
     PATH_OF_TEST_DUMP: str = "tests/db_dumps/dump_of_lookup_tables.sql"
 
+    # Authorization
+    SECRET_KEY: str
+    ALGORITHM: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ACCESS_TOKEN_COOKIE: str = "hotel_rental_access_token"
+
     @property
     def DB_URL(self):
         return (
