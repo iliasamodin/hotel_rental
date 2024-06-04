@@ -99,7 +99,6 @@ class TestGetRooms:
     @pytest.mark.parametrize(
         argnames=(
             "parameters_of_get",
-            "body_of_request",
             "hotels_for_test",
             "rooms_for_test",
             "services_of_rooms_for_test",
@@ -108,7 +107,6 @@ class TestGetRooms:
         ),
         argvalues=[
             pytest.param(
-                None,
                 None,
                 hotels_for_test,
                 rooms_for_test,
@@ -209,7 +207,6 @@ class TestGetRooms:
                 {
                     "min_price": 10_000,
                 },
-                None,
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
@@ -291,7 +288,6 @@ class TestGetRooms:
                 {
                     "min_price": 100_000,
                 },
-                None,
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
@@ -305,7 +301,6 @@ class TestGetRooms:
                 {
                     "max_price": 10_000,
                 },
-                None,
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
@@ -369,7 +364,6 @@ class TestGetRooms:
                 {
                     "max_price": 1_000,
                 },
-                None,
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
@@ -383,7 +377,6 @@ class TestGetRooms:
                     "min_price": 10_000,
                     "max_price": 10_000,
                 },
-                None,
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
@@ -428,7 +421,6 @@ class TestGetRooms:
                 {
                     "hotel_id": 1,
                 },
-                None,
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
@@ -492,7 +484,6 @@ class TestGetRooms:
                 {
                     "hotel_id": 3,
                 },
-                None,
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
@@ -505,7 +496,6 @@ class TestGetRooms:
                 {
                     "number_of_guests": 3,
                 },
-                None,
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
@@ -587,7 +577,6 @@ class TestGetRooms:
                 {
                     "number_of_guests": 10,
                 },
-                None,
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
@@ -597,10 +586,8 @@ class TestGetRooms:
                 id="-test-10",
             ),
             pytest.param(
-                None,
                 {
-                    "premium_level_ids": [2, 3],
-                    "service_ids": [],
+                    "premium_levels": [2, 3],
                 },
                 hotels_for_test,
                 rooms_for_test,
@@ -643,10 +630,8 @@ class TestGetRooms:
                 id="-test-11",
             ),
             pytest.param(
-                None,
                 {
-                    "premium_level_ids": [3, 5],
-                    "service_ids": [],
+                    "premium_levels": [3, 5],
                 },
                 hotels_for_test,
                 rooms_for_test,
@@ -657,10 +642,8 @@ class TestGetRooms:
                 id="-test-12",
             ),
             pytest.param(
-                None,
                 {
-                    "premium_level_ids": [],
-                    "service_ids": [1, 2],
+                    "services": [1, 2],
                 },
                 hotels_for_test,
                 rooms_for_test,
@@ -714,10 +697,8 @@ class TestGetRooms:
                     "max_price": 100_000,
                     "hotel_id": 2,
                     "number_of_guests": 2,
-                },
-                {
-                    "premium_level_ids": [4],
-                    "service_ids": [1, 2],
+                    "premium_levels": [4],
+                    "services": [1, 2],
                 },
                 hotels_for_test,
                 rooms_for_test,
@@ -769,7 +750,6 @@ class TestGetRooms:
                     "min_price": 100_000,
                     "max_price": 35_000,
                 },
-                None,
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
@@ -790,7 +770,6 @@ class TestGetRooms:
     async def test_get_rooms(
         self,
         parameters_of_get: dict[str, Any] | None,
-        body_of_request: dict[str, list[int]] | None,
         hotels_for_test: list[dict[str, Any]],
         rooms_for_test: list[dict[str, Any]],
         services_of_rooms_for_test: list[dict[str, Any]],
@@ -811,10 +790,9 @@ class TestGetRooms:
         ):
             # Client for test requests to API
             async with self.client_maker(transport=self.transport_for_client) as client:
-                api_response = await client.post(
+                api_response = await client.get(
                     url=f"http://test{self.url}",
                     params=parameters_of_get,
-                    json=body_of_request,
                 )
                 dict_of_response = api_response.json()
                 ic(dict_of_response)

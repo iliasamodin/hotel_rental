@@ -7,16 +7,11 @@ from app.db.models.hotels_services_model import HotelsServicesModel
 from app.db.models.service_varieties_model import ServiceVarietiesModel
 from app.db.models.rooms_services_model import RoomsServicesModel
 
-from app.services.bookings.schemas import (
-    ListOfServicesRequestSchema,
-    ListOfPremiumLevelsSchema,
-    ServicesAndLevelsRequestSchema,
-)
 from app.services.check.schemas import PriceRangeValidator
 
 
 def get_filters_by_services(
-    services: ListOfServicesRequestSchema | None = None,
+    services: list[int] | None = None,
 ) -> tuple[list[BinaryExpression], list[BinaryExpression]]:
     """
     Get sqlalchemy filters by services of hotels or rooms.
@@ -26,15 +21,15 @@ def get_filters_by_services(
 
     query_filters = []
     query_having = []
-    if services is not None and services.service_ids:
-        query_filters.append(ServiceVarietiesModel.id.in_(services.service_ids))
-        query_having.append(func.count(ServiceVarietiesModel.id) == len(services.service_ids))
+    if services:
+        query_filters.append(ServiceVarietiesModel.id.in_(services))
+        query_having.append(func.count(ServiceVarietiesModel.id) == len(services))
 
     return query_filters, query_having
 
 
 def get_hotels_with_requested_services_query(
-    services: ListOfServicesRequestSchema | None = None,
+    services: list[int] | None = None,
 ) -> Select:
     """
     Get a query to select hotel identifiers
@@ -91,7 +86,7 @@ def get_filters_for_hotels(
 
 
 def get_filters_by_premium_levels(
-    premium_levels: ListOfPremiumLevelsSchema | None = None,
+    premium_levels: list[int] | None = None,
 ) -> list[BinaryExpression]:
     """
     Get sqlalchemy filters by premium levels of rooms.
@@ -100,14 +95,15 @@ def get_filters_by_premium_levels(
     """
 
     query_filters = []
-    if premium_levels is not None and premium_levels.premium_level_ids:
-        query_filters.append(RoomsModel.premium_level_id.in_(premium_levels.premium_level_ids))
+    if premium_levels:
+        query_filters.append(RoomsModel.premium_level_id.in_(premium_levels))
 
     return query_filters
 
 
 def get_rooms_with_requested_services_and_levels_query(
-    services_and_levels: ServicesAndLevelsRequestSchema | None = None,
+    services: list[int] | None = None,
+    premium_levels: list[int] | None = None,
 ) -> Select:
     """
     Get a query to select room identifiers
@@ -118,9 +114,9 @@ def get_rooms_with_requested_services_and_levels_query(
     :return: query to select room identifiers.
     """
 
-    query_filters, query_having = get_filters_by_services(services=services_and_levels)
+    query_filters, query_having = get_filters_by_services(services=services)
     query_filters += get_filters_by_premium_levels(
-        premium_levels=services_and_levels,
+        premium_levels=premium_levels,
     )
 
     query = (

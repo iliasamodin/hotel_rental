@@ -11,7 +11,6 @@ from app.dao.bookings.schemas import (
 )
 
 from app.services.check.schemas import HotelsOrRoomsValidator, PriceRangeValidator
-from app.services.bookings.schemas import ListOfServicesRequestSchema, ServicesAndLevelsRequestSchema
 
 
 class BookingDAO:
@@ -50,7 +49,7 @@ class BookingDAO:
         location: str | None = None,
         number_of_guests: int | None = None,
         stars: int | None = None,
-        services: ListOfServicesRequestSchema | None = None,
+        services: list[int] | None = None,
     ) -> list[ExtendedHotelDTO]:
         """
         Get a list of hotels in accordance with filters.
@@ -113,7 +112,8 @@ class BookingDAO:
         min_price_and_max_price: PriceRangeValidator,
         hotel_id: int = None,
         number_of_guests: int = None,
-        services_and_levels: ServicesAndLevelsRequestSchema = None,
+        services: list[int] | None = None,
+        premium_levels: list[int] | None = None,
     ) -> list[ExtendedRoomDTO]:
         """
         Get a list of rooms in accordance with filters.
@@ -126,7 +126,8 @@ class BookingDAO:
             min_price_and_max_price=min_price_and_max_price,
             hotel_id=hotel_id,
             number_of_guests=number_of_guests,
-            services_and_levels=services_and_levels,
+            services=services,
+            premium_levels=premium_levels,
         )
         rows_with_rooms = query_result_of_rooms.fetchall()
 

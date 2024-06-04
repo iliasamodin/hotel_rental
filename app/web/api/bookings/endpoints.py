@@ -5,10 +5,8 @@ from sqlalchemy.orm import sessionmaker
 from app.services.bookings.service import BookingService
 from app.services.bookings.schemas import (
     ServiceVarietyResponseSchema,
-    ListOfServicesRequestSchema,
     ExtendedHotelResponseSchema,
     PremiumLevelVarietyResponseSchema,
-    ServicesAndLevelsRequestSchema,
     ExtendedRoomResponseSchema,
 )
 from app.services.check.services import (
@@ -18,7 +16,7 @@ from app.services.check.services import (
 )
 from app.services.check.schemas import HotelsOrRoomsValidator, PriceRangeValidator
 
-from app.web.api.bookings.types import hotel_stars_annotated
+from app.web.api.bookings.types import hotel_stars_annotated, service_ids_annotated, premium_level_ids_annotated
 
 router = APIRouter(prefix="/bookings")
 
@@ -39,15 +37,15 @@ async def get_services(
     return services
 
 
-@router.post(
+@router.get(
     path="/get-hotels",
     summary="Get a list of hotels in accordance with filters.",
 )
 async def get_hotels(
     location: str = None,
     number_of_guests: int = None,
-    stars: hotel_stars_annotated = None,
-    services: ListOfServicesRequestSchema = None,
+    stars: hotel_stars_annotated = None,  # type: ignore
+    services: service_ids_annotated = None,  # type: ignore
     session_maker: sessionmaker = Depends(get_session_maker),
 ) -> list[ExtendedHotelResponseSchema]:
     booking_service = BookingService(session_maker=session_maker)
@@ -79,7 +77,7 @@ async def get_premium_levels(
     return premium_levels
 
 
-@router.post(
+@router.get(
     path="/get-rooms",
     summary="Get a list of rooms in accordance with filters.",
 )
@@ -87,7 +85,8 @@ async def get_rooms(
     min_price_and_max_price: PriceRangeValidator = Depends(get_min_price_and_max_price),
     hotel_id: int = None,
     number_of_guests: int = None,
-    services_and_levels: ServicesAndLevelsRequestSchema = None,
+    services: service_ids_annotated = None,  # type: ignore
+    premium_levels: premium_level_ids_annotated = None,  # type: ignore
     session_maker: sessionmaker = Depends(get_session_maker),
 ) -> list[ExtendedRoomResponseSchema]:
     booking_service = BookingService(session_maker=session_maker)
@@ -95,7 +94,8 @@ async def get_rooms(
         min_price_and_max_price=min_price_and_max_price,
         hotel_id=hotel_id,
         number_of_guests=number_of_guests,
-        services_and_levels=services_and_levels,
+        services=services,
+        premium_levels=premium_levels,
     )
 
     return rooms

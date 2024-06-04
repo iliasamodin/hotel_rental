@@ -5,10 +5,8 @@ from app.dao.bookings.schemas import ServiceVarietyDTO, ExtendedHotelDTO, Premiu
 
 from app.services.bookings.schemas import (
     ServiceVarietyResponseSchema,
-    ListOfServicesRequestSchema,
     ExtendedHotelResponseSchema,
     PremiumLevelVarietyResponseSchema,
-    ServicesAndLevelsRequestSchema,
     ExtendedRoomResponseSchema,
     HotelSchema,
 )
@@ -58,7 +56,7 @@ class BookingService:
         location: str | None = None,
         number_of_guests: int | None = None,
         stars: int | None = None,
-        services: ListOfServicesRequestSchema | None = None,
+        services: list[int] | None = None,
     ) -> list[ExtendedHotelResponseSchema]:
         """
         Get a list of hotels in accordance with filters.
@@ -136,7 +134,8 @@ class BookingService:
         min_price_and_max_price: PriceRangeValidator,
         hotel_id: int = None,
         number_of_guests: int = None,
-        services_and_levels: ServicesAndLevelsRequestSchema = None,
+        services: list[int] | None = None,
+        premium_levels: list[int] | None = None,
     ) -> list[ExtendedRoomResponseSchema]:
         """
         Get a list of rooms in accordance with filters.
@@ -150,7 +149,8 @@ class BookingService:
                 min_price_and_max_price=min_price_and_max_price,
                 hotel_id=hotel_id,
                 number_of_guests=number_of_guests,
-                services_and_levels=services_and_levels,
+                services=services,
+                premium_levels=premium_levels,
             )
 
             rooms: list[ExtendedRoomResponseSchema] = []
