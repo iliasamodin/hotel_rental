@@ -1,6 +1,7 @@
 from fastapi import Depends
 from fastapi.routing import APIRouter
 from sqlalchemy.orm import sessionmaker
+from starlette import status
 
 from app.services.bookings.service import BookingService
 from app.services.bookings.schemas import (
@@ -17,13 +18,20 @@ from app.services.check.services import (
 from app.services.check.schemas import HotelsOrRoomsValidator, PriceRangeValidator
 
 from app.web.api.bookings.types import hotel_stars_annotated, service_ids_annotated, premium_level_ids_annotated
+from app.web.api.bookings.responses import (
+    responses_of_services,
+    responses_of_hotels,
+    responses_of_premium_levels,
+    responses_of_rooms,
+)
 
 router = APIRouter(prefix="/bookings")
 
 
 @router.get(
     path="/services",
-    status_code=200,
+    status_code=status.HTTP_200_OK,
+    responses=responses_of_services,
     summary="Get all service options.",
 )
 async def get_services(
@@ -40,7 +48,8 @@ async def get_services(
 
 @router.get(
     path="/hotels",
-    status_code=200,
+    status_code=status.HTTP_200_OK,
+    responses=responses_of_hotels,
     summary="Get a list of hotels in accordance with filters.",
 )
 async def get_hotels(
@@ -63,7 +72,8 @@ async def get_hotels(
 
 @router.get(
     path="/premium-levels",
-    status_code=200,
+    status_code=status.HTTP_200_OK,
+    responses=responses_of_premium_levels,
     summary="Get all variations of room's premium levels.",
 )
 async def get_premium_levels(
@@ -82,7 +92,8 @@ async def get_premium_levels(
 
 @router.get(
     path="/rooms",
-    status_code=200,
+    status_code=status.HTTP_200_OK,
+    responses=responses_of_rooms,
     summary="Get a list of rooms in accordance with filters.",
 )
 async def get_rooms(

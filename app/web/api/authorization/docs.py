@@ -30,7 +30,7 @@ class RegistrationEnum(Enum):
     SERVER_ERR: BaseErrorResponseSchema = BaseErrorResponseSchema(
         detail="Unspecified error.",
         extras={
-            "doc": "Exception documentation."
+            "doc": "Exception documentation.",
         },
     )
 
@@ -59,6 +59,6 @@ class AuthenticationEnum(Enum):
     SERVER_ERR: BaseErrorResponseSchema = BaseErrorResponseSchema(
         detail="Unspecified error.",
         extras={
-            "doc": "Exception documentation."
+            "doc": "Exception documentation.",
         },
     )
