@@ -8,10 +8,6 @@ class ServiceVarietyResponseSchema(BaseModel):
     desc: str | None = None
 
 
-class ListOfServicesRequestSchema(BaseModel):
-    service_ids: list[int]
-
-
 class HotelSchema(BaseModel):
     id: int
     name: str
@@ -30,14 +26,6 @@ class PremiumLevelVarietyResponseSchema(BaseModel):
     key: str
     name: str | None = None
     desc: str | None = None
-
-
-class ListOfPremiumLevelsSchema(BaseModel):
-    premium_level_ids: list[int]
-
-
-class ServicesAndLevelsRequestSchema(ListOfServicesRequestSchema, ListOfPremiumLevelsSchema):
-    pass
 
 
 class RoomSchema(BaseModel):

@@ -17,7 +17,6 @@ from app.dao.bookings.helpers import (
 )
 
 from app.services.check.schemas import HotelsOrRoomsValidator, PriceRangeValidator
-from app.services.bookings.schemas import ListOfServicesRequestSchema, ServicesAndLevelsRequestSchema
 
 
 async def get_services(
@@ -59,7 +58,7 @@ async def get_hotels(
     location: str | None = None,
     number_of_guests: int | None = None,
     stars: int | None = None,
-    services: ListOfServicesRequestSchema | None = None,
+    services: list[int] | None = None,
 ) -> Result:
     """
     Get the result of a hotel query from the database.
@@ -160,7 +159,8 @@ async def get_rooms(
     min_price_and_max_price: PriceRangeValidator,
     hotel_id: int = None,
     number_of_guests: int = None,
-    services_and_levels: ServicesAndLevelsRequestSchema = None,
+    services: list[int] | None = None,
+    premium_levels: list[int] | None = None,
 ) -> Result:
     """
     Get the result of a room query from the database.
@@ -169,7 +169,8 @@ async def get_rooms(
     """
 
     rooms_with_requested_services_sbq = get_rooms_with_requested_services_and_levels_query(
-        services_and_levels=services_and_levels,
+        services=services,
+        premium_levels=premium_levels,
     ).subquery()
 
     query_filters = get_filters_for_rooms(

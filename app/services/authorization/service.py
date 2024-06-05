@@ -33,14 +33,14 @@ class AuthorizationService:
 
         async with self.session_maker.begin() as session:
             self.authorization_dao = AuthorizationDAO(session=session)
-            user_dao: UserDTO = await self.authorization_dao.add_user(user=user)
+            user_dto: UserDTO = await self.authorization_dao.add_user(user=user)
 
             user = UserResponseSchema(
-                id=user_dao.id,
-                email=user_dao.email,
-                phone=user_dao.phone,
-                first_name=user_dao.first_name,
-                last_name=user_dao.last_name,
+                id=user_dto.id,
+                email=user_dto.email,
+                phone=user_dto.phone,
+                first_name=user_dto.first_name,
+                last_name=user_dto.last_name,
             )
 
         return user
@@ -57,11 +57,11 @@ class AuthorizationService:
 
         async with self.session_maker.begin() as session:
             self.authorization_dao = AuthorizationDAO(session=session)
-            user_dao: UserDTO = await self.authorization_dao.get_user(authentication_data=authentication_data)
+            user_dto: UserDTO = await self.authorization_dao.get_user(authentication_data=authentication_data)
 
             if not verify_password(
                 plain_password=authentication_data.password,
-                hashed_password=user_dao.password,
+                hashed_password=user_dto.password,
             ):
                 raise IncorrectPasswordError(
                     message="Invalid password.",
@@ -71,11 +71,11 @@ class AuthorizationService:
                 )
 
             user = UserResponseSchema(
-                id=user_dao.id,
-                email=user_dao.email,
-                phone=user_dao.phone,
-                first_name=user_dao.first_name,
-                last_name=user_dao.last_name,
+                id=user_dto.id,
+                email=user_dto.email,
+                phone=user_dto.phone,
+                first_name=user_dto.first_name,
+                last_name=user_dto.last_name,
             )
             access_token: TokenResponseSchema = get_access_token(user=user)
 

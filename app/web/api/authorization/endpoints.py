@@ -1,6 +1,7 @@
 from fastapi import Depends, Response
 from fastapi.routing import APIRouter
 from sqlalchemy.orm import sessionmaker
+from starlette import status
 
 from app.settings import settings
 
@@ -16,7 +17,7 @@ router = APIRouter(prefix="/users")
 
 @router.post(
     path="/registration",
-    status_code=201,
+    status_code=status.HTTP_201_CREATED,
     responses=registration_responses,
     summary="User registration.",
 )
@@ -32,7 +33,7 @@ async def registration(
 
 @router.post(
     path="/authentication",
-    status_code=201,
+    status_code=status.HTTP_201_CREATED,
     responses=authentication_responses,
     summary="User authentication.",
 )

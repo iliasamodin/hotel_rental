@@ -97,7 +97,6 @@ class TestGetHotels:
     @pytest.mark.parametrize(
         argnames=(
             "parameters_of_get",
-            "body_of_request",
             "hotels_for_test",
             "services_of_hotels_for_test",
             "rooms_for_test",
@@ -106,7 +105,6 @@ class TestGetHotels:
         ),
         argvalues=[
             pytest.param(
-                None,
                 None,
                 hotels_for_test,
                 services_of_hotels_for_test,
@@ -167,7 +165,6 @@ class TestGetHotels:
                 {
                     "location": "Komi",
                 },
-                None,
                 hotels_for_test,
                 services_of_hotels_for_test,
                 rooms_for_test,
@@ -190,7 +187,6 @@ class TestGetHotels:
                 {
                     "location": "London",
                 },
-                None,
                 hotels_for_test,
                 services_of_hotels_for_test,
                 rooms_for_test,
@@ -203,7 +199,6 @@ class TestGetHotels:
                 {
                     "number_of_guests": 3,
                 },
-                None,
                 hotels_for_test,
                 services_of_hotels_for_test,
                 rooms_for_test,
@@ -242,7 +237,6 @@ class TestGetHotels:
                 {
                     "number_of_guests": 10,
                 },
-                None,
                 hotels_for_test,
                 services_of_hotels_for_test,
                 rooms_for_test,
@@ -255,7 +249,6 @@ class TestGetHotels:
                 {
                     "stars": 5,
                 },
-                None,
                 hotels_for_test,
                 services_of_hotels_for_test,
                 rooms_for_test,
@@ -291,7 +284,6 @@ class TestGetHotels:
                 {
                     "stars": 6,
                 },
-                None,
                 hotels_for_test,
                 services_of_hotels_for_test,
                 rooms_for_test,
@@ -302,9 +294,8 @@ class TestGetHotels:
                 id="-test-7",
             ),
             pytest.param(
-                None,
                 {
-                    "service_ids": [1, 3],
+                    "services": [1, 3],
                 },
                 hotels_for_test,
                 services_of_hotels_for_test,
@@ -338,9 +329,8 @@ class TestGetHotels:
                 id="-test-8",
             ),
             pytest.param(
-                None,
                 {
-                    "service_ids": [1, 2, 3],
+                    "services": [1, 2, 3],
                 },
                 hotels_for_test,
                 services_of_hotels_for_test,
@@ -355,9 +345,7 @@ class TestGetHotels:
                     "location": "Altai",
                     "number_of_guests": 2,
                     "stars": 5,
-                },
-                {
-                    "service_ids": [1, 3],
+                    "services": [1, 3],
                 },
                 hotels_for_test,
                 services_of_hotels_for_test,
@@ -393,7 +381,6 @@ class TestGetHotels:
                 {
                     "stars": 10,
                 },
-                None,
                 hotels_for_test,
                 services_of_hotels_for_test,
                 rooms_for_test,
@@ -424,7 +411,6 @@ class TestGetHotels:
     async def test_get_hotels(
         self,
         parameters_of_get: dict[str, Any] | None,
-        body_of_request: dict[str, list[int]] | None,
         hotels_for_test: list[dict[str, Any]],
         services_of_hotels_for_test: list[dict[str, Any]],
         rooms_for_test: list[dict[str, Any]],
@@ -445,10 +431,9 @@ class TestGetHotels:
         ):
             # Client for test requests to API
             async with self.client_maker(transport=self.transport_for_client) as client:
-                api_response = await client.post(
+                api_response = await client.get(
                     url=f"http://test{self.url}",
                     params=parameters_of_get,
-                    json=body_of_request,
                 )
                 dict_of_response = api_response.json()
                 ic(dict_of_response)
