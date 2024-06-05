@@ -22,7 +22,8 @@ router = APIRouter(prefix="/bookings")
 
 
 @router.get(
-    path="/get-services",
+    path="/services",
+    status_code=200,
     summary="Get all service options.",
 )
 async def get_services(
@@ -38,7 +39,8 @@ async def get_services(
 
 
 @router.get(
-    path="/get-hotels",
+    path="/hotels",
+    status_code=200,
     summary="Get a list of hotels in accordance with filters.",
 )
 async def get_hotels(
@@ -60,7 +62,8 @@ async def get_hotels(
 
 
 @router.get(
-    path="/get-premium-levels",
+    path="/premium-levels",
+    status_code=200,
     summary="Get all variations of room's premium levels.",
 )
 async def get_premium_levels(
@@ -78,7 +81,8 @@ async def get_premium_levels(
 
 
 @router.get(
-    path="/get-rooms",
+    path="/rooms",
+    status_code=200,
     summary="Get a list of rooms in accordance with filters.",
 )
 async def get_rooms(
