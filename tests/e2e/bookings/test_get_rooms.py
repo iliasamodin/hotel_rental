@@ -3,6 +3,7 @@ from typing import Any
 from fastapi import FastAPI
 from httpx import AsyncClient, ASGITransport
 from icecream import ic
+from starlette import status
 
 import pytest
 
@@ -102,6 +103,7 @@ class TestGetRooms:
             "hotels_for_test",
             "rooms_for_test",
             "services_of_rooms_for_test",
+            "expected_status_code",
             "expected_result",
             "test_description",
         ),
@@ -111,6 +113,7 @@ class TestGetRooms:
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
+                status.HTTP_200_OK,
                 [
                     {
                         "id": 1,
@@ -210,6 +213,7 @@ class TestGetRooms:
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
+                status.HTTP_200_OK,
                 [
                     {
                         "id": 2,
@@ -291,6 +295,7 @@ class TestGetRooms:
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
+                status.HTTP_200_OK,
                 [],
                 "Endpoint test for selecting rooms from the database "
                 "with a filter based on the minimum price for renting a room "
@@ -304,6 +309,7 @@ class TestGetRooms:
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
+                status.HTTP_200_OK,
                 [
                     {
                         "id": 1,
@@ -367,6 +373,7 @@ class TestGetRooms:
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
+                status.HTTP_200_OK,
                 [],
                 "Endpoint test for selecting rooms from the database "
                 "with a filter based on the maximum room rental price less than the rental cost of any existing room",
@@ -380,6 +387,7 @@ class TestGetRooms:
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
+                status.HTTP_200_OK,
                 [
                     {
                         "id": 2,
@@ -424,6 +432,7 @@ class TestGetRooms:
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
+                status.HTTP_200_OK,
                 [
                     {
                         "id": 1,
@@ -487,6 +496,7 @@ class TestGetRooms:
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
+                status.HTTP_200_OK,
                 [],
                 "Endpoint test for selecting rooms from the database "
                 "with filter by non-existent hotel ID",
@@ -499,6 +509,7 @@ class TestGetRooms:
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
+                status.HTTP_200_OK,
                 [
                     {
                         "id": 2,
@@ -580,6 +591,7 @@ class TestGetRooms:
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
+                status.HTTP_200_OK,
                 [],
                 "Endpoint test for selecting rooms from the database "
                 "with a filter by the number of guests exceeding the capacity of any of the rooms in the database",
@@ -592,6 +604,7 @@ class TestGetRooms:
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
+                status.HTTP_200_OK,
                 [
                     {
                         "id": 2,
@@ -636,6 +649,7 @@ class TestGetRooms:
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
+                status.HTTP_200_OK,
                 [],
                 "Endpoint test for selecting rooms from the database "
                 "with filtering by premium levels for which there are no rooms in the database",
@@ -648,6 +662,7 @@ class TestGetRooms:
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
+                status.HTTP_200_OK,
                 [
                     {
                         "id": 3,
@@ -703,6 +718,7 @@ class TestGetRooms:
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
+                status.HTTP_200_OK,
                 [
                     {
                         "id": 3,
@@ -753,6 +769,7 @@ class TestGetRooms:
                 hotels_for_test,
                 rooms_for_test,
                 services_of_rooms_for_test,
+                status.HTTP_200_OK,
                 {
                     "detail": "The minimum room price filter must be less than the maximum room price filter.",
                     "extras": {
@@ -773,6 +790,7 @@ class TestGetRooms:
         hotels_for_test: list[dict[str, Any]],
         rooms_for_test: list[dict[str, Any]],
         services_of_rooms_for_test: list[dict[str, Any]],
+        expected_status_code: int,
         expected_result: list[dict[str, Any]] | dict[str, Any],
         test_description: str,
     ):
@@ -794,7 +812,14 @@ class TestGetRooms:
                     url=f"http://test{self.url}",
                     params=parameters_of_get,
                 )
+
+                status_code_of_response = api_response.status_code
+                ic(status_code_of_response)
                 dict_of_response = api_response.json()
                 ic(dict_of_response)
 
+            assert (
+                status_code_of_response == expected_status_code,
+                "The status code returned by the endpoint is not as expected",
+            )
             assert dict_of_response == expected_result, "The data returned by the endpoint is not as expected"

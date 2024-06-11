@@ -3,6 +3,7 @@ from typing import Any
 from fastapi import FastAPI
 from httpx import AsyncClient, ASGITransport
 from icecream import ic
+from starlette import status
 
 import pytest
 
@@ -76,6 +77,7 @@ class TestPremiumLevels:
             "parameters_of_get",
             "hotels_for_test",
             "rooms_for_test",
+            "expected_status_code",
             "expected_result",
             "test_description",
         ),
@@ -84,6 +86,7 @@ class TestPremiumLevels:
                 None,
                 hotels_for_test,
                 rooms_for_test,
+                status.HTTP_200_OK,
                 [
                     {
                         "id": 1,
@@ -119,6 +122,7 @@ class TestPremiumLevels:
                 },
                 hotels_for_test,
                 rooms_for_test,
+                status.HTTP_200_OK,
                 [
                     {
                         "id": 1,
@@ -143,6 +147,7 @@ class TestPremiumLevels:
                 },
                 hotels_for_test,
                 rooms_for_test,
+                status.HTTP_200_OK,
                 [],
                 "Endpoint test for selecting room's premium levels from the database "
                 "with filter by non-existent hotel ID",
@@ -154,6 +159,7 @@ class TestPremiumLevels:
                 },
                 hotels_for_test,
                 rooms_for_test,
+                status.HTTP_200_OK,
                 [
                     {
                         "id": 1,
@@ -185,6 +191,7 @@ class TestPremiumLevels:
                 },
                 hotels_for_test,
                 rooms_for_test,
+                status.HTTP_200_OK,
                 [
                     {
                         "id": 3,
@@ -205,6 +212,7 @@ class TestPremiumLevels:
         parameters_of_get: dict[str, Any] | None,
         hotels_for_test: list[dict[str, Any]],
         rooms_for_test: list[dict[str, Any]],
+        expected_status_code: int,
         expected_result: list[dict[str, Any]],
         test_description: str,
     ):
@@ -222,7 +230,14 @@ class TestPremiumLevels:
                     url=f"http://test{self.url}",
                     params=parameters_of_get,
                 )
+
+                status_code_of_response = api_response.status_code
+                ic(status_code_of_response)
                 dict_of_response = api_response.json()
                 ic(dict_of_response)
 
+            assert (
+                status_code_of_response == expected_status_code,
+                "The status code returned by the endpoint is not as expected",
+            )
             assert dict_of_response == expected_result, "The data returned by the endpoint is not as expected"
