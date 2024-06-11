@@ -3,6 +3,7 @@ from typing import Any
 from fastapi import FastAPI
 from httpx import AsyncClient, ASGITransport
 from icecream import ic
+from starlette import status
 
 import pytest
 
@@ -48,6 +49,7 @@ class TestAuthentication:
         argnames=(
             "body_of_request",
             "users_for_test",
+            "expected_status_code",
             "expected_result",
             "test_description",
         ),
@@ -58,6 +60,7 @@ class TestAuthentication:
                     "password": "Password1",
                 },
                 users_for_test,
+                status.HTTP_201_CREATED,
                 {
                     "token",
                     "expires",
@@ -72,6 +75,7 @@ class TestAuthentication:
                     "password": "Password1",
                 },
                 users_for_test,
+                status.HTTP_201_CREATED,
                 {
                     "token",
                     "expires",
@@ -87,6 +91,7 @@ class TestAuthentication:
                     "password": "Password1",
                 },
                 users_for_test,
+                status.HTTP_201_CREATED,
                 {
                     "token",
                     "expires",
@@ -102,6 +107,7 @@ class TestAuthentication:
         self,
         body_of_request: dict[str, str],
         users_for_test: list[dict[str, Any]],
+        expected_status_code: int,
         expected_result: dict[str, Any],
         test_description: str,
     ):
@@ -116,17 +122,25 @@ class TestAuthentication:
                     url=f"http://test{self.url}",
                     json=body_of_request,
                 )
+
+                status_code_of_response = api_response.status_code
+                ic(status_code_of_response)
                 dict_of_response = api_response.json()
                 ic(dict_of_response)
 
             keys_of_response = set(dict_of_response.keys())
 
+            assert (
+                status_code_of_response == expected_status_code,
+                "The status code returned by the endpoint is not as expected",
+            )
             assert keys_of_response == expected_result, "The data returned by the endpoint is not as expected"
 
     @pytest.mark.parametrize(
         argnames=(
             "body_of_request",
             "users_for_test",
+            "expected_status_code",
             "expected_result",
             "test_description",
         ),
@@ -136,6 +150,7 @@ class TestAuthentication:
                     "password": "Password1",
                 },
                 users_for_test,
+                status.HTTP_409_CONFLICT,
                 {
                     "detail": "To identify the user, you need to pass the email or phone value.",
                     "extras": {
@@ -153,6 +168,7 @@ class TestAuthentication:
                     "password": "Password1",
                 },
                 users_for_test,
+                status.HTTP_409_CONFLICT,
                 {
                     "detail": "User with this email or phone number does not exist.",
                     "extras": {
@@ -169,6 +185,7 @@ class TestAuthentication:
                     "password": "Password1",
                 },
                 users_for_test,
+                status.HTTP_409_CONFLICT,
                 {
                     "detail": "User with this email or phone number does not exist.",
                     "extras": {
@@ -186,6 +203,7 @@ class TestAuthentication:
                     "password": "Password1",
                 },
                 users_for_test,
+                status.HTTP_409_CONFLICT,
                 {
                     "detail": "User with this email or phone number does not exist.",
                     "extras": {
@@ -203,6 +221,7 @@ class TestAuthentication:
                     "password": "Password2",
                 },
                 users_for_test,
+                status.HTTP_409_CONFLICT,
                 {
                     "detail": "Invalid password.",
                     "extras": {
@@ -219,6 +238,7 @@ class TestAuthentication:
                     "password": "Password2",
                 },
                 users_for_test,
+                status.HTTP_409_CONFLICT,
                 {
                     "detail": "Invalid password.",
                     "extras": {
@@ -236,6 +256,7 @@ class TestAuthentication:
                     "password": "Password2",
                 },
                 users_for_test,
+                status.HTTP_409_CONFLICT,
                 {
                     "detail": "Invalid password.",
                     "extras": {
@@ -253,6 +274,7 @@ class TestAuthentication:
         self,
         body_of_request: dict[str, str],
         users_for_test: list[dict[str, Any]],
+        expected_status_code: int,
         expected_result: dict[str, Any],
         test_description: str,
     ):
@@ -267,7 +289,14 @@ class TestAuthentication:
                     url=f"http://test{self.url}",
                     json=body_of_request,
                 )
+
+                status_code_of_response = api_response.status_code
+                ic(status_code_of_response)
                 dict_of_response = api_response.json()
                 ic(dict_of_response)
 
+            assert (
+                status_code_of_response == expected_status_code,
+                "The status code returned by the endpoint is not as expected",
+            )
             assert dict_of_response == expected_result, "The data returned by the endpoint is not as expected"

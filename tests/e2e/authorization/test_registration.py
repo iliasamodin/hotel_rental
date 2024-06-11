@@ -3,6 +3,7 @@ from typing import Any
 from fastapi import FastAPI
 from httpx import AsyncClient, ASGITransport
 from icecream import ic
+from starlette import status
 
 import pytest
 
@@ -56,6 +57,7 @@ class TestRegistration:
         argnames=(
             "body_of_request",
             "users_for_test",
+            "expected_status_code",
             "expected_result",
             "test_description",
         ),
@@ -69,6 +71,7 @@ class TestRegistration:
                     "password": "Password3",
                 },
                 users_for_test,
+                status.HTTP_201_CREATED,
                 {
                     "email": "user3@example.com",
                     "phone": "+7-999-999-99-99",
@@ -88,6 +91,7 @@ class TestRegistration:
                     "password": "Password1",
                 },
                 users_for_test,
+                status.HTTP_201_CREATED,
                 {
                     "email": "user3@example.com",
                     "phone": "+7-999-999-99-99",
@@ -108,6 +112,7 @@ class TestRegistration:
                     "password": "Password3",
                 },
                 users_for_test,
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
                 {
                     "detail": [
                         {
@@ -137,6 +142,7 @@ class TestRegistration:
                     "password": "Password3",
                 },
                 users_for_test,
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
                 {
                     "detail": [
                         {
@@ -162,6 +168,7 @@ class TestRegistration:
                     "password": "Password 3",
                 },
                 users_for_test,
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
                 {
                     "detail": [
                         {
@@ -187,6 +194,7 @@ class TestRegistration:
                     "password": "Password3",
                 },
                 users_for_test,
+                status.HTTP_409_CONFLICT,
                 {
                     "detail": "User with this email already exists.",
                     "extras": {
@@ -206,6 +214,7 @@ class TestRegistration:
                     "password": "Password3",
                 },
                 users_for_test,
+                status.HTTP_409_CONFLICT,
                 {
                     "detail": "User with this phone already exists.",
                     "extras": {
@@ -225,6 +234,7 @@ class TestRegistration:
                     "password": "Password3",
                 },
                 users_for_test,
+                status.HTTP_409_CONFLICT,
                 {
                     "detail": "User with this email already exists.",
                     "extras": {
@@ -242,6 +252,7 @@ class TestRegistration:
         self,
         body_of_request: dict[str, str],
         users_for_test: list[dict[str, Any]],
+        expected_status_code: int,
         expected_result: dict[str, Any],
         test_description: str,
     ):
@@ -256,10 +267,17 @@ class TestRegistration:
                     url=f"http://test{self.url}",
                     json=body_of_request,
                 )
+
+                status_code_of_response = api_response.status_code
+                ic(status_code_of_response)
                 dict_of_response = api_response.json()
                 ic(dict_of_response)
 
             # Delete data added to the database by endpoint
             await self.db_preparer.delete_test_data(orm_model=UsersModel, data_for_delete=[dict_of_response])
 
+            assert (
+                status_code_of_response == expected_status_code,
+                "The status code returned by the endpoint is not as expected",
+            )
             assert dict_of_response == expected_result, "The data returned by the endpoint is not as expected"

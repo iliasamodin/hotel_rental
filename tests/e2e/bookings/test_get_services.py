@@ -3,6 +3,7 @@ from typing import Any
 from fastapi import FastAPI
 from httpx import AsyncClient, ASGITransport
 from icecream import ic
+from starlette import status
 
 import pytest
 
@@ -80,6 +81,7 @@ class TestGetServices:
             "services_of_hotels_for_test",
             "rooms_for_test",
             "services_of_rooms_for_test",
+            "expected_status_code",
             "expected_result",
             "test_description",
         ),
@@ -93,6 +95,7 @@ class TestGetServices:
                 services_of_hotels_for_test,
                 rooms_for_test,
                 service_1_of_rooms_for_test,
+                status.HTTP_200_OK,
                 [
                     {
                         "id": 1,
@@ -125,6 +128,7 @@ class TestGetServices:
                 services_of_hotels_for_test,
                 rooms_for_test,
                 service_1_of_rooms_for_test,
+                status.HTTP_200_OK,
                 [
                     {
                         "id": 1,
@@ -152,6 +156,7 @@ class TestGetServices:
                 services_of_hotels_for_test,
                 rooms_for_test,
                 service_1_of_rooms_for_test,
+                status.HTTP_200_OK,
                 [
                     {
                         "id": 1,
@@ -173,6 +178,7 @@ class TestGetServices:
                 services_of_hotels_for_test,
                 rooms_for_test,
                 service_1_of_rooms_for_test + service_2_of_rooms_for_test,
+                status.HTTP_200_OK,
                 [
                     {
                         "id": 1,
@@ -200,6 +206,7 @@ class TestGetServices:
                 services_of_hotels_for_test,
                 rooms_for_test,
                 service_1_of_rooms_for_test,
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
                 {
                     "detail": "Service filters for hotels only or rooms only are mutually exclusive.",
                     "extras": {
@@ -220,6 +227,7 @@ class TestGetServices:
         services_of_hotels_for_test: list[dict[str, Any]],
         rooms_for_test: list[dict[str, Any]],
         services_of_rooms_for_test: list[dict[str, Any]],
+        expected_status_code: int,
         expected_result: list[dict[str, Any]] | dict[str, Any],
         test_description: str,
     ):
@@ -245,7 +253,14 @@ class TestGetServices:
                     url=f"http://test{self.url}",
                     params=parameters_of_get,
                 )
+
+                status_code_of_response = api_response.status_code
+                ic(status_code_of_response)
                 dict_of_response = api_response.json()
                 ic(dict_of_response)
 
+            assert (
+                status_code_of_response == expected_status_code,
+                "The status code returned by the endpoint is not as expected",
+            )
             assert dict_of_response == expected_result, "The data returned by the endpoint is not as expected"
