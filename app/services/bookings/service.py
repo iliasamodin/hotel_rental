@@ -1,16 +1,25 @@
 from sqlalchemy.orm import sessionmaker
 
 from app.dao.bookings.dao import BookingDAO
-from app.dao.bookings.schemas import ServiceVarietyDTO, ExtendedHotelDTO, PremiumLevelVarietyDTO, ExtendedRoomDTO
+from app.dao.bookings.schemas import (
+    ExtendedBookingDTO,
+    RoomDTO,
+    ServiceVarietyDTO,
+    ExtendedHotelDTO,
+    PremiumLevelVarietyDTO,
+    ExtendedRoomDTO,
+)
 
 from app.services.bookings.schemas import (
+    ExtendedBookingResponseSchema,
+    RoomSchema,
     ServiceVarietyResponseSchema,
     ExtendedHotelResponseSchema,
     PremiumLevelVarietyResponseSchema,
     ExtendedRoomResponseSchema,
     HotelSchema,
 )
-from app.services.check.schemas import HotelsOrRoomsValidator, PriceRangeValidator
+from app.services.check.schemas import HotelsOrRoomsValidator, MinAndMaxDtsValidator, PriceRangeValidator
 
 
 class BookingService:
@@ -196,3 +205,49 @@ class BookingService:
                 )
 
         return rooms
+
+    async def get_bookings(
+        self,
+        user_id: int,
+        min_and_max_dts: MinAndMaxDtsValidator,
+        number_of_guests: int = None,
+    ) -> list[ExtendedBookingResponseSchema]:
+        """
+        Get a list of user's bookings.
+
+        :return: list of bookings.
+        """
+
+        async with self.session_maker.begin() as session:
+            self.booking_dao = BookingDAO(session=session)
+            bookings_dto: list[ExtendedBookingDTO] = await self.booking_dao.get_bookings(
+                user_id=user_id,
+                min_and_max_dts=min_and_max_dts,
+                number_of_guests=number_of_guests,
+            )
+
+            bookings: list[ExtendedBookingResponseSchema] = []
+            for booking in bookings_dto:
+                bookings.append(
+                    ExtendedBookingResponseSchema(
+                        id=booking.id,
+                        user_id=booking.user_id,
+                        room_id=booking.room_id,
+                        number_of_persons=booking.number_of_persons,
+                        check_in_dt=booking.check_in_dt,
+                        check_out_dt=booking.check_out_dt,
+                        total_cost=booking.total_cost,
+                        room=RoomSchema(
+                            id=booking.room.id,
+                            name=booking.room.name,
+                            desc=booking.room.desc,
+                            hotel_id=booking.room.hotel_id,
+                            premium_level_id=booking.room.premium_level_id,
+                            ordinal_number=booking.room.ordinal_number,
+                            maximum_persons=booking.room.maximum_persons,
+                            price=booking.room.price,
+                        ),
+                    )
+                )
+
+        return bookings

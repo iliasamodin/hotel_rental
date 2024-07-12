@@ -1,8 +1,10 @@
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.dao.bookings.adapters import get_services, get_hotels, get_premium_levels, get_rooms
+from app.dao.bookings.adapters import get_bookings, get_services, get_hotels, get_premium_levels, get_rooms
 from app.dao.bookings.schemas import (
+    ExtendedBookingDTO,
+    RoomDTO,
     ServiceVarietyDTO,
     ExtendedHotelDTO,
     PremiumLevelVarietyDTO,
@@ -10,7 +12,7 @@ from app.dao.bookings.schemas import (
     HotelDTO,
 )
 
-from app.services.check.schemas import HotelsOrRoomsValidator, PriceRangeValidator
+from app.services.check.schemas import HotelsOrRoomsValidator, MinAndMaxDtsValidator, PriceRangeValidator
 
 
 class BookingDAO:
@@ -150,3 +152,31 @@ class BookingDAO:
                 map_of_room_ids_and_rooms[room.id].services.extend(room.services)
 
         return map_of_room_ids_and_rooms.values()
+
+    async def get_bookings(
+        self,
+        min_and_max_dts: MinAndMaxDtsValidator,
+        number_of_guests: int = None,
+        user_id: int | None = None,
+    ) -> list[ExtendedBookingDTO]:
+        """
+        Get a list of user's bookings.
+
+        :return: list of bookings.
+        """
+
+        query_result_of_bookings: Result = await get_bookings(
+            session=self.session,
+            user_id=user_id,
+            min_and_max_dts=min_and_max_dts,
+            number_of_guests=number_of_guests,
+        )
+        rows_with_bookings = query_result_of_bookings.fetchall()
+
+        bookings: list[ExtendedBookingDTO] = []
+        for row in rows_with_bookings:
+            booking = ExtendedBookingDTO.model_validate(row.BookingsModel)
+            booking.room = RoomDTO.model_validate(row.RoomsModel)
+            bookings.append(booking)
+
+        return bookings

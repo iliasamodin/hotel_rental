@@ -39,6 +39,11 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     ACCESS_TOKEN_COOKIE: str = "hotel_rental_access_token"
 
+    # Business logic
+    CHECK_IN_TIME: int = 14
+    CHECK_OUT_TIME: int = 12
+    MIN_RENTAL_INTERVAL_HOURS: int = 22
+
     @property
     def DB_URL(self):
         return (

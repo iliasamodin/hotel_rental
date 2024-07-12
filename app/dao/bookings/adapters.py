@@ -2,6 +2,7 @@ from sqlalchemy import select, func
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.models.bookings_model import BookingsModel
 from app.db.models.hotels_services_model import HotelsServicesModel
 from app.db.models.rooms_services_model import RoomsServicesModel
 from app.db.models.service_varieties_model import ServiceVarietiesModel
@@ -10,13 +11,14 @@ from app.db.models.rooms_model import RoomsModel
 from app.db.models.premium_level_varieties_model import PremiumLevelVarietiesModel
 
 from app.dao.bookings.helpers import (
+    get_filters_for_bookings,
     get_hotels_with_requested_services_query,
     get_filters_for_hotels,
     get_rooms_with_requested_services_and_levels_query,
     get_filters_for_rooms,
 )
 
-from app.services.check.schemas import HotelsOrRoomsValidator, PriceRangeValidator
+from app.services.check.schemas import HotelsOrRoomsValidator, MinAndMaxDtsValidator, PriceRangeValidator
 
 
 async def get_services(
@@ -209,6 +211,43 @@ async def get_rooms(
         )
         .where(*query_filters)
         .order_by(RoomsModel.id)
+    )
+
+    query_result = await session.execute(query)
+
+    return query_result
+
+
+async def get_bookings(
+    session: AsyncSession,
+    min_and_max_dts: MinAndMaxDtsValidator,
+    number_of_guests: int = None,
+    user_id: int | None = None,
+) -> Result:
+    """
+    Get the result of query for user's bookings from the database.
+
+    :return: result of a booking query.
+    """
+
+    query_filters = get_filters_for_bookings(
+        user_id=user_id,
+        min_and_max_dts=min_and_max_dts,
+        number_of_guests=number_of_guests,
+    )
+
+    query = (
+        select(
+            BookingsModel,
+            RoomsModel,
+        )
+        .select_from(BookingsModel)
+        .join(
+            RoomsModel,
+            BookingsModel.room_id == RoomsModel.id,
+        )
+        .where(*query_filters)
+        .order_by(BookingsModel.id)
     )
 
     query_result = await session.execute(query)

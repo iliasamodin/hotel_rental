@@ -1,3 +1,6 @@
+from datetime import datetime
+from decimal import Decimal
+
 from pydantic import BaseModel
 
 
@@ -43,3 +46,17 @@ class ExtendedRoomResponseSchema(RoomSchema):
     hotel: HotelSchema | None = None
     premium_level: PremiumLevelVarietyResponseSchema | None = None
     services: list[ServiceVarietyResponseSchema]
+
+
+class BookingSchema(BaseModel):
+    id: int
+    user_id: int
+    room_id: int | None
+    number_of_persons: int
+    check_in_dt: datetime
+    check_out_dt: datetime
+    total_cost: float
+
+
+class ExtendedBookingResponseSchema(BookingSchema):
+    room: RoomSchema | None = None

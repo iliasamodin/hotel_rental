@@ -1,13 +1,14 @@
 from sqlalchemy import select, Select, func
 from sqlalchemy.sql.elements import BinaryExpression
 
+from app.db.models.bookings_model import BookingsModel
 from app.db.models.hotels_model import HotelsModel
 from app.db.models.rooms_model import RoomsModel
 from app.db.models.hotels_services_model import HotelsServicesModel
 from app.db.models.service_varieties_model import ServiceVarietiesModel
 from app.db.models.rooms_services_model import RoomsServicesModel
 
-from app.services.check.schemas import PriceRangeValidator
+from app.services.check.schemas import MinAndMaxDtsValidator, PriceRangeValidator
 
 
 def get_filters_by_services(
@@ -162,5 +163,29 @@ def get_filters_for_rooms(
         query_filters.append(HotelsModel.id == hotel_id)
     if number_of_guests is not None:
         query_filters.append(RoomsModel.maximum_persons >= number_of_guests)
+
+    return query_filters
+
+
+def get_filters_for_bookings(
+    min_and_max_dts: MinAndMaxDtsValidator,
+    number_of_guests: int = None,
+    user_id: int | None = None,
+) -> list[BinaryExpression]:
+    """
+    Get sqlalchemy filters for booking query.
+
+    :return: list of sqlalchemy filters.
+    """
+
+    query_filters = []
+    if user_id is not None:
+        query_filters.append(BookingsModel.user_id == user_id)
+    if min_and_max_dts.min_dt is not None:
+        query_filters.append(BookingsModel.check_in_dt >= min_and_max_dts.min_dt)
+    if min_and_max_dts.max_dt is not None:
+        query_filters.append(BookingsModel.check_out_dt <= min_and_max_dts.max_dt)
+    if number_of_guests is not None:
+        query_filters.append(BookingsModel.number_of_persons == number_of_guests)
 
     return query_filters

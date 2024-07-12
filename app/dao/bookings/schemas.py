@@ -1,3 +1,6 @@
+from datetime import datetime
+from decimal import Decimal
+
 from pydantic import BaseModel
 
 
@@ -55,3 +58,20 @@ class ExtendedRoomDTO(RoomDTO):
     hotel: HotelDTO | None = None
     premium_level: PremiumLevelVarietyDTO | None = None
     services: list[ServiceVarietyDTO] | None = None
+
+
+class BookingDTO(BaseModel):
+    id: int
+    user_id: int
+    room_id: int | None
+    number_of_persons: int
+    check_in_dt: datetime
+    check_out_dt: datetime
+    total_cost: float
+
+    class Config:
+        from_attributes = True
+
+
+class ExtendedBookingDTO(BookingDTO):
+    room: RoomDTO | None = None

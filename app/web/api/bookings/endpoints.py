@@ -3,19 +3,22 @@ from fastapi.routing import APIRouter
 from sqlalchemy.orm import sessionmaker
 from starlette import status
 
+from app.web.api.dependencies import get_user_id
 from app.services.bookings.service import BookingService
 from app.services.bookings.schemas import (
     ServiceVarietyResponseSchema,
     ExtendedHotelResponseSchema,
     PremiumLevelVarietyResponseSchema,
+    ExtendedBookingResponseSchema,
     ExtendedRoomResponseSchema,
 )
 from app.services.check.services import (
+    get_min_and_max_dts,
     get_session_maker,
     get_only_for_hotels_and_only_for_rooms,
     get_min_price_and_max_price,
 )
-from app.services.check.schemas import HotelsOrRoomsValidator, PriceRangeValidator
+from app.services.check.schemas import HotelsOrRoomsValidator, MinAndMaxDtsValidator, PriceRangeValidator
 
 from app.web.api.bookings.types import hotel_stars_annotated, service_ids_annotated, premium_level_ids_annotated
 from app.web.api.bookings.responses import (
@@ -23,9 +26,32 @@ from app.web.api.bookings.responses import (
     responses_of_hotels,
     responses_of_premium_levels,
     responses_of_rooms,
+    responses_of_bookings,
 )
 
 router = APIRouter(prefix="/bookings")
+
+
+@router.get(
+    path="",
+    status_code=status.HTTP_200_OK,
+    responses=responses_of_bookings,
+    summary="Get a list of user's bookings.",
+)
+async def get_bookings(
+    min_and_max_dts: MinAndMaxDtsValidator = Depends(get_min_and_max_dts),
+    number_of_guests: int = None,
+    user_id: int = Depends(get_user_id),
+    session_maker: sessionmaker = Depends(get_session_maker),
+) -> list[ExtendedBookingResponseSchema]:
+    booking_service = BookingService(session_maker=session_maker)
+    bookings: list[ExtendedBookingResponseSchema] = await booking_service.get_bookings(
+        user_id=user_id,
+        min_and_max_dts=min_and_max_dts,
+        number_of_guests=number_of_guests,
+    )
+
+    return bookings
 
 
 @router.get(
