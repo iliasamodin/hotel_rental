@@ -1,4 +1,8 @@
+from datetime import datetime, timedelta
+
 from pydantic import BaseModel, model_validator, EmailStr
+
+from app.settings import settings
 
 from app.services.base.mixins import PhoneValidatorMixin, PasswordValidatorMixin
 from app.services.check.exceptions import DataValidationError
@@ -75,6 +79,36 @@ class UserAuthenticationValidator(BaseModel, PhoneValidatorMixin, PasswordValida
                 extras={
                     "email": self.email,
                     "phone": self.phone,
+                },
+            )
+
+        return self
+
+
+class MinAndMaxDtsValidator(BaseModel):
+    min_dt: datetime | None
+    max_dt: datetime | None
+
+    @model_validator(mode="after")
+    def time_range_validator(self) -> "MinAndMaxDtsValidator":
+        """
+        Check min and max dates for consistency.
+
+        return: Schema of min and max dates.
+        raise: DataValidationError
+        """
+
+        if (
+            self.min_dt is not None
+            and self.max_dt is not None
+            and self.min_dt + timedelta(hours=settings.MIN_RENTAL_INTERVAL_HOURS) > self.max_dt
+        ):
+            raise DataValidationError(
+                message=f"The maximum date must be at least {settings.MIN_RENTAL_INTERVAL_HOURS} hours later "
+                "than the minimum.",
+                extras={
+                    "min_dt": self.min_dt.strftime("%Y-%m-%dT%H:%M:%S%z"),
+                    "max_dt": self.max_dt.strftime("%Y-%m-%dT%H:%M:%S%z"),
                 },
             )
 

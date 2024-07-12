@@ -5,10 +5,11 @@ from app.services.bookings.schemas import (
     ExtendedHotelResponseSchema,
     PremiumLevelVarietyResponseSchema,
     ExtendedRoomResponseSchema,
+    ExtendedBookingResponseSchema,
 )
 
 from app.web.api.base.schemas import BaseErrorResponseSchema
-from app.web.api.bookings.docs import ServicesEnum, HotelsEnum, PremiumLevelsEnum, RoomsEnum
+from app.web.api.bookings.docs import ServicesEnum, HotelsEnum, PremiumLevelsEnum, RoomsEnum, BookingsEnum
 
 
 responses_of_services = {
@@ -146,6 +147,48 @@ responses_of_rooms = {
                     RoomsEnum.SERVER_ERR.name: {
                         "summary": RoomsEnum.SERVER_ERR.name,
                         "value": RoomsEnum.SERVER_ERR.value,
+                    },
+                },
+            },
+        },
+    },
+}
+
+responses_of_bookings = {
+    status.HTTP_200_OK: {
+        "model": ExtendedBookingResponseSchema,
+        "content": {
+            "application/json": {
+                "examples": {
+                    BookingsEnum.SUCCESS.name: {
+                        "summary": BookingsEnum.SUCCESS.name,
+                        "value": BookingsEnum.SUCCESS.value,
+                    },
+                },
+            },
+        },
+    },
+    status.HTTP_422_UNPROCESSABLE_ENTITY: {
+        "model": BaseErrorResponseSchema,
+        "content": {
+            "application/json": {
+                "examples": {
+                    BookingsEnum.CONSISTENCY_ERR.name: {
+                        "summary": BookingsEnum.CONSISTENCY_ERR.name,
+                        "value": BookingsEnum.CONSISTENCY_ERR.value,
+                    },
+                },
+            },
+        },
+    },
+    status.HTTP_500_INTERNAL_SERVER_ERROR: {
+        "model": BaseErrorResponseSchema,
+        "content": {
+            "application/json": {
+                "examples": {
+                    BookingsEnum.SERVER_ERR.name: {
+                        "summary": BookingsEnum.SERVER_ERR.name,
+                        "value": BookingsEnum.SERVER_ERR.value,
                     },
                 },
             },

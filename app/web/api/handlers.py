@@ -9,6 +9,9 @@ from app.services.base.exceptions import BaseServiceError
 from app.services.check.exceptions import BaseCheckServiceError
 from app.services.authorization.exceptions import IncorrectPasswordError
 
+from app.web.api.base.exceptions import BaseApiError
+from app.web.api.authorization.exceptions import BaseAuthorizationApiError
+
 
 def registering_exception_handlers(app: FastAPI):
     """
@@ -69,6 +72,26 @@ def registering_exception_handlers(app: FastAPI):
     async def _exception(request: Request, exc: BaseServiceError):
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={
+                "detail": exc.message,
+                "extras": exc.extras,
+            },
+        )
+
+    @app.exception_handler(BaseAuthorizationApiError)
+    async def _exception(request: Request, exc: BaseAuthorizationApiError):
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={
+                "detail": exc.message,
+                "extras": exc.extras,
+            },
+        )
+
+    @app.exception_handler(BaseApiError)
+    async def _exception(request: Request, exc: BaseApiError):
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
             content={
                 "detail": exc.message,
                 "extras": exc.extras,

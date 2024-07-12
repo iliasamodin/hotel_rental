@@ -1,8 +1,9 @@
+from datetime import datetime
 from sqlalchemy.orm import sessionmaker
 
 from app.db.session import get_async_session_maker
 
-from app.services.check.schemas import HotelsOrRoomsValidator, PriceRangeValidator
+from app.services.check.schemas import HotelsOrRoomsValidator, MinAndMaxDtsValidator, PriceRangeValidator
 
 
 def get_session_maker() -> sessionmaker:
@@ -44,4 +45,20 @@ def get_min_price_and_max_price(
     return PriceRangeValidator(
         min_price=min_price,
         max_price=max_price,
+    )
+
+
+def get_min_and_max_dts(
+    min_dt: datetime = None,
+    max_dt: datetime = None,
+) -> MinAndMaxDtsValidator:
+    """
+    Get validator for min and max dates.
+
+    :return: MinAndMaxDtsValidator
+    """
+
+    return MinAndMaxDtsValidator(
+        min_dt=min_dt,
+        max_dt=max_dt,
     )

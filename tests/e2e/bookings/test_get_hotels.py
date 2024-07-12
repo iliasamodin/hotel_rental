@@ -78,7 +78,7 @@ rooms_for_test = [
 @pytest.mark.asyncio
 class TestGetHotels:
     """
-    E2E tests for endpoint /get-hotels.
+    E2E tests for GET method of endpoint /hotels.
     """
 
     @pytest.fixture(autouse=True)

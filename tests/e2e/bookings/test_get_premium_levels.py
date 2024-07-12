@@ -55,7 +55,7 @@ rooms_for_test = [
 @pytest.mark.asyncio
 class TestPremiumLevels:
     """
-    E2E tests for endpoint /get-premium-levels.
+    E2E tests for GET method of endpoint /premium-levels.
     """
 
     @pytest.fixture(autouse=True)
