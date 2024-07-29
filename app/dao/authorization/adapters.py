@@ -1,3 +1,4 @@
+from typing import Callable
 from sqlalchemy import insert, select
 from sqlalchemy.engine import Result
 from sqlalchemy.exc import IntegrityError
@@ -70,6 +71,7 @@ async def add_user(
 async def get_user(
     session: AsyncSession,
     authentication_data: UserAuthenticationValidator,
+    get_query_filters: Callable = get_filters_by_email_or_password,
 ) -> Result:
     """
     Get the result of a query to select a user by his unique field.
@@ -77,7 +79,7 @@ async def get_user(
     :return: result of user query.
     """
 
-    query_filters = get_filters_by_email_or_password(authentication_data=authentication_data)
+    query_filters = get_query_filters(authentication_data=authentication_data)
 
     query = (
         select(UsersModel)

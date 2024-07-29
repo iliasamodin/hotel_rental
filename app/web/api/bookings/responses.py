@@ -1,6 +1,7 @@
 from starlette import status
 
 from app.services.bookings.schemas import (
+    BookingResponseSchema,
     ServiceVarietyResponseSchema,
     ExtendedHotelResponseSchema,
     PremiumLevelVarietyResponseSchema,
@@ -9,18 +10,18 @@ from app.services.bookings.schemas import (
 )
 
 from app.web.api.base.schemas import BaseErrorResponseSchema
-from app.web.api.bookings.docs import ServicesEnum, HotelsEnum, PremiumLevelsEnum, RoomsEnum, BookingsEnum
+from app.web.api.bookings.docs import AddingBookingEnum, GettingServicesEnum, GettingHotelsEnum, GettingPremiumLevelsEnum, GettingRoomsEnum, GettingBookingsEnum
 
 
-responses_of_services = {
+responses_of_getting_services = {
     status.HTTP_200_OK: {
         "model": ServiceVarietyResponseSchema,
         "content": {
             "application/json": {
                 "examples": {
-                    ServicesEnum.SUCCESS.name: {
-                        "summary": ServicesEnum.SUCCESS.name,
-                        "value": ServicesEnum.SUCCESS.value,
+                    GettingServicesEnum.SUCCESS.name: {
+                        "summary": GettingServicesEnum.SUCCESS.name,
+                        "value": GettingServicesEnum.SUCCESS.value,
                     },
                 },
             },
@@ -31,9 +32,9 @@ responses_of_services = {
         "content": {
             "application/json": {
                 "examples": {
-                    ServicesEnum.CONSISTENCY_ERR.name: {
-                        "summary": ServicesEnum.CONSISTENCY_ERR.name,
-                        "value": ServicesEnum.CONSISTENCY_ERR.value,
+                    GettingServicesEnum.CONSISTENCY_ERR.name: {
+                        "summary": GettingServicesEnum.CONSISTENCY_ERR.name,
+                        "value": GettingServicesEnum.CONSISTENCY_ERR.value,
                     },
                 },
             },
@@ -44,9 +45,9 @@ responses_of_services = {
         "content": {
             "application/json": {
                 "examples": {
-                    ServicesEnum.SERVER_ERR.name: {
-                        "summary": ServicesEnum.SERVER_ERR.name,
-                        "value": ServicesEnum.SERVER_ERR.value,
+                    GettingServicesEnum.SERVER_ERR.name: {
+                        "summary": GettingServicesEnum.SERVER_ERR.name,
+                        "value": GettingServicesEnum.SERVER_ERR.value,
                     },
                 },
             },
@@ -54,15 +55,15 @@ responses_of_services = {
     },
 }
 
-responses_of_hotels = {
+responses_of_getting_hotels = {
     status.HTTP_200_OK: {
         "model": ExtendedHotelResponseSchema,
         "content": {
             "application/json": {
                 "examples": {
-                    HotelsEnum.SUCCESS.name: {
-                        "summary": HotelsEnum.SUCCESS.name,
-                        "value": HotelsEnum.SUCCESS.value,
+                    GettingHotelsEnum.SUCCESS.name: {
+                        "summary": GettingHotelsEnum.SUCCESS.name,
+                        "value": GettingHotelsEnum.SUCCESS.value,
                     },
                 },
             },
@@ -73,9 +74,9 @@ responses_of_hotels = {
         "content": {
             "application/json": {
                 "examples": {
-                    HotelsEnum.SERVER_ERR.name: {
-                        "summary": HotelsEnum.SERVER_ERR.name,
-                        "value": HotelsEnum.SERVER_ERR.value,
+                    GettingHotelsEnum.SERVER_ERR.name: {
+                        "summary": GettingHotelsEnum.SERVER_ERR.name,
+                        "value": GettingHotelsEnum.SERVER_ERR.value,
                     },
                 },
             },
@@ -83,15 +84,15 @@ responses_of_hotels = {
     },
 }
 
-responses_of_premium_levels = {
+responses_of_getting_premium_levels = {
     status.HTTP_200_OK: {
         "model": PremiumLevelVarietyResponseSchema,
         "content": {
             "application/json": {
                 "examples": {
-                    PremiumLevelsEnum.SUCCESS.name: {
-                        "summary": PremiumLevelsEnum.SUCCESS.name,
-                        "value": PremiumLevelsEnum.SUCCESS.value,
+                    GettingPremiumLevelsEnum.SUCCESS.name: {
+                        "summary": GettingPremiumLevelsEnum.SUCCESS.name,
+                        "value": GettingPremiumLevelsEnum.SUCCESS.value,
                     },
                 },
             },
@@ -102,9 +103,9 @@ responses_of_premium_levels = {
         "content": {
             "application/json": {
                 "examples": {
-                    PremiumLevelsEnum.SERVER_ERR.name: {
-                        "summary": PremiumLevelsEnum.SERVER_ERR.name,
-                        "value": PremiumLevelsEnum.SERVER_ERR.value,
+                    GettingPremiumLevelsEnum.SERVER_ERR.name: {
+                        "summary": GettingPremiumLevelsEnum.SERVER_ERR.name,
+                        "value": GettingPremiumLevelsEnum.SERVER_ERR.value,
                     },
                 },
             },
@@ -112,15 +113,15 @@ responses_of_premium_levels = {
     },
 }
 
-responses_of_rooms = {
+responses_of_getting_rooms = {
     status.HTTP_200_OK: {
         "model": ExtendedRoomResponseSchema,
         "content": {
             "application/json": {
                 "examples": {
-                    RoomsEnum.SUCCESS.name: {
-                        "summary": RoomsEnum.SUCCESS.name,
-                        "value": RoomsEnum.SUCCESS.value,
+                    GettingRoomsEnum.SUCCESS.name: {
+                        "summary": GettingRoomsEnum.SUCCESS.name,
+                        "value": GettingRoomsEnum.SUCCESS.value,
                     },
                 },
             },
@@ -131,9 +132,9 @@ responses_of_rooms = {
         "content": {
             "application/json": {
                 "examples": {
-                    RoomsEnum.CONSISTENCY_ERR.name: {
-                        "summary": RoomsEnum.CONSISTENCY_ERR.name,
-                        "value": RoomsEnum.CONSISTENCY_ERR.value,
+                    GettingRoomsEnum.CONSISTENCY_ERR.name: {
+                        "summary": GettingRoomsEnum.CONSISTENCY_ERR.name,
+                        "value": GettingRoomsEnum.CONSISTENCY_ERR.value,
                     },
                 },
             },
@@ -144,9 +145,9 @@ responses_of_rooms = {
         "content": {
             "application/json": {
                 "examples": {
-                    RoomsEnum.SERVER_ERR.name: {
-                        "summary": RoomsEnum.SERVER_ERR.name,
-                        "value": RoomsEnum.SERVER_ERR.value,
+                    GettingRoomsEnum.SERVER_ERR.name: {
+                        "summary": GettingRoomsEnum.SERVER_ERR.name,
+                        "value": GettingRoomsEnum.SERVER_ERR.value,
                     },
                 },
             },
@@ -154,15 +155,15 @@ responses_of_rooms = {
     },
 }
 
-responses_of_bookings = {
+responses_of_getting_bookings = {
     status.HTTP_200_OK: {
         "model": ExtendedBookingResponseSchema,
         "content": {
             "application/json": {
                 "examples": {
-                    BookingsEnum.SUCCESS.name: {
-                        "summary": BookingsEnum.SUCCESS.name,
-                        "value": BookingsEnum.SUCCESS.value,
+                    GettingBookingsEnum.SUCCESS.name: {
+                        "summary": GettingBookingsEnum.SUCCESS.name,
+                        "value": GettingBookingsEnum.SUCCESS.value,
                     },
                 },
             },
@@ -173,9 +174,9 @@ responses_of_bookings = {
         "content": {
             "application/json": {
                 "examples": {
-                    BookingsEnum.CONSISTENCY_ERR.name: {
-                        "summary": BookingsEnum.CONSISTENCY_ERR.name,
-                        "value": BookingsEnum.CONSISTENCY_ERR.value,
+                    GettingBookingsEnum.CONSISTENCY_ERR.name: {
+                        "summary": GettingBookingsEnum.CONSISTENCY_ERR.name,
+                        "value": GettingBookingsEnum.CONSISTENCY_ERR.value,
                     },
                 },
             },
@@ -186,9 +187,68 @@ responses_of_bookings = {
         "content": {
             "application/json": {
                 "examples": {
-                    BookingsEnum.SERVER_ERR.name: {
-                        "summary": BookingsEnum.SERVER_ERR.name,
-                        "value": BookingsEnum.SERVER_ERR.value,
+                    GettingBookingsEnum.SERVER_ERR.name: {
+                        "summary": GettingBookingsEnum.SERVER_ERR.name,
+                        "value": GettingBookingsEnum.SERVER_ERR.value,
+                    },
+                },
+            },
+        },
+    },
+}
+
+responses_of_adding_booking = {
+    status.HTTP_201_CREATED: {
+        "model": BookingResponseSchema,
+        "content": {
+            "application/json": {
+                "examples": {
+                    AddingBookingEnum.SUCCESS.name: {
+                        "summary": AddingBookingEnum.SUCCESS.name,
+                        "value": AddingBookingEnum.SUCCESS.value,
+                    },
+                },
+            },
+        },
+    },
+    status.HTTP_422_UNPROCESSABLE_ENTITY: {
+        "model": BaseErrorResponseSchema,
+        "content": {
+            "application/json": {
+                "examples": {
+                    AddingBookingEnum.CONSISTENCY_ERR.name: {
+                        "summary": AddingBookingEnum.CONSISTENCY_ERR.name,
+                        "value": AddingBookingEnum.CONSISTENCY_ERR.value,
+                    },
+                },
+            },
+        },
+    },
+    status.HTTP_409_CONFLICT: {
+        "model": BaseErrorResponseSchema,
+        "content": {
+            "application/json": {
+                "examples": {
+                    AddingBookingEnum.CAPACITY_ERR.name: {
+                        "summary": AddingBookingEnum.CAPACITY_ERR.name,
+                        "value": AddingBookingEnum.CAPACITY_ERR.value,
+                    },
+                    AddingBookingEnum.AVAILABILITY_ERR.name: {
+                        "summary": AddingBookingEnum.AVAILABILITY_ERR.name,
+                        "value": AddingBookingEnum.AVAILABILITY_ERR.value,
+                    },
+                },
+            },
+        },
+    },
+    status.HTTP_500_INTERNAL_SERVER_ERROR: {
+        "model": BaseErrorResponseSchema,
+        "content": {
+            "application/json": {
+                "examples": {
+                    AddingBookingEnum.SERVER_ERR.name: {
+                        "summary": AddingBookingEnum.SERVER_ERR.name,
+                        "value": AddingBookingEnum.SERVER_ERR.value,
                     },
                 },
             },

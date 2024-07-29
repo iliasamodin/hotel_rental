@@ -1,6 +1,7 @@
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.dao.base.dao import BaseDAO
 from app.dao.authorization.adapters import add_user, get_user
 from app.dao.authorization.schemas import UserDTO
 from app.dao.authorization.exceptions import NotExistsError
@@ -9,13 +10,10 @@ from app.services.authorization.schemas import UserRequestSchema
 from app.services.check.schemas import UserAuthenticationValidator
 
 
-class AuthorizationDAO:
+class AuthorizationDAO(BaseDAO):
     """
     DAO for authorization.
     """
-
-    def __init__(self, session: AsyncSession):
-        self.session = session
 
     async def add_user(
         self,

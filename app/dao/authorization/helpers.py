@@ -7,6 +7,8 @@ from app.services.check.schemas import UserAuthenticationValidator
 
 def get_filters_by_email_or_password(
     authentication_data: UserAuthenticationValidator,
+    *args,
+    **kwargs,
 ) -> list[BinaryExpression]:
     """
     Get sqlalchemy filters by email or password of user.

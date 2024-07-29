@@ -6,6 +6,8 @@ from starlette import status
 from app.web.api.dependencies import get_user_id
 from app.services.bookings.service import BookingService
 from app.services.bookings.schemas import (
+    BookingRequestSchema,
+    BookingResponseSchema,
     ServiceVarietyResponseSchema,
     ExtendedHotelResponseSchema,
     PremiumLevelVarietyResponseSchema,
@@ -22,11 +24,12 @@ from app.services.check.schemas import HotelsOrRoomsValidator, MinAndMaxDtsValid
 
 from app.web.api.bookings.types import hotel_stars_annotated, service_ids_annotated, premium_level_ids_annotated
 from app.web.api.bookings.responses import (
-    responses_of_services,
-    responses_of_hotels,
-    responses_of_premium_levels,
-    responses_of_rooms,
-    responses_of_bookings,
+    responses_of_getting_services,
+    responses_of_getting_hotels,
+    responses_of_getting_premium_levels,
+    responses_of_getting_rooms,
+    responses_of_getting_bookings,
+    responses_of_adding_booking,
 )
 
 router = APIRouter(prefix="/bookings")
@@ -35,7 +38,7 @@ router = APIRouter(prefix="/bookings")
 @router.get(
     path="",
     status_code=status.HTTP_200_OK,
-    responses=responses_of_bookings,
+    responses=responses_of_getting_bookings,
     summary="Get a list of user's bookings.",
 )
 async def get_bookings(
@@ -54,10 +57,30 @@ async def get_bookings(
     return bookings
 
 
+@router.post(
+    path="",
+    status_code=status.HTTP_201_CREATED,
+    responses=responses_of_adding_booking,
+    summary="Add a booking.",
+)
+async def add_booking(
+    booking_data: BookingRequestSchema,
+    user_id: int = Depends(get_user_id),
+    session_maker: sessionmaker = Depends(get_session_maker),
+) -> BookingResponseSchema:
+    booking_service = BookingService(session_maker=session_maker)
+    booking: BookingResponseSchema = await booking_service.add_booking(
+        user_id=user_id,
+        booking_data=booking_data,
+    )
+
+    return booking
+
+
 @router.get(
     path="/services",
     status_code=status.HTTP_200_OK,
-    responses=responses_of_services,
+    responses=responses_of_getting_services,
     summary="Get all service options.",
 )
 async def get_services(
@@ -75,7 +98,7 @@ async def get_services(
 @router.get(
     path="/hotels",
     status_code=status.HTTP_200_OK,
-    responses=responses_of_hotels,
+    responses=responses_of_getting_hotels,
     summary="Get a list of hotels in accordance with filters.",
 )
 async def get_hotels(
@@ -99,7 +122,7 @@ async def get_hotels(
 @router.get(
     path="/premium-levels",
     status_code=status.HTTP_200_OK,
-    responses=responses_of_premium_levels,
+    responses=responses_of_getting_premium_levels,
     summary="Get all variations of room's premium levels.",
 )
 async def get_premium_levels(
@@ -119,7 +142,7 @@ async def get_premium_levels(
 @router.get(
     path="/rooms",
     status_code=status.HTTP_200_OK,
-    responses=responses_of_rooms,
+    responses=responses_of_getting_rooms,
     summary="Get a list of rooms in accordance with filters.",
 )
 async def get_rooms(

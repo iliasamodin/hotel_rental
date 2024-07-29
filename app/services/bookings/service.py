@@ -2,6 +2,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.dao.bookings.dao import BookingDAO
 from app.dao.bookings.schemas import (
+    BookingDTO,
     ExtendedBookingDTO,
     RoomDTO,
     ServiceVarietyDTO,
@@ -10,7 +11,12 @@ from app.dao.bookings.schemas import (
     ExtendedRoomDTO,
 )
 
+from app.domain.bookings.booking_domain import AddBookingDomainModel
+from app.services.bookings.exceptions import RoomAlreadyBookedError
 from app.services.bookings.schemas import (
+    BaseBookingSchema,
+    BookingRequestSchema,
+    BookingResponseSchema,
     ExtendedBookingResponseSchema,
     RoomSchema,
     ServiceVarietyResponseSchema,
@@ -251,3 +257,57 @@ class BookingService:
                 )
 
         return bookings
+
+    async def add_booking(
+        self,
+        user_id: int,
+        booking_data: BookingRequestSchema,
+    ) -> BookingResponseSchema:
+        """
+        Add a booking.
+
+        :return: data of new booking.
+        """
+
+        async with self.session_maker.begin() as session:
+            self.booking_dao = BookingDAO(session=session)
+
+            room_dto: RoomDTO = await self.booking_dao.get_item_by_id(
+                table_name="rooms",
+                item_id=booking_data.room_id,
+            )
+
+            # Business logic of adding booking
+            add_booking_domain_model = AddBookingDomainModel(
+                user_id=user_id,
+                booking=booking_data,
+                room=room_dto,
+            )
+            new_booking: BaseBookingSchema = add_booking_domain_model.execute()
+
+            min_and_max_dts = MinAndMaxDtsValidator(
+                min_dt=new_booking.check_in_dt,
+                max_dt=new_booking.check_out_dt,
+            )
+            overlapping_bookings_dto: list[BookingDTO] = await self.booking_dao.get_bookings(
+                min_and_max_dts=min_and_max_dts,
+                room_id=new_booking.room_id,
+                booking_overlaps=True,
+            )
+            add_booking_domain_model.check_room_availability(overlapping_bookings=overlapping_bookings_dto)
+
+            booking_dto: BookingDTO = await self.booking_dao.add_booking(
+                new_booking=new_booking,
+            )
+
+            booking = BookingResponseSchema(
+                id=booking_dto.id,
+                user_id=booking_dto.user_id,
+                room_id=booking_dto.room_id,
+                number_of_persons=booking_dto.number_of_persons,
+                check_in_dt=booking_dto.check_in_dt,
+                check_out_dt=booking_dto.check_out_dt,
+                total_cost=booking_dto.total_cost,
+            )
+
+        return booking

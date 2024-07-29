@@ -1,8 +1,11 @@
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.dao.bookings.adapters import get_bookings, get_services, get_hotels, get_premium_levels, get_rooms
+from app.dao.base.dao import BaseDAO
+from app.dao.bookings.adapters import add_booking, get_bookings, get_services, get_hotels, get_premium_levels, get_rooms
+from app.dao.bookings.helpers import get_filters_for_booking_overlaps, get_filters_for_bookings
 from app.dao.bookings.schemas import (
+    BookingDTO,
     ExtendedBookingDTO,
     RoomDTO,
     ServiceVarietyDTO,
@@ -12,16 +15,14 @@ from app.dao.bookings.schemas import (
     HotelDTO,
 )
 
+from app.services.bookings.schemas import BaseBookingSchema
 from app.services.check.schemas import HotelsOrRoomsValidator, MinAndMaxDtsValidator, PriceRangeValidator
 
 
-class BookingDAO:
+class BookingDAO(BaseDAO):
     """
     DAO for booking.
     """
-
-    def __init__(self, session: AsyncSession):
-        self.session = session
 
     async def get_services(
         self,
@@ -158,6 +159,8 @@ class BookingDAO:
         min_and_max_dts: MinAndMaxDtsValidator,
         number_of_guests: int = None,
         user_id: int | None = None,
+        room_id: int | None = None,
+        booking_overlaps: bool = False,
     ) -> list[ExtendedBookingDTO]:
         """
         Get a list of user's bookings.
@@ -170,6 +173,8 @@ class BookingDAO:
             user_id=user_id,
             min_and_max_dts=min_and_max_dts,
             number_of_guests=number_of_guests,
+            room_id=room_id,
+            get_query_filters=get_filters_for_booking_overlaps if booking_overlaps else get_filters_for_bookings,
         )
         rows_with_bookings = query_result_of_bookings.fetchall()
 
@@ -180,3 +185,23 @@ class BookingDAO:
             bookings.append(booking)
 
         return bookings
+
+    async def add_booking(
+        self,
+        new_booking: BaseBookingSchema,
+    ) -> BookingDTO:
+        """
+        Add a booking.
+
+        :return: data of new booking.
+        """
+
+        query_result_of_booking: Result = await add_booking(
+            session=self.session,
+            new_booking=new_booking,
+        )
+        row_with_booking = query_result_of_booking.fetchone()
+
+        booking = BookingDTO.model_validate(row_with_booking)
+
+        return booking

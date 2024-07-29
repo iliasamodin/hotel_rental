@@ -3,6 +3,7 @@ from enum import Enum
 from app.settings import settings
 
 from app.services.bookings.schemas import (
+    BookingResponseSchema,
     ServiceVarietyResponseSchema,
     ExtendedHotelResponseSchema,
     PremiumLevelVarietyResponseSchema,
@@ -15,7 +16,7 @@ from app.services.bookings.schemas import (
 from app.web.api.base.schemas import BaseErrorResponseSchema
 
 
-class ServicesEnum(Enum):
+class GettingServicesEnum(Enum):
     """
     Scheme of responses to a request for a selection of services.
     """
@@ -43,7 +44,7 @@ class ServicesEnum(Enum):
     )
 
 
-class HotelsEnum(Enum):
+class GettingHotelsEnum(Enum):
     """
     Scheme of responses to a request for a selection of hotels.
     """
@@ -74,7 +75,7 @@ class HotelsEnum(Enum):
     )
 
 
-class PremiumLevelsEnum(Enum):
+class GettingPremiumLevelsEnum(Enum):
     """
     Scheme of responses to a request for a selection of premium levels.
     """
@@ -95,7 +96,7 @@ class PremiumLevelsEnum(Enum):
     )
 
 
-class RoomsEnum(Enum):
+class GettingRoomsEnum(Enum):
     """
     Scheme of responses to a request for a selection of rooms.
     """
@@ -148,7 +149,7 @@ class RoomsEnum(Enum):
     )
 
 
-class BookingsEnum(Enum):
+class GettingBookingsEnum(Enum):
     """
     Scheme of responses to a request for a selection of bookings.
     """
@@ -181,6 +182,55 @@ class BookingsEnum(Enum):
             "min_dt": "2024-07-03T12:00:00Z",
             "max_dt": "2024-07-02T14:00:00Z",
         },
+    )
+    SERVER_ERR: BaseErrorResponseSchema = BaseErrorResponseSchema(
+        detail="Unspecified error.",
+        extras={
+            "doc": "Exception documentation.",
+        },
+    )
+
+
+class AddingBookingEnum(Enum):
+    """
+    Scheme of responses to a request to add booking.
+    """
+
+    SUCCESS: list[BookingResponseSchema] = [
+        BookingResponseSchema(
+            id=1,
+            user_id=1,
+            room_id=1,
+            number_of_persons=1,
+            check_in_dt="2024-07-28T14:00:00Z",
+            check_out_dt="2024-07-29T12:00:00Z",
+            total_cost=24_500,
+        ),
+    ]
+    CONSISTENCY_ERR: BaseErrorResponseSchema = BaseErrorResponseSchema(
+        detail=f"Check-out date must be later than check-in date.",
+        extras={
+            "check_in_date": "2024-07-29",
+            "check_out_date": "2024-07-28",
+        },
+    )
+    CAPACITY_ERR: BaseErrorResponseSchema = BaseErrorResponseSchema(
+        detail="The room capacity is less than the number of person booked.",
+        extras={
+            "room_id": 1,
+            "room_name": "Room #1 of hotel #1",
+            "maximum_persons_of_room": 1,
+            "number_of_person_booked": 4,
+        },
+    )
+    AVAILABILITY_ERR: BaseErrorResponseSchema = BaseErrorResponseSchema(
+        detail="The room is already booked on these dates.",
+        extras=[
+            {
+                "check_in_date": "2024-07-28",
+                "check_out_date": "2024-07-29",
+            },
+        ],
     )
     SERVER_ERR: BaseErrorResponseSchema = BaseErrorResponseSchema(
         detail="Unspecified error.",

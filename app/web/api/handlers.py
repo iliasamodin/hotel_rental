@@ -5,7 +5,11 @@ from starlette.responses import JSONResponse
 from app.dao.base.exceptions import BaseDAOError
 from app.dao.authorization.exceptions import AlreadyExistsError, NotExistsError
 
+from app.domain.base.exceptions import BaseDomainError
+from app.domain.bookings.exceptions import RoomCapacityError
+
 from app.services.base.exceptions import BaseServiceError
+from app.services.bookings.exceptions import RoomAlreadyBookedError
 from app.services.check.exceptions import BaseCheckServiceError
 from app.services.authorization.exceptions import IncorrectPasswordError
 
@@ -48,10 +52,20 @@ def registering_exception_handlers(app: FastAPI):
             },
         )
 
-    @app.exception_handler(BaseCheckServiceError)
-    async def _exception(request: Request, exc: BaseCheckServiceError):
+    @app.exception_handler(RoomCapacityError)
+    async def _exception(request: Request, exc: RoomCapacityError):
         return JSONResponse(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_409_CONFLICT,
+            content={
+                "detail": exc.message,
+                "extras": exc.extras,
+            },
+        )
+
+    @app.exception_handler(BaseDomainError)
+    async def _exception(request: Request, exc: BaseDomainError):
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={
                 "detail": exc.message,
                 "extras": exc.extras,
@@ -62,6 +76,26 @@ def registering_exception_handlers(app: FastAPI):
     async def _exception(request: Request, exc: IncorrectPasswordError):
         return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,
+            content={
+                "detail": exc.message,
+                "extras": exc.extras,
+            },
+        )
+
+    @app.exception_handler(RoomAlreadyBookedError)
+    async def _exception(request: Request, exc: RoomAlreadyBookedError):
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={
+                "detail": exc.message,
+                "extras": exc.extras,
+            },
+        )
+
+    @app.exception_handler(BaseCheckServiceError)
+    async def _exception(request: Request, exc: BaseCheckServiceError):
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             content={
                 "detail": exc.message,
                 "extras": exc.extras,

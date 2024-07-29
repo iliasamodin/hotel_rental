@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from pydantic import BaseModel, model_validator, EmailStr
 
@@ -109,6 +109,35 @@ class MinAndMaxDtsValidator(BaseModel):
                 extras={
                     "min_dt": self.min_dt.strftime("%Y-%m-%dT%H:%M:%S%z"),
                     "max_dt": self.max_dt.strftime("%Y-%m-%dT%H:%M:%S%z"),
+                },
+            )
+
+        return self
+
+
+class CheckInAndCheckOutValidator(BaseModel):
+    check_in_date: date
+    check_out_date: date
+
+    @model_validator(mode="after")
+    def date_range_validator(self) -> "CheckInAndCheckOutValidator":
+        """
+        Check the consistency of the check-in and check-out dates.
+
+        return: Schema of check-in and check-out dates.
+        raise: DataValidationError
+        """
+
+        if (
+            self.check_in_date is not None
+            and self.check_out_date is not None
+            and self.check_in_date >= self.check_out_date
+        ):
+            raise DataValidationError(
+                message=f"Check-out date must be later than check-in date.",
+                extras={
+                    "check_in_date": self.check_in_date.strftime("%Y-%m-%d"),
+                    "check_out_date": self.check_out_date.strftime("%Y-%m-%d"),
                 },
             )
 
