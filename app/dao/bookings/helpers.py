@@ -1,4 +1,4 @@
-from sqlalchemy import select, Select, func
+from sqlalchemy import or_, select, Select, func, between
 from sqlalchemy.sql.elements import BinaryExpression
 
 from app.db.models.bookings_model import BookingsModel
@@ -13,6 +13,8 @@ from app.services.check.schemas import MinAndMaxDtsValidator, PriceRangeValidato
 
 def get_filters_by_services(
     services: list[int] | None = None,
+    *args,
+    **kwargs,
 ) -> tuple[list[BinaryExpression], list[BinaryExpression]]:
     """
     Get sqlalchemy filters by services of hotels or rooms.
@@ -31,6 +33,8 @@ def get_filters_by_services(
 
 def get_hotels_with_requested_services_query(
     services: list[int] | None = None,
+    *args,
+    **kwargs,
 ) -> Select:
     """
     Get a query to select hotel identifiers
@@ -68,6 +72,8 @@ def get_filters_for_hotels(
     location: str | None = None,
     number_of_guests: int | None = None,
     stars: int | None = None,
+    *args,
+    **kwargs,
 ) -> list[BinaryExpression]:
     """
     Get sqlalchemy filters for hotel query.
@@ -88,6 +94,8 @@ def get_filters_for_hotels(
 
 def get_filters_by_premium_levels(
     premium_levels: list[int] | None = None,
+    *args,
+    **kwargs,
 ) -> list[BinaryExpression]:
     """
     Get sqlalchemy filters by premium levels of rooms.
@@ -105,6 +113,8 @@ def get_filters_by_premium_levels(
 def get_rooms_with_requested_services_and_levels_query(
     services: list[int] | None = None,
     premium_levels: list[int] | None = None,
+    *args,
+    **kwargs,
 ) -> Select:
     """
     Get a query to select room identifiers
@@ -147,6 +157,8 @@ def get_filters_for_rooms(
     min_price_and_max_price: PriceRangeValidator,
     hotel_id: int = None,
     number_of_guests: int = None,
+    *args,
+    **kwargs,
 ) -> list[BinaryExpression]:
     """
     Get sqlalchemy filters for hotel query.
@@ -171,6 +183,9 @@ def get_filters_for_bookings(
     min_and_max_dts: MinAndMaxDtsValidator,
     number_of_guests: int = None,
     user_id: int | None = None,
+    room_id: int | None = None,
+    *args,
+    **kwargs,
 ) -> list[BinaryExpression]:
     """
     Get sqlalchemy filters for booking query.
@@ -187,5 +202,59 @@ def get_filters_for_bookings(
         query_filters.append(BookingsModel.check_out_dt <= min_and_max_dts.max_dt)
     if number_of_guests is not None:
         query_filters.append(BookingsModel.number_of_persons == number_of_guests)
+    if room_id is not None:
+        query_filters.append(BookingsModel.room_id == room_id)
+
+    return query_filters
+
+
+def get_filters_for_booking_overlaps(
+    min_and_max_dts: MinAndMaxDtsValidator,
+    room_id: int | None = None,
+    *args,
+    **kwargs,
+) -> list[BinaryExpression]:
+    """
+    Get sqlalchemy filters for booking overlap query.
+
+    :return: list of sqlalchemy filters.
+    """
+
+    filters_by_or = []
+    if min_and_max_dts.min_dt is not None:
+        filters_by_or.append(
+            between(
+                min_and_max_dts.min_dt,
+                BookingsModel.check_in_dt,
+                BookingsModel.check_out_dt,
+            )
+        )
+    if min_and_max_dts.max_dt is not None:
+        filters_by_or.append(
+            between(
+                min_and_max_dts.max_dt,
+                BookingsModel.check_in_dt,
+                BookingsModel.check_out_dt,
+            )
+        )
+    if min_and_max_dts.min_dt is not None and min_and_max_dts.max_dt is not None:
+        filters_by_or.append(
+            between(
+                BookingsModel.check_in_dt,
+                min_and_max_dts.min_dt,
+                min_and_max_dts.max_dt,
+            )
+        )
+        filters_by_or.append(
+            between(
+                BookingsModel.check_out_dt,
+                min_and_max_dts.min_dt,
+                min_and_max_dts.max_dt,
+            )
+        )
+
+    query_filters = [or_(*filters_by_or)]
+    if room_id is not None:
+        query_filters.append(BookingsModel.room_id == room_id)
 
     return query_filters

@@ -12,3 +12,9 @@ class BaseDAOError(Exception):
     ):
         self.message = message
         self.extras = extras
+
+
+class ModelNotFoundError(BaseDAOError):
+    """
+    Model not found error.
+    """

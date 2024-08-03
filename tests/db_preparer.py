@@ -28,7 +28,7 @@ class DBPreparer:
         session_maker: sessionmaker = get_async_session_maker(), 
         path_of_test_dump: str = settings.PATH_OF_TEST_DUMP,
         base_class_of_models: DeclarativeBase = Base,
-        classes_of_models: Sequence[DeclarativeAttributeIntercept] = classes_of_models,
+        classes_of_models: dict[str, DeclarativeAttributeIntercept] = classes_of_models,
     ):
         self.session_maker = session_maker
         self.engine = session_maker.kw["bind"]
@@ -86,7 +86,7 @@ class DBPreparer:
 
         if clean_tables:
             tasks = []
-            for class_of_model in self.classes_of_models:
+            for class_of_model in self.classes_of_models.values():
                 tasks.append(
                     asyncio.create_task(
                         self.clean_table(
@@ -100,7 +100,7 @@ class DBPreparer:
         await self.load_test_dump()
 
         tasks = []
-        for class_of_model in self.classes_of_models:
+        for class_of_model in self.classes_of_models.values():
             tasks.append(
                 asyncio.create_task(
                     self.restore_seq_in_table(

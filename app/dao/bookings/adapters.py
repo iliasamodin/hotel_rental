@@ -1,4 +1,5 @@
-from sqlalchemy import select, func
+from typing import Callable
+from sqlalchemy import insert, select, func
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,6 +19,7 @@ from app.dao.bookings.helpers import (
     get_filters_for_rooms,
 )
 
+from app.services.bookings.schemas import BaseBookingSchema
 from app.services.check.schemas import HotelsOrRoomsValidator, MinAndMaxDtsValidator, PriceRangeValidator
 
 
@@ -61,6 +63,7 @@ async def get_hotels(
     number_of_guests: int | None = None,
     stars: int | None = None,
     services: list[int] | None = None,
+    get_query_filters: Callable = get_filters_for_hotels,
 ) -> Result:
     """
     Get the result of a hotel query from the database.
@@ -74,7 +77,7 @@ async def get_hotels(
         "partition_by": (HotelsModel.id, ServiceVarietiesModel.id),
     }
 
-    query_filters = get_filters_for_hotels(
+    query_filters = get_query_filters(
         location=location,
         number_of_guests=number_of_guests,
         stars=stars,
@@ -163,6 +166,7 @@ async def get_rooms(
     number_of_guests: int = None,
     services: list[int] | None = None,
     premium_levels: list[int] | None = None,
+    get_query_filters: Callable = get_filters_for_rooms,
 ) -> Result:
     """
     Get the result of a room query from the database.
@@ -175,7 +179,7 @@ async def get_rooms(
         premium_levels=premium_levels,
     ).subquery()
 
-    query_filters = get_filters_for_rooms(
+    query_filters = get_query_filters(
         min_price_and_max_price=min_price_and_max_price,
         hotel_id=hotel_id,
         number_of_guests=number_of_guests,
@@ -223,6 +227,8 @@ async def get_bookings(
     min_and_max_dts: MinAndMaxDtsValidator,
     number_of_guests: int = None,
     user_id: int | None = None,
+    room_id: int | None = None,
+    get_query_filters: Callable = get_filters_for_bookings,
 ) -> Result:
     """
     Get the result of query for user's bookings from the database.
@@ -230,10 +236,11 @@ async def get_bookings(
     :return: result of a booking query.
     """
 
-    query_filters = get_filters_for_bookings(
+    query_filters = get_query_filters(
         user_id=user_id,
         min_and_max_dts=min_and_max_dts,
         number_of_guests=number_of_guests,
+        room_id=room_id,
     )
 
     query = (
@@ -248,6 +255,29 @@ async def get_bookings(
         )
         .where(*query_filters)
         .order_by(BookingsModel.id)
+    )
+
+    query_result = await session.execute(query)
+
+    return query_result
+
+
+async def add_booking(
+    session: AsyncSession,
+    new_booking: BaseBookingSchema,
+) -> Result:
+    """
+    Add a booking to the database
+    and get the result of querying the new booking's data.
+
+    :return: result of booking query.
+    """
+
+    map_of_booking_data = new_booking.model_dump()
+    query = (
+        insert(BookingsModel)
+        .values(map_of_booking_data)
+        .returning(*BookingsModel.__table__.columns)
     )
 
     query_result = await session.execute(query)

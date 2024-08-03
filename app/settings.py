@@ -1,3 +1,4 @@
+from datetime import timedelta, timezone
 from typing import Literal
 
 from dotenv import load_dotenv
@@ -23,6 +24,8 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: SecretStr
     DB_HOST: str
     DB_PORT: int
+    DB_TIME_ZONE_OFFSET_HOURS: int = 0
+    DB_TIME_ZONE_NAME: str = "UTC"
 
     # DB schemas
     DB_ALEMBIC_SCHEMA: str = "alembic"
@@ -58,6 +61,13 @@ class Settings(BaseSettings):
             f"postgresql+asyncpg://"
             f"{self.POSTGRES_USER.get_secret_value()}:{self.POSTGRES_PASSWORD.get_secret_value()}"
             f"@{self.DB_HOST}:{self.DB_PORT}/{self.POSTGRES_DB}"
+        )
+
+    @property
+    def DB_TIME_ZONE(self):
+        return timezone(
+            offset=timedelta(hours=self.DB_TIME_ZONE_OFFSET_HOURS),
+            name=self.DB_TIME_ZONE_NAME,
         )
 
     model_config = SettingsConfigDict(env_file=".env")

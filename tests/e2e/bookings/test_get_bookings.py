@@ -16,8 +16,8 @@ from app.db.models.rooms_model import RoomsModel
 from app.db.models.users_model import UsersModel
 
 from app.services.authorization.helpers import get_password_hash, get_access_token
-
 from app.services.authorization.schemas import UserResponseSchema
+
 from tests.db_preparer import DBPreparer
 
 cookies_of_first_user = {
@@ -87,8 +87,8 @@ bookings_for_test = [
         "user_id": 1,
         "room_id": 1,
         "number_of_persons": 1,
-        "check_in_dt": datetime(year=2024, month=7, day=2, hour=14, tzinfo=timezone.utc),
-        "check_out_dt": datetime(year=2024, month=7, day=3, hour=12, tzinfo=timezone.utc),
+        "check_in_dt": datetime(year=2024, month=7, day=2, hour=14, tzinfo=settings.DB_TIME_ZONE),
+        "check_out_dt": datetime(year=2024, month=7, day=3, hour=12, tzinfo=settings.DB_TIME_ZONE),
         "total_cost": 5_000,
     },
     {
@@ -96,8 +96,8 @@ bookings_for_test = [
         "user_id": 2,
         "room_id": 2,
         "number_of_persons": 1,
-        "check_in_dt": datetime(year=2024, month=7, day=2, hour=14, tzinfo=timezone.utc),
-        "check_out_dt": datetime(year=2024, month=7, day=3, hour=12, tzinfo=timezone.utc),
+        "check_in_dt": datetime(year=2024, month=7, day=2, hour=14, tzinfo=settings.DB_TIME_ZONE),
+        "check_out_dt": datetime(year=2024, month=7, day=3, hour=12, tzinfo=settings.DB_TIME_ZONE),
         "total_cost": 10_000,
     },
     {
@@ -105,8 +105,8 @@ bookings_for_test = [
         "user_id": 1,
         "room_id": 2,
         "number_of_persons": 2,
-        "check_in_dt": datetime(year=2024, month=8, day=10, hour=14, tzinfo=timezone.utc),
-        "check_out_dt": datetime(year=2024, month=8, day=22, hour=12, tzinfo=timezone.utc),
+        "check_in_dt": datetime(year=2024, month=8, day=10, hour=14, tzinfo=settings.DB_TIME_ZONE),
+        "check_out_dt": datetime(year=2024, month=8, day=22, hour=12, tzinfo=settings.DB_TIME_ZONE),
         "total_cost": 110_000,
     },
     {
@@ -114,8 +114,8 @@ bookings_for_test = [
         "user_id": 1,
         "room_id": 1,
         "number_of_persons": 2,
-        "check_in_dt": datetime(year=2025, month=9, day=10, hour=14, tzinfo=timezone.utc),
-        "check_out_dt": datetime(year=2025, month=9, day=22, hour=12, tzinfo=timezone.utc),
+        "check_in_dt": datetime(year=2025, month=9, day=10, hour=14, tzinfo=settings.DB_TIME_ZONE),
+        "check_out_dt": datetime(year=2025, month=9, day=22, hour=12, tzinfo=settings.DB_TIME_ZONE),
         "total_cost": 55_000,
     },
 ]
