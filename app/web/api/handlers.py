@@ -6,10 +6,15 @@ from app.dao.base.exceptions import BaseDAOError
 from app.dao.authorization.exceptions import AlreadyExistsError, NotExistsError
 
 from app.domain.base.exceptions import BaseDomainError
-from app.domain.bookings.exceptions import RoomCapacityError
+from app.domain.bookings.exceptions import (
+    ItemNotExistsError,
+    DeletionTimeEndedError,
+    ItemNotBelongUserError,
+    RoomCapacityError,
+    RoomAlreadyBookedError,
+)
 
 from app.services.base.exceptions import BaseServiceError
-from app.services.bookings.exceptions import RoomAlreadyBookedError
 from app.services.check.exceptions import BaseCheckServiceError
 from app.services.authorization.exceptions import IncorrectPasswordError
 
@@ -62,6 +67,46 @@ def registering_exception_handlers(app: FastAPI):
             },
         )
 
+    @app.exception_handler(RoomAlreadyBookedError)
+    async def _exception(request: Request, exc: RoomAlreadyBookedError):
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={
+                "detail": exc.message,
+                "extras": exc.extras,
+            },
+        )
+
+    @app.exception_handler(ItemNotExistsError)
+    async def _exception(request: Request, exc: ItemNotExistsError):
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={
+                "detail": exc.message,
+                "extras": exc.extras,
+            },
+        )
+
+    @app.exception_handler(ItemNotBelongUserError)
+    async def _exception(request: Request, exc: ItemNotBelongUserError):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={
+                "detail": exc.message,
+                "extras": exc.extras,
+            },
+        )
+
+    @app.exception_handler(DeletionTimeEndedError)
+    async def _exception(request: Request, exc: DeletionTimeEndedError):
+        return JSONResponse(
+            status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+            content={
+                "detail": exc.message,
+                "extras": exc.extras,
+            },
+        )
+
     @app.exception_handler(BaseDomainError)
     async def _exception(request: Request, exc: BaseDomainError):
         return JSONResponse(
@@ -74,16 +119,6 @@ def registering_exception_handlers(app: FastAPI):
 
     @app.exception_handler(IncorrectPasswordError)
     async def _exception(request: Request, exc: IncorrectPasswordError):
-        return JSONResponse(
-            status_code=status.HTTP_409_CONFLICT,
-            content={
-                "detail": exc.message,
-                "extras": exc.extras,
-            },
-        )
-
-    @app.exception_handler(RoomAlreadyBookedError)
-    async def _exception(request: Request, exc: RoomAlreadyBookedError):
         return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,
             content={

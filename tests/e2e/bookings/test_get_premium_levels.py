@@ -236,8 +236,5 @@ class TestPremiumLevels:
                 dict_of_response = api_response.json()
                 ic(dict_of_response)
 
-            assert (
-                status_code_of_response == expected_status_code,
-                "The status code returned by the endpoint is not as expected",
-            )
+            assert status_code_of_response == expected_status_code, "The returned status code is not as expected"
             assert dict_of_response == expected_result, "The data returned by the endpoint is not as expected"

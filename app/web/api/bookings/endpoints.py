@@ -77,6 +77,24 @@ async def add_booking(
     return booking
 
 
+@router.delete(
+    path="/{booking_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    # responses=responses_of_deleting_booking,
+    summary="Delete booking.",
+)
+async def delete_booking(
+    booking_id: int,
+    user_id: int = Depends(get_user_id),
+    session_maker: sessionmaker = Depends(get_session_maker),
+) -> None:
+    booking_service = BookingService(session_maker=session_maker)
+    await booking_service.delete_booking(
+        booking_id=booking_id,
+        user_id=user_id,
+    )
+
+
 @router.get(
     path="/services",
     status_code=status.HTTP_200_OK,

@@ -1,4 +1,4 @@
-from datetime import timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Literal
 
 from dotenv import load_dotenv
@@ -35,6 +35,7 @@ class Settings(BaseSettings):
     MODE: Literal["dev", "test", "stage", "prod"] = "prod"
     COMPOSE_FILE: str = "./docker/docker-compose.test.yaml"
     PATH_OF_TEST_DUMP: str = "tests/db_dumps/dump_of_lookup_tables.sql"
+    CURRENT_DATE_AND_TIME: str = "2024-08-01 12:00:00"
 
     # Authorization
     SECRET_KEY: str
@@ -46,6 +47,7 @@ class Settings(BaseSettings):
     CHECK_IN_TIME: int = 14
     CHECK_OUT_TIME: int = 12
     MIN_RENTAL_INTERVAL_HOURS: int = 22
+    BOOKING_CANCELLATION_AVAILABILITY_HOURS: int = 72
 
     @property
     def DB_URL(self):
@@ -68,6 +70,14 @@ class Settings(BaseSettings):
         return timezone(
             offset=timedelta(hours=self.DB_TIME_ZONE_OFFSET_HOURS),
             name=self.DB_TIME_ZONE_NAME,
+        )
+
+    @property
+    def CURRENT_DT(self):
+        return (
+            self.MODE == "test"
+            and datetime.strptime(self.CURRENT_DATE_AND_TIME, "%Y-%m-%d %H:%M:%S").replace(tzinfo=self.DB_TIME_ZONE)
+            or datetime.now(tz=self.DB_TIME_ZONE)
         )
 
     model_config = SettingsConfigDict(env_file=".env")

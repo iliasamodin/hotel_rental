@@ -14,9 +14,9 @@ from tests.fake_session import FakeAsyncSession
 
 
 @pytest.mark.asyncio
-class TestGetItemById:
+class TestDeleteItemById:
     """
-    Unit tests for method get_item_by_id of BaseDAO class.
+    Unit tests for method delete_item_by_id of BaseDAO class.
     """
 
     @pytest.fixture(autouse=True)
@@ -42,15 +42,15 @@ class TestGetItemById:
             pytest.param(
                 ServiceVarietiesModel.__tablename__,
                 1,
-                "SELECT "
+                "DELETE FROM booking.service_varieties "
+                "WHERE booking.service_varieties.id = 1 "
+                "RETURNING "
                 "booking.service_varieties.id, "
                 "booking.service_varieties.key, "
                 "booking.service_varieties.name, "
-                "booking.service_varieties.\"desc\" \n"
-                "FROM booking.service_varieties \n"
-                "WHERE booking.service_varieties.id = 1",
+                "booking.service_varieties.\"desc\"",
                 does_not_raise(),
-                "Testing a query to select a record by its ID",
+                "Testing a query to delete a record by its ID",
                 id="-test-1",
             ),
             pytest.param(
@@ -58,14 +58,14 @@ class TestGetItemById:
                 1,
                 None,
                 pytest.raises(ModelNotFoundError),
-                "Testing a query to select a record by its ID "
+                "Testing a query to delete a record by its ID "
                 "from a non-existent table",
                 id="-test-2",
             ),
         ],
     )
     @pytest.mark.asyncio
-    async def test_get_item_by_id(
+    async def test_delete_item_by_id(
         self,
         table_name: str,
         item_id: int,
@@ -79,7 +79,7 @@ class TestGetItemById:
         #   raised by the object under test
         with expectation:
             base_dao = BaseDAO(session=self.fake_async_session)
-            await base_dao.get_item_by_id(
+            await base_dao.delete_item_by_id(
                 table_name=table_name,
                 item_id=item_id,
             )
