@@ -1,7 +1,7 @@
 from sqlalchemy.engine import Result
 
 from app.dao.base.dao import BaseDAO
-from app.dao.bookings.adapters import add_booking, get_bookings, get_services, get_hotels, get_premium_levels, get_rooms
+from app.dao.bookings.adapters import get_bookings, get_services, get_hotels, get_premium_levels, get_rooms
 from app.dao.bookings.helpers import get_filters_for_booking_overlaps, get_filters_for_bookings
 from app.dao.bookings.schemas import (
     BookingDTO,
@@ -14,7 +14,6 @@ from app.dao.bookings.schemas import (
     HotelDTO,
 )
 
-from app.services.bookings.schemas import BaseBookingSchema
 from app.services.check.schemas import HotelsOrRoomsValidator, MinAndMaxDtsValidator, PriceRangeValidator
 
 
@@ -184,23 +183,3 @@ class BookingDAO(BaseDAO):
             bookings.append(booking)
 
         return bookings
-
-    async def add_booking(
-        self,
-        new_booking: BaseBookingSchema,
-    ) -> BookingDTO:
-        """
-        Add a booking.
-
-        :return: data of new booking.
-        """
-
-        query_result_of_booking: Result = await add_booking(
-            session=self.session,
-            new_booking=new_booking,
-        )
-        row_with_booking = query_result_of_booking.fetchone()
-
-        booking = BookingDTO.model_validate(row_with_booking)
-
-        return booking

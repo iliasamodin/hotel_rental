@@ -19,7 +19,6 @@ from app.dao.bookings.helpers import (
     get_filters_for_rooms,
 )
 
-from app.services.bookings.schemas import BaseBookingSchema
 from app.services.check.schemas import HotelsOrRoomsValidator, MinAndMaxDtsValidator, PriceRangeValidator
 
 
@@ -255,29 +254,6 @@ async def get_bookings(
         )
         .where(*query_filters)
         .order_by(BookingsModel.id)
-    )
-
-    query_result = await session.execute(query)
-
-    return query_result
-
-
-async def add_booking(
-    session: AsyncSession,
-    new_booking: BaseBookingSchema,
-) -> Result:
-    """
-    Add a booking to the database
-    and get the result of querying the new booking's data.
-
-    :return: result of booking query.
-    """
-
-    map_of_booking_data = new_booking.model_dump()
-    query = (
-        insert(BookingsModel)
-        .values(map_of_booking_data)
-        .returning(*BookingsModel.__table__.columns)
     )
 
     query_result = await session.execute(query)

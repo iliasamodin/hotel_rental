@@ -1,5 +1,6 @@
-from typing import Callable
-from sqlalchemy import delete, select
+from typing import Any, Callable
+from pydantic import BaseModel
+from sqlalchemy import delete, insert, select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.decl_api import DeclarativeAttributeIntercept
@@ -27,6 +28,32 @@ async def get_item_by_id(
     query = (
         select(*model.__table__.columns)
         .where(*query_filters)
+    )
+
+    query_result = await session.execute(query)
+
+    return query_result
+
+
+async def insert_item(
+    session: AsyncSession,
+    model: DeclarativeAttributeIntercept,
+    item_data: dict[str, Any] | BaseModel,
+) -> Result:
+    """
+    Add an item to the database
+    and get the result of querying the inserted item's data.
+
+    :return: result of item query.
+    """
+
+    if isinstance(item_data, BaseModel):
+        item_data: dict[str, Any] = item_data.model_dump()
+
+    query = (
+        insert(model)
+        .values(item_data)
+        .returning(*model.__table__.columns)
     )
 
     query_result = await session.execute(query)
