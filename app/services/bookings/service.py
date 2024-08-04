@@ -295,8 +295,9 @@ class BookingService:
             )
             add_booking_domain_model.check_room_availability(overlapping_bookings=overlapping_bookings_dto)
 
-            booking_dto: BookingDTO = await self.booking_dao.add_booking(
-                new_booking=new_booking,
+            booking_dto: BookingDTO = await self.booking_dao.insert_item(
+                table_name="bookings",
+                item_data=new_booking,
             )
 
             booking = BookingResponseSchema(
