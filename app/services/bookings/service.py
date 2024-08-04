@@ -11,8 +11,7 @@ from app.dao.bookings.schemas import (
     ExtendedRoomDTO,
 )
 
-from app.domain.bookings.booking_domain import AddBookingDomainModel
-from app.services.bookings.exceptions import RoomAlreadyBookedError
+from app.domain.bookings.booking_domain import AddBookingDomainModel, DeleteBookingDomainModel
 from app.services.bookings.schemas import (
     BaseBookingSchema,
     BookingRequestSchema,
@@ -298,6 +297,50 @@ class BookingService:
 
             booking_dto: BookingDTO = await self.booking_dao.add_booking(
                 new_booking=new_booking,
+            )
+
+            booking = BookingResponseSchema(
+                id=booking_dto.id,
+                user_id=booking_dto.user_id,
+                room_id=booking_dto.room_id,
+                number_of_persons=booking_dto.number_of_persons,
+                check_in_dt=booking_dto.check_in_dt,
+                check_out_dt=booking_dto.check_out_dt,
+                total_cost=booking_dto.total_cost,
+            )
+
+        return booking
+
+    async def delete_booking(
+        self,
+        user_id: int,
+        booking_id: int,
+    ) -> BookingResponseSchema:
+        """
+        Delete booking.
+
+        :return: data of deleted booking.
+        """
+
+        async with self.session_maker.begin() as session:
+            self.booking_dao = BookingDAO(session=session)
+
+            booking_dto: BookingDTO = await self.booking_dao.get_item_by_id(
+                table_name="bookings",
+                item_id=booking_id,
+            )
+
+            # Business logic of deleting booking
+            delete_booking_domain_model = DeleteBookingDomainModel(
+                user_id=user_id,
+                booking_id=booking_id,
+                booking=booking_dto,
+            )
+            delete_booking_domain_model.execute()
+
+            booking_dto: BookingDTO = await self.booking_dao.delete_item_by_id(
+                table_name="bookings",
+                item_id=booking_id,
             )
 
             booking = BookingResponseSchema(

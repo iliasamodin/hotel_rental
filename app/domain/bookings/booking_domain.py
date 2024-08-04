@@ -1,12 +1,17 @@
-from datetime import datetime, time, timezone
+from datetime import datetime, time, timedelta, timezone
 
 from app.settings import settings
 
 from app.dao.bookings.schemas import RoomDTO, BookingDTO
 
-from app.domain.bookings.exceptions import RoomCapacityError
+from app.domain.bookings.exceptions import (
+    ItemNotExistsError,
+    DeletionTimeEndedError,
+    ItemNotBelongUserError,
+    RoomCapacityError,
+    RoomAlreadyBookedError,
+)
 
-from app.services.bookings.exceptions import RoomAlreadyBookedError
 from app.services.bookings.schemas import BaseBookingSchema, BookingRequestSchema, RoomSchema
 
 
@@ -29,7 +34,6 @@ class AddBookingDomainModel:
         """
 
         self.check_number_of_persons()
-
 
         check_in_time = time(
             hour=settings.CHECK_IN_TIME,
@@ -113,3 +117,75 @@ class AddBookingDomainModel:
                     message="The room is already booked on these dates.",
                     extras=overlapping_dates,
                 )
+
+
+class DeleteBookingDomainModel:
+    def __init__(
+        self,
+        user_id: int,
+        booking_id: int,
+        booking: BookingDTO,
+    ):
+        self.user_id = user_id
+        self.booking_id = booking_id
+        self.booking = booking
+
+    def execute(self) -> None:
+        """
+        Preparing a booking for deletion.
+        """
+
+        self.check_existence_of_booking()
+        self.check_booking_affiliation()
+        self.check_availability_for_deletion()
+
+    def check_existence_of_booking(self) -> None:
+        """
+        Check that the booking with the passed id exists
+        in the database.
+
+        :raise: BookingNotExistsError
+        """
+
+        if not self.booking:
+            raise ItemNotExistsError(
+                message="The booking to be deleted is not in the database.",
+                extras={
+                    "booking_id": self.booking_id,
+                },
+            )
+
+    def check_booking_affiliation(self) -> None:
+        """
+        Check that the booking being deleted belongs to the user
+        who is deleting it.
+
+        :raise: NotBelongError
+        """
+
+        if self.booking.user_id != self.user_id:
+            raise ItemNotBelongUserError(
+                message="The booking being canceled does not belong to the user who is deleting it.",
+                extras={
+                    "user_id": self.user_id,
+                    "user_id_of_booking": self.booking.user_id,
+                },
+            )
+
+    def check_availability_for_deletion(self) -> None:
+        """
+        Check that the time interval
+        when booking deletion is available has not yet expired.
+
+        :raise: DeleteTimeError
+        """
+
+        latest_cancellation_dt = self.booking.check_in_dt - timedelta(hours=settings.BOOKING_CANCELLATION_AVAILABILITY_HOURS)
+        if latest_cancellation_dt < settings.CURRENT_DT:
+            raise DeletionTimeEndedError(
+                message="The time when the booking could be canceled has already expired.",
+                extras={
+                    "current_dt": settings.CURRENT_DT.strftime("%Y-%m-%dT%H:%M:%S%z"),
+                    "latest_cancellation_dt": latest_cancellation_dt.strftime("%Y-%m-%dT%H:%M:%S%z"),
+                },
+            )

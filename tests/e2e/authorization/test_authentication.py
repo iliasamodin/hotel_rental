@@ -130,10 +130,7 @@ class TestAuthentication:
 
             keys_of_response = set(dict_of_response.keys())
 
-            assert (
-                status_code_of_response == expected_status_code,
-                "The status code returned by the endpoint is not as expected",
-            )
+            assert status_code_of_response == expected_status_code, "The returned status code is not as expected"
             assert keys_of_response == expected_result, "The data returned by the endpoint is not as expected"
 
     @pytest.mark.parametrize(
@@ -150,7 +147,7 @@ class TestAuthentication:
                     "password": "Password1",
                 },
                 users_for_test,
-                status.HTTP_409_CONFLICT,
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
                 {
                     "detail": "To identify the user, you need to pass the email or phone value.",
                     "extras": {
@@ -295,8 +292,5 @@ class TestAuthentication:
                 dict_of_response = api_response.json()
                 ic(dict_of_response)
 
-            assert (
-                status_code_of_response == expected_status_code,
-                "The status code returned by the endpoint is not as expected",
-            )
+            assert status_code_of_response == expected_status_code, "The returned status code is not as expected"
             assert dict_of_response == expected_result, "The data returned by the endpoint is not as expected"

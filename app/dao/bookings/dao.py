@@ -1,5 +1,4 @@
 from sqlalchemy.engine import Result
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dao.base.dao import BaseDAO
 from app.dao.bookings.adapters import add_booking, get_bookings, get_services, get_hotels, get_premium_levels, get_rooms

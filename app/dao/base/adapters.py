@@ -1,5 +1,5 @@
 from typing import Callable
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.decl_api import DeclarativeAttributeIntercept
@@ -27,6 +27,35 @@ async def get_item_by_id(
     query = (
         select(*model.__table__.columns)
         .where(*query_filters)
+    )
+
+    query_result = await session.execute(query)
+
+    return query_result
+
+
+async def delete_item_by_id(
+    session: AsyncSession,
+    model: DeclarativeAttributeIntercept,
+    item_id: int,
+    get_query_filters: Callable = get_filter_by_id,
+) -> Result:
+    """
+    Delete an item from the database
+    and get the result of querying the deleted item's data.
+
+    :return: result of item query.
+    """
+
+    query_filters = get_query_filters(
+        model=model,
+        item_id=item_id,
+    )
+
+    query = (
+        delete(model)
+        .where(*query_filters)
+        .returning(*model.__table__.columns)
     )
 
     query_result = await session.execute(query)
