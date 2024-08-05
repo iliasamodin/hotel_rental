@@ -1,5 +1,7 @@
 from typing import Any
+
 from pydantic import BaseModel
+from sqlalchemy import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.decl_api import DeclarativeAttributeIntercept
 
@@ -21,7 +23,7 @@ class BaseDAO:
         self,
         table_name: str,
         item_id: int,
-    ) -> dict[str, Any]:
+    ) -> dict[str, Any] | None:
         """
         Get item by id.
 
@@ -37,7 +39,7 @@ class BaseDAO:
                 },
             )
 
-        query_result_of_item = await get_item_by_id(
+        query_result_of_item: Result = await get_item_by_id(
             session=self.session,
             model=model,
             item_id=item_id,
@@ -66,7 +68,7 @@ class BaseDAO:
                 },
             )
 
-        query_result_of_item = await insert_item(
+        query_result_of_item: Result = await insert_item(
             session=self.session,
             model=model,
             item_data=item_data,
@@ -95,7 +97,7 @@ class BaseDAO:
                 },
             )
 
-        query_result_of_item = await delete_item_by_id(
+        query_result_of_item: Result = await delete_item_by_id(
             session=self.session,
             model=model,
             item_id=item_id,

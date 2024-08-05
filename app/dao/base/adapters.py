@@ -1,4 +1,5 @@
 from typing import Any, Callable
+
 from pydantic import BaseModel
 from sqlalchemy import delete, insert, select
 from sqlalchemy.engine import Result
