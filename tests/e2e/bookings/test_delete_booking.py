@@ -115,7 +115,7 @@ bookings_for_test = [
 @pytest.mark.asyncio
 class TestDeleteBooking:
     """
-    E2E tests for DELETE method of endpoint /bookings.
+    E2E tests for DELETE method of endpoint /bookings/{booking_id}.
     """
 
     @pytest.fixture(autouse=True)
