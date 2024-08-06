@@ -18,3 +18,9 @@ class ModelNotFoundError(BaseDAOError):
     """
     Model not found error.
     """
+
+
+class ValidatorGenerationError(BaseDAOError):
+    """
+    Validator generation error.
+    """

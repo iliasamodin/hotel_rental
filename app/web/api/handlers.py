@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from pydantic_core import ValidationError
 from starlette import status
 from starlette.responses import JSONResponse
 
@@ -26,6 +27,16 @@ def registering_exception_handlers(app: FastAPI):
     """
     Registering handlers for custom exceptions.
     """
+
+    @app.exception_handler(ValidationError)
+    async def _exception(request: Request, exc: ValidationError):
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content={
+                "detail": repr(exc),
+                "extras": exc.errors(),
+            },
+        )
 
     @app.exception_handler(AlreadyExistsError)
     async def _exception(request: Request, exc: AlreadyExistsError):

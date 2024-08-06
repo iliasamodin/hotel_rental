@@ -8,6 +8,8 @@ from starlette import status
 
 import pytest
 
+from app.web.api.resource_manager.types import EntityNamePathParams
+
 from tests.db_preparer import DBPreparer
 
 
@@ -42,7 +44,7 @@ class TestGetEntityByIid:
         argvalues=[
             pytest.param(
                 {
-                    "entity_name": "service_varieties",
+                    "entity_name": EntityNamePathParams.ServiceVarieties.value,
                     "iid": 1,
                 },
                 status.HTTP_200_OK,
@@ -57,7 +59,7 @@ class TestGetEntityByIid:
             ),
             pytest.param(
                 {
-                    "entity_name": "service_varieties",
+                    "entity_name": EntityNamePathParams.ServiceVarieties.value,
                     "iid": 10_000,
                 },
                 status.HTTP_200_OK,

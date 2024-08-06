@@ -143,7 +143,7 @@ class TestGetBookings:
 
     @pytest.mark.parametrize(
         argnames=(
-            "parameters_of_get",
+            "query_params",
             "cookies",
             "hotels_for_test",
             "rooms_for_test",
@@ -360,7 +360,7 @@ class TestGetBookings:
     @pytest.mark.asyncio
     async def test_get_bookings(
         self,
-        parameters_of_get: dict[str, Any] | None,
+        query_params: dict[str, Any] | None,
         cookies: dict[str, str],
         hotels_for_test: list[dict[str, Any]],
         rooms_for_test: list[dict[str, Any]],
@@ -384,7 +384,7 @@ class TestGetBookings:
             async with self.client_maker(transport=self.transport_for_client) as client:
                 api_response = await client.get(
                     url=f"http://test{self.url}",
-                    params=parameters_of_get,
+                    params=query_params,
                     cookies=cookies,
                 )
 

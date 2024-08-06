@@ -36,3 +36,24 @@ class ResourceManagerService:
             )
 
         return entity
+
+    async def get_entities_by_filters(
+        self,
+        entity_name: Enum,
+        filters: dict[str, str],
+    ) -> list[dict[str, Any]]:
+        """
+        Get entities by filters.
+
+        :return: entities.
+        """
+
+        async with self.session_maker.begin() as session:
+            self.resource_manager_dao = ResourceManagerDAO(session=session)
+
+            entity: list[dict[str, Any]] = await self.resource_manager_dao.get_items_by_filters(
+                table_name=entity_name.value,
+                filters=filters,
+            )
+
+        return entity
