@@ -2,6 +2,7 @@ from typing import Any, Sequence
 
 from contextlib import asynccontextmanager
 
+from alembic.config import Config, command
 from sqlalchemy import text, delete, insert, Column, Result, and_, or_, ColumnElement
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
@@ -27,6 +28,7 @@ class DBPreparer:
         self, 
         session_maker: sessionmaker = get_async_session_maker(), 
         path_of_test_dump: str = settings.PATH_OF_TEST_DUMP,
+        path_of_alembic_ini: str = settings.PATH_OF_ALEMBIC_INI,
         base_class_of_models: DeclarativeBase = Base,
         classes_of_models: dict[str, DeclarativeAttributeIntercept] = classes_of_models,
     ):
@@ -40,9 +42,30 @@ class DBPreparer:
             os.pardir,
             path_of_test_dump,
         )
+        self.full_path_of_alembic_ini = os.path.join(
+            os.path.dirname(
+                os.path.realpath(__file__),
+            ),
+            os.pardir,
+            path_of_alembic_ini,
+        )
 
         self.base_class_of_models = base_class_of_models
         self.classes_of_models = classes_of_models
+
+    def deploy_migrations(
+        self, 
+        deploy_migrations: bool = True,
+        revision: str = "head",
+    ) -> None:
+        """
+        Deploy migrations for test database.
+        """
+
+        if deploy_migrations:
+            alembic_config = Config(self.full_path_of_alembic_ini)
+            command.upgrade(alembic_config, revision)
+            ic(f"Deployed migrations: {revision}, on {settings.DB_URL}")
 
     async def clean_table(
         self,
