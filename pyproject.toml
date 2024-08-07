@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hotel-rental"
-version = "0.6.0"
+version = "0.6.1"
 description = ""
 authors = ["Ilia Samodin <broobooot@gmail.com>"]
 readme = "README.md"
