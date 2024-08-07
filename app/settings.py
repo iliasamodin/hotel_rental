@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     DB_PORT: int
     DB_TIME_ZONE_OFFSET_HOURS: int = 0
     DB_TIME_ZONE_NAME: str = "UTC"
+    PATH_OF_ALEMBIC_INI: str = "alembic.ini"
 
     # DB schemas
     DB_ALEMBIC_SCHEMA: str = "alembic"
