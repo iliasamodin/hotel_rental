@@ -6,6 +6,7 @@ from app.dao.bookings.helpers import get_filters_for_booking_overlaps, get_filte
 from app.dao.bookings.schemas import (
     BookingDTO,
     ExtendedBookingDTO,
+    ImageDTO,
     RoomDTO,
     ServiceVarietyDTO,
     ExtendedHotelDTO,
@@ -71,6 +72,8 @@ class BookingDAO(BaseDAO):
         for row in rows_with_hotels:
             hotel = ExtendedHotelDTO.model_validate(row.HotelsModel)
             hotel.rooms_quantity = row.rooms_quantity
+            if row.ImagesModel is not None:
+                hotel.main_image = ImageDTO.model_validate(row.ImagesModel)
 
             hotel.services = []
             if row.ServiceVarietiesModel is not None:

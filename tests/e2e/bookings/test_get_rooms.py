@@ -130,6 +130,7 @@ class TestGetRooms:
                             "desc": "Colorful description for hotel #1.",
                             "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
                             "stars": 3,
+                            "main_image_id": None,
                         },
                         "premium_level": None,
                         "services": [],
@@ -149,6 +150,7 @@ class TestGetRooms:
                             "desc": "Colorful description for hotel #1.",
                             "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
                             "stars": 3,
+                            "main_image_id": None,
                         },
                         "premium_level": {
                             "id": 2,
@@ -180,6 +182,7 @@ class TestGetRooms:
                             "desc": "Colorful description for hotel #2.",
                             "location": "Altai Republic, Maiminsky district, Barangol village, Chuyskaya street 40a",
                             "stars": 5,
+                            "main_image_id": None,
                         },
                         "premium_level": {
                             "id": 4,
@@ -230,6 +233,7 @@ class TestGetRooms:
                             "desc": "Colorful description for hotel #1.",
                             "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
                             "stars": 3,
+                            "main_image_id": None,
                         },
                         "premium_level": {
                             "id": 2,
@@ -261,6 +265,7 @@ class TestGetRooms:
                             "desc": "Colorful description for hotel #2.",
                             "location": "Altai Republic, Maiminsky district, Barangol village, Chuyskaya street 40a",
                             "stars": 5,
+                            "main_image_id": None,
                         },
                         "premium_level": {
                             "id": 4,
@@ -326,6 +331,7 @@ class TestGetRooms:
                             "desc": "Colorful description for hotel #1.",
                             "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
                             "stars": 3,
+                            "main_image_id": None,
                         },
                         "premium_level": None,
                         "services": [],
@@ -345,6 +351,7 @@ class TestGetRooms:
                             "desc": "Colorful description for hotel #1.",
                             "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
                             "stars": 3,
+                            "main_image_id": None,
                         },
                         "premium_level": {
                             "id": 2,
@@ -404,6 +411,7 @@ class TestGetRooms:
                             "desc": "Colorful description for hotel #1.",
                             "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
                             "stars": 3,
+                            "main_image_id": None,
                         },
                         "premium_level": {
                             "id": 2,
@@ -449,6 +457,7 @@ class TestGetRooms:
                             "desc": "Colorful description for hotel #1.",
                             "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
                             "stars": 3,
+                            "main_image_id": None,
                         },
                         "premium_level": None,
                         "services": [],
@@ -468,6 +477,7 @@ class TestGetRooms:
                             "desc": "Colorful description for hotel #1.",
                             "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
                             "stars": 3,
+                            "main_image_id": None,
                         },
                         "premium_level": {
                             "id": 2,
@@ -526,6 +536,7 @@ class TestGetRooms:
                             "desc": "Colorful description for hotel #1.",
                             "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
                             "stars": 3,
+                            "main_image_id": None,
                         },
                         "premium_level": {
                             "id": 2,
@@ -557,6 +568,7 @@ class TestGetRooms:
                             "desc": "Colorful description for hotel #2.",
                             "location": "Altai Republic, Maiminsky district, Barangol village, Chuyskaya street 40a",
                             "stars": 5,
+                            "main_image_id": None,
                         },
                         "premium_level": {
                             "id": 4,
@@ -621,6 +633,7 @@ class TestGetRooms:
                             "desc": "Colorful description for hotel #1.",
                             "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
                             "stars": 3,
+                            "main_image_id": None,
                         },
                         "premium_level": {
                             "id": 2,
@@ -679,6 +692,7 @@ class TestGetRooms:
                             "desc": "Colorful description for hotel #2.",
                             "location": "Altai Republic, Maiminsky district, Barangol village, Chuyskaya street 40a",
                             "stars": 5,
+                            "main_image_id": None,
                         },
                         "premium_level": {
                             "id": 4,
@@ -735,6 +749,7 @@ class TestGetRooms:
                             "desc": "Colorful description for hotel #2.",
                             "location": "Altai Republic, Maiminsky district, Barangol village, Chuyskaya street 40a",
                             "stars": 5,
+                            "main_image_id": None,
                         },
                         "premium_level": {
                             "id": 4,

@@ -14,12 +14,25 @@ class ServiceVarietyDTO(BaseModel):
         from_attributes = True
 
 
+class ImageDTO(BaseModel):
+    id: int
+    key: str
+    name: str | None = None
+    desc: str | None = None
+    room_id: int | None = None
+    filepath: str
+
+    class Config:
+        from_attributes = True
+
+
 class HotelDTO(BaseModel):
     id: int
     name: str
     desc: str | None = None
     location: str
     stars: int | None = None
+    main_image_id: int | None = None
 
     class Config:
         from_attributes = True
@@ -27,6 +40,7 @@ class HotelDTO(BaseModel):
 
 class ExtendedHotelDTO(HotelDTO):
     rooms_quantity: int | None = None
+    main_image: ImageDTO | None = None
     services: list[ServiceVarietyDTO] | None = None
 
 

@@ -17,6 +17,7 @@ from app.services.bookings.schemas import (
     BookingRequestSchema,
     BookingResponseSchema,
     ExtendedBookingResponseSchema,
+    ImageSchema,
     RoomSchema,
     ServiceVarietyResponseSchema,
     ExtendedHotelResponseSchema,
@@ -89,6 +90,15 @@ class BookingService:
 
             hotels: list[ExtendedHotelResponseSchema] = []
             for hotel in hotels_dto:
+                main_image = hotel.main_image and ImageSchema(
+                    id=hotel.main_image.id,
+                    key=hotel.main_image.key,
+                    name=hotel.main_image.name,
+                    desc=hotel.main_image.desc,
+                    room_id=hotel.main_image.room_id,
+                    filepath=hotel.main_image.filepath,
+                )
+
                 services = [
                     ServiceVarietyResponseSchema(
                         id=service.id,
@@ -106,7 +116,9 @@ class BookingService:
                         desc=hotel.desc,
                         location=hotel.location,
                         stars=hotel.stars,
+                        main_image_id=hotel.main_image_id,
                         rooms_quantity=hotel.rooms_quantity,
+                        main_image=main_image,
                         services=services,
                     )
                 )

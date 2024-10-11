@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models.bookings_model import BookingsModel
 from app.db.models.hotels_services_model import HotelsServicesModel
+from app.db.models.images_model import ImagesModel
 from app.db.models.rooms_services_model import RoomsServicesModel
 from app.db.models.service_varieties_model import ServiceVarietiesModel
 from app.db.models.hotels_model import HotelsModel
@@ -87,6 +88,7 @@ async def get_hotels(
             HotelsModel,
             ServiceVarietiesModel,
             func.count(RoomsModel.id).over(**window_of_count_rooms).label("rooms_quantity"),
+            ImagesModel,
         )
         .select_from(HotelsModel)
         .distinct(HotelsModel.id, ServiceVarietiesModel.id)
@@ -105,6 +107,10 @@ async def get_hotels(
         .outerjoin(
             ServiceVarietiesModel,
             HotelsServicesModel.service_variety_id == ServiceVarietiesModel.id,
+        )
+        .outerjoin(
+            ImagesModel,
+            HotelsModel.main_image_id == ImagesModel.id,
         )
         .where(*query_filters)
         .order_by(HotelsModel.id, ServiceVarietiesModel.id)

@@ -1,11 +1,14 @@
-INSERT INTO booking.hotels (id, name, "desc", location, stars) 
+INSERT INTO booking.images (id, key, name, "desc")
+VALUES
+    (1, 'hoter_1.jpg', 'Image of hoter #1', 'Main image of hotel #1.');
+INSERT INTO booking.hotels (id, name, "desc", location, stars, main_image_id) 
 VALUES 
-    (1, 'Cosmos Collection Altay Resort', 'Colorful description for hotel #1.', 'Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20', 3),
-    (2, 'Skala', 'Colorful description for hotel #2.', 'Altai Republic, Maiminsky district, Barangol village, Chuyskaya street 40a', 4),
-    (3, 'Aru-Kol', 'Colorful description for hotel #3.', 'Altai Republic, Turochaksky district, Artybash village, Teletskaya street, 44a', 2),
-    (4, 'Hotel Syktyvkar', 'Colorful description for hotel #4.', 'Komi Republic, Syktyvkar, Kommunisticheskaya street, 67', 4),
-    (5, 'Palace', 'Colorful description for hotel #5.', 'Komi Republic, Syktyvkar, Pervomaiskaya street, 62', 4),
-    (6, 'Bridge Resort', 'Colorful description for hotel #6.', 'Urban village Sirius, Figurnaya street, 45', 3);
+    (1, 'Cosmos Collection Altay Resort', 'Colorful description for hotel #1.', 'Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20', 3, 1),
+    (2, 'Skala', 'Colorful description for hotel #2.', 'Altai Republic, Maiminsky district, Barangol village, Chuyskaya street 40a', 4, NULL),
+    (3, 'Aru-Kol', 'Colorful description for hotel #3.', 'Altai Republic, Turochaksky district, Artybash village, Teletskaya street, 44a', 2, NULL),
+    (4, 'Hotel Syktyvkar', 'Colorful description for hotel #4.', 'Komi Republic, Syktyvkar, Kommunisticheskaya street, 67', 4, NULL),
+    (5, 'Palace', 'Colorful description for hotel #5.', 'Komi Republic, Syktyvkar, Pervomaiskaya street, 62', 4, NULL),
+    (6, 'Bridge Resort', 'Colorful description for hotel #6.', 'Urban village Sirius, Figurnaya street, 45', 3, NULL);
 INSERT INTO booking.premium_level_varieties (id, key, name, "desc")
 VALUES 
     (1, 'budget', 'Budget service', 'Minimum service for the level of the hotel to which the room belongs.'),
