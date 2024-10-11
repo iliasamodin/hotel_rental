@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 import uvicorn
 import sys
@@ -16,6 +17,13 @@ openapi_params = get_data_to_display_in_openapi()
 # FastAPI instance declaration
 app = FastAPI(**openapi_params)
 app.include_router(router=api_router, prefix=settings.API_PREFIX)
+app.mount(
+    path=f"/{settings.PATH_OF_MEDIA}",
+    app=StaticFiles(
+        directory=settings.PATH_OF_MEDIA,
+    ),
+    name=settings.PATH_OF_MEDIA,
+)
 
 # Registering exception handlers
 registering_exception_handlers(app=app)

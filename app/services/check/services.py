@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy.orm import sessionmaker
 
-from app.db.session import get_async_session_maker
+from app.db.session import async_session_maker
 
 from app.services.check.schemas import HotelsOrRoomsValidator, MinAndMaxDtsValidator, PriceRangeValidator
 
@@ -13,7 +13,7 @@ def get_session_maker() -> sessionmaker:
     :return: sessionmaker
     """
 
-    return get_async_session_maker()
+    return async_session_maker
 
 
 def get_only_for_hotels_and_only_for_rooms(

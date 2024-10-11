@@ -25,6 +25,11 @@ VALUES
     (9, 'Room #1 of hotel #5', 'Colorful description for room #1 of hotel #5.', 5, 2, 1, 2, 5000),
     (10,'Room #2 of hotel #5', 'Colorful description for room #2 of hotel #5.', 5, 4, 2, 4, 8000),
     (11,'Room #1 of hotel #6', 'Colorful description for room #1 of hotel #6.', 6, 1, 1, 1, 8125);
+INSERT INTO booking.images (id, key, name, "desc", room_id)
+VALUES
+    (2, 'room_1.webp', 'Image #1 of room #1', 'Main image of room #1.', 1),
+    (3, 'room_2_1.jpeg', 'Image #1 of room #2', 'Main image of room #2.', 2),
+    (4, 'room_2_2.jpg', 'Image #2 of room #2', 'Additional image of room #2.', 2);
 INSERT INTO booking.service_varieties (id, key, name)
 VALUES
     (1, 'wifi', 'Free Wi-Fi'),
