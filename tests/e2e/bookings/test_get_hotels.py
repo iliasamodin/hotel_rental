@@ -9,10 +9,20 @@ import pytest
 
 from app.db.models.hotels_model import HotelsModel
 from app.db.models.hotels_services_model import HotelsServicesModel
+from app.db.models.images_model import ImagesModel
 from app.db.models.rooms_model import RoomsModel
 
 from tests.db_preparer import DBPreparer
 
+images_for_test = [
+    {
+        "id": 1,
+        "key": "hoter_1.jpg",
+        "name": "Image of hoter #1",
+        "desc": "Main image of hotel #1.",
+        "room_id": None,
+    },
+]
 hotels_for_test = [
     {
         "id": 1,
@@ -20,6 +30,7 @@ hotels_for_test = [
         "desc": "Colorful description for hotel #1.",
         "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
         "stars": 5,
+        "main_image_id": 1,
     },
     {
         "id": 2,
@@ -27,6 +38,7 @@ hotels_for_test = [
         "desc": "Colorful description for hotel #2.",
         "location": "Altai Republic, Maiminsky district, Barangol village, Chuyskaya street 40a",
         "stars": None,
+        "main_image_id": None,
     },
     {
         "id": 3,
@@ -34,7 +46,8 @@ hotels_for_test = [
         "desc": "Colorful description for hotel #3.",
         "location": "Komi Republic, Syktyvkar, Kommunisticheskaya street, 67",
         "stars": 4,
-    }
+        "main_image_id": None,
+    },
 ]
 services_of_hotels_for_test = [
     {
@@ -98,6 +111,7 @@ class TestGetHotels:
     @pytest.mark.parametrize(
         argnames=(
             "query_params",
+            "images_for_test",
             "hotels_for_test",
             "services_of_hotels_for_test",
             "rooms_for_test",
@@ -108,6 +122,7 @@ class TestGetHotels:
         argvalues=[
             pytest.param(
                 None,
+                images_for_test,
                 hotels_for_test,
                 services_of_hotels_for_test,
                 rooms_for_test,
@@ -119,7 +134,16 @@ class TestGetHotels:
                         "desc": "Colorful description for hotel #1.",
                         "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
                         "stars": 5,
+                        "main_image_id": 1,
                         "rooms_quantity": 1,
+                        "main_image": {
+                            "id": 1,
+                            "key": "hoter_1.jpg",
+                            "name": "Image of hoter #1",
+                            "desc": "Main image of hotel #1.",
+                            "room_id": None,
+                            "filepath": "media/images/bookings/hoter_1.jpg"
+                        },
                         "services": [
                             {
                                 "id": 1,
@@ -141,7 +165,9 @@ class TestGetHotels:
                         "desc": "Colorful description for hotel #2.",
                         "location": "Altai Republic, Maiminsky district, Barangol village, Chuyskaya street 40a",
                         "stars": None,
+                        "main_image_id": None,
                         "rooms_quantity": 1,
+                        "main_image": None,
                         "services": [
                             {
                                 "id": 1,
@@ -157,7 +183,9 @@ class TestGetHotels:
                         "desc": "Colorful description for hotel #3.",
                         "location": "Komi Republic, Syktyvkar, Kommunisticheskaya street, 67",
                         "stars": 4,
+                        "main_image_id": None,
                         "rooms_quantity": 1,
+                        "main_image": None,
                         "services": [],
                     },
                 ],
@@ -168,6 +196,7 @@ class TestGetHotels:
                 {
                     "location": "Komi",
                 },
+                images_for_test,
                 hotels_for_test,
                 services_of_hotels_for_test,
                 rooms_for_test,
@@ -179,7 +208,9 @@ class TestGetHotels:
                         "desc": "Colorful description for hotel #3.",
                         "location": "Komi Republic, Syktyvkar, Kommunisticheskaya street, 67",
                         "stars": 4,
+                        "main_image_id": None,
                         "rooms_quantity": 1,
+                        "main_image": None,
                         "services": [],
                     },
                 ],
@@ -191,6 +222,7 @@ class TestGetHotels:
                 {
                     "location": "London",
                 },
+                images_for_test,
                 hotels_for_test,
                 services_of_hotels_for_test,
                 rooms_for_test,
@@ -204,6 +236,7 @@ class TestGetHotels:
                 {
                     "number_of_guests": 3,
                 },
+                images_for_test,
                 hotels_for_test,
                 services_of_hotels_for_test,
                 rooms_for_test,
@@ -215,7 +248,9 @@ class TestGetHotels:
                         "desc": "Colorful description for hotel #2.",
                         "location": "Altai Republic, Maiminsky district, Barangol village, Chuyskaya street 40a",
                         "stars": None,
+                        "main_image_id": None,
                         "rooms_quantity": 1,
+                        "main_image": None,
                         "services": [
                             {
                                 "id": 1,
@@ -231,7 +266,9 @@ class TestGetHotels:
                         "desc": "Colorful description for hotel #3.",
                         "location": "Komi Republic, Syktyvkar, Kommunisticheskaya street, 67",
                         "stars": 4,
+                        "main_image_id": None,
                         "rooms_quantity": 1,
+                        "main_image": None,
                         "services": [],
                     },
                 ],
@@ -243,6 +280,7 @@ class TestGetHotels:
                 {
                     "number_of_guests": 10,
                 },
+                images_for_test,
                 hotels_for_test,
                 services_of_hotels_for_test,
                 rooms_for_test,
@@ -256,6 +294,7 @@ class TestGetHotels:
                 {
                     "stars": 5,
                 },
+                images_for_test,
                 hotels_for_test,
                 services_of_hotels_for_test,
                 rooms_for_test,
@@ -267,7 +306,16 @@ class TestGetHotels:
                         "desc": "Colorful description for hotel #1.",
                         "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
                         "stars": 5,
+                        "main_image_id": 1,
                         "rooms_quantity": 1,
+                        "main_image": {
+                            "id": 1,
+                            "key": "hoter_1.jpg",
+                            "name": "Image of hoter #1",
+                            "desc": "Main image of hotel #1.",
+                            "room_id": None,
+                            "filepath": "media/images/bookings/hoter_1.jpg"
+                        },
                         "services": [
                             {
                                 "id": 1,
@@ -292,6 +340,7 @@ class TestGetHotels:
                 {
                     "stars": 6,
                 },
+                images_for_test,
                 hotels_for_test,
                 services_of_hotels_for_test,
                 rooms_for_test,
@@ -306,6 +355,7 @@ class TestGetHotels:
                 {
                     "services": [1, 3],
                 },
+                images_for_test,
                 hotels_for_test,
                 services_of_hotels_for_test,
                 rooms_for_test,
@@ -317,7 +367,16 @@ class TestGetHotels:
                         "desc": "Colorful description for hotel #1.",
                         "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
                         "stars": 5,
+                        "main_image_id": 1,
                         "rooms_quantity": 1,
+                        "main_image": {
+                            "id": 1,
+                            "key": "hoter_1.jpg",
+                            "name": "Image of hoter #1",
+                            "desc": "Main image of hotel #1.",
+                            "room_id": None,
+                            "filepath": "media/images/bookings/hoter_1.jpg"
+                        },
                         "services": [
                             {
                                 "id": 1,
@@ -342,6 +401,7 @@ class TestGetHotels:
                 {
                     "services": [1, 2, 3],
                 },
+                images_for_test,
                 hotels_for_test,
                 services_of_hotels_for_test,
                 rooms_for_test,
@@ -358,6 +418,7 @@ class TestGetHotels:
                     "stars": 5,
                     "services": [1, 3],
                 },
+                images_for_test,
                 hotels_for_test,
                 services_of_hotels_for_test,
                 rooms_for_test,
@@ -369,7 +430,16 @@ class TestGetHotels:
                         "desc": "Colorful description for hotel #1.",
                         "location": "Altai Republic, Maiminsky district, Urlu-Aspak village, Leshoznaya street, 20",
                         "stars": 5,
+                        "main_image_id": 1,
                         "rooms_quantity": 1,
+                        "main_image": {
+                            "id": 1,
+                            "key": "hoter_1.jpg",
+                            "name": "Image of hoter #1",
+                            "desc": "Main image of hotel #1.",
+                            "room_id": None,
+                            "filepath": "media/images/bookings/hoter_1.jpg"
+                        },
                         "services": [
                             {
                                 "id": 1,
@@ -393,6 +463,7 @@ class TestGetHotels:
                 {
                     "stars": 10,
                 },
+                images_for_test,
                 hotels_for_test,
                 services_of_hotels_for_test,
                 rooms_for_test,
@@ -424,6 +495,7 @@ class TestGetHotels:
     async def test_get_hotels(
         self,
         query_params: dict[str, Any] | None,
+        images_for_test: list[dict[str, Any]],
         hotels_for_test: list[dict[str, Any]],
         services_of_hotels_for_test: list[dict[str, Any]],
         rooms_for_test: list[dict[str, Any]],
@@ -436,6 +508,7 @@ class TestGetHotels:
         # Inserting test data into the database before each test
         #   and deleting this data after each test
         async with (
+            self.db_preparer.insert_test_data(orm_model=ImagesModel, data_for_insert=images_for_test),
             self.db_preparer.insert_test_data(orm_model=HotelsModel, data_for_insert=hotels_for_test),
             self.db_preparer.insert_test_data(
                 orm_model=HotelsServicesModel, 

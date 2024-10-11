@@ -12,16 +12,27 @@ class ServiceVarietyResponseSchema(BaseModel):
     desc: str | None = None
 
 
+class ImageSchema(BaseModel):
+    id: int
+    key: str
+    name: str | None = None
+    desc: str | None = None
+    room_id: int | None = None
+    filepath: str
+
+
 class HotelSchema(BaseModel):
     id: int
     name: str
     desc: str | None = None
     location: str
     stars: int | None = None
+    main_image_id: int | None = None
 
 
 class ExtendedHotelResponseSchema(HotelSchema):
     rooms_quantity: int | None = None
+    main_image: ImageSchema | None = None
     services: list[ServiceVarietyResponseSchema]
 
 

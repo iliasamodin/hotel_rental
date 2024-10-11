@@ -10,6 +10,7 @@ class EntityNamePathParams(Enum):
     Hotels = "hotels"
     PremiumLevelVarieties = "premium_level_varieties"
     Rooms = "rooms"
+    Images = "images"
 
 
 @dataclass

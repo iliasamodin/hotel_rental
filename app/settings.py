@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from fastapi import Path
 from typing import Literal
 
 from dotenv import load_dotenv
@@ -49,6 +50,10 @@ class Settings(BaseSettings):
     CHECK_OUT_TIME: int = 12
     MIN_RENTAL_INTERVAL_HOURS: int = 22
     BOOKING_CANCELLATION_AVAILABILITY_HOURS: int = 72
+
+    # Media
+    PATH_OF_MEDIA: str = "media"
+    PATH_OF_BOOKING_IMAGES: str = f"{PATH_OF_MEDIA}/images/bookings"
 
     @property
     def DB_URL(self):

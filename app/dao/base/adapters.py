@@ -27,7 +27,10 @@ async def get_item_by_id(
     )
 
     query = (
-        select(*orm_model.__table__.columns)
+        select(
+            *orm_model.__table__.columns,
+            *orm_model.get_hybrid_properties(),
+        )
         .where(*query_filters)
     )
 
@@ -54,7 +57,10 @@ async def get_items_by_filters(
     )
 
     query = (
-        select(*orm_model.__table__.columns)
+        select(
+            *orm_model.__table__.columns,
+            *orm_model.get_hybrid_properties(),
+        )
         .where(*query_filters)
     )
 

@@ -18,7 +18,7 @@ import os
 
 from app.settings import settings
 
-from app.db.session import get_async_session_maker
+from app.db.session import async_session_maker
 from app.db.base import Base
 from app.db.models import classes_of_models
 
@@ -26,7 +26,7 @@ from app.db.models import classes_of_models
 class DBPreparer:
     def __init__(
         self, 
-        session_maker: sessionmaker = get_async_session_maker(), 
+        session_maker: sessionmaker = async_session_maker, 
         path_of_test_dump: str = settings.PATH_OF_TEST_DUMP,
         path_of_alembic_ini: str = settings.PATH_OF_ALEMBIC_INI,
         base_class_of_models: DeclarativeBase = Base,

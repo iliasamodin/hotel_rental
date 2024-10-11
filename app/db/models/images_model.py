@@ -1,5 +1,8 @@
-from sqlalchemy import Integer, ForeignKey
+from sqlalchemy import Integer, ForeignKey, select, func
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.ext.hybrid import hybrid_property
+
+from app.settings import settings
 
 from app.db.base import Base
 
@@ -24,3 +27,15 @@ class ImagesModel(Base):
         ),
         index=True,
     )
+
+    @hybrid_property
+    def filepath(self):
+        return f"{settings.PATH_OF_BOOKING_IMAGES}/{self.key}"
+
+    @filepath.expression
+    def filepath(cls):
+        return func.concat(
+            settings.PATH_OF_BOOKING_IMAGES,
+            "/",
+            cls.key,
+        ).label("filepath")

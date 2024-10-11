@@ -135,14 +135,16 @@ class TestGetEntitiesByFilters:
                     "detail": [
                         {
                             "ctx": {
-                                "expected": "'service_varieties', 'hotels', 'premium_level_varieties' or 'rooms'",
+                                "expected": "'service_varieties', 'hotels', 'premium_level_varieties', 'rooms' "
+                                "or 'images'",
                             },
                             "input": "non_existent_entity",
                             "loc": [
                                 "path",
                                 "entity_name",
                             ],
-                            "msg": "Input should be 'service_varieties', 'hotels', 'premium_level_varieties' or 'rooms'",
+                            "msg": "Input should be 'service_varieties', 'hotels', 'premium_level_varieties', 'rooms' "
+                            "or 'images'",
                             "type": "enum",
                         },
                     ],
