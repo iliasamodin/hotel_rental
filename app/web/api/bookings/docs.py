@@ -238,3 +238,39 @@ class AddingBookingEnum(Enum):
             "doc": "Exception documentation.",
         },
     )
+
+
+class DeletingBookingEnum(Enum):
+    """
+    Scheme of responses to a request to delete booking.
+    """
+
+    SUCCESS: str = "Response body is missing"
+    NOT_EXISTS_ERR: BaseErrorResponseSchema = BaseErrorResponseSchema(
+        detail="The booking to be deleted is not in the database.",
+        extras={
+            "booking_id": 1,
+        },
+    )
+    CONNECTIVITY_ERR: BaseErrorResponseSchema = BaseErrorResponseSchema(
+        detail=f"The booking being canceled does not belong to the user who is deleting it.",
+        extras={
+            "user_id": 1,
+            "user_id_of_booking": 2,
+        },
+    )
+    AVAILABILITY_ERR: BaseErrorResponseSchema = BaseErrorResponseSchema(
+        detail="The time when the booking could be canceled has already expired.",
+        extras=[
+            {
+                "current_dt": "2024-08-04T13:30:00Z",
+                "latest_cancellation_dt": "2024-08-01T14:00:00Z",
+            },
+        ],
+    )
+    SERVER_ERR: BaseErrorResponseSchema = BaseErrorResponseSchema(
+        detail="Unspecified error.",
+        extras={
+            "doc": "Exception documentation.",
+        },
+    )

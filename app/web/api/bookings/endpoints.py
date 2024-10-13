@@ -30,6 +30,7 @@ from app.web.api.bookings.responses import (
     responses_of_getting_rooms,
     responses_of_getting_bookings,
     responses_of_adding_booking,
+    responses_of_deleting_booking,
 )
 
 router = APIRouter(prefix="/bookings")
@@ -80,7 +81,7 @@ async def add_booking(
 @router.delete(
     path="/{booking_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    # responses=responses_of_deleting_booking,
+    responses=responses_of_deleting_booking,
     summary="Delete booking.",
 )
 async def delete_booking(
