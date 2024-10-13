@@ -5,6 +5,7 @@ import uvicorn
 import sys
 import os
 
+from app.lifespan import lifespan
 from app.settings import settings
 
 from app.web.api.router import api_router
@@ -15,7 +16,10 @@ from app.tools import ic, get_data_to_display_in_openapi
 openapi_params = get_data_to_display_in_openapi()
 
 # FastAPI instance declaration
-app = FastAPI(**openapi_params)
+app = FastAPI(
+    lifespan=lifespan,
+    **openapi_params,
+)
 app.include_router(router=api_router, prefix=settings.API_PREFIX)
 app.mount(
     path=f"/{settings.PATH_OF_MEDIA}",

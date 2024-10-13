@@ -5,12 +5,16 @@ from fastapi.routing import APIRouter
 from sqlalchemy.orm import sessionmaker
 from starlette import status
 
+from app.settings import settings
+
 from app.services.resource_manager.service import ResourceManagerService
 
 from app.services.check.services import get_session_maker
 
 from app.web.api.resource_manager.types import entity_name_annotated
 from app.web.api.resource_manager.responses import responses_of_getting_entity, responses_of_getting_entities
+
+from app.redis.redis_controller import redis_controller
 
 router = APIRouter(prefix="/resource-manager")
 
@@ -25,6 +29,7 @@ router = APIRouter(prefix="/resource-manager")
     "Query-parameters provide the ability to filter elements based on equality with the filter value.<br>"
     "Other comparison operators are not supported.",
 )
+@redis_controller.cache(expire=settings.CACHE_RETENTION_TIME_SECONDS)
 async def get_entities_by_filters(
     request: Request,
     entity_name: entity_name_annotated,
@@ -47,6 +52,7 @@ async def get_entities_by_filters(
     responses=responses_of_getting_entity,
     summary="Get entity by iid.",
 )
+@redis_controller.cache(expire=settings.CACHE_RETENTION_TIME_SECONDS)
 async def get_entity_by_iid(
     entity_name: entity_name_annotated,
     iid: int,
