@@ -180,7 +180,9 @@ class DeleteBookingDomainModel:
         :raise: DeleteTimeError
         """
 
-        latest_cancellation_dt = self.booking.check_in_dt - timedelta(hours=settings.BOOKING_CANCELLATION_AVAILABILITY_HOURS)
+        latest_cancellation_dt = self.booking.check_in_dt - timedelta(
+            hours=settings.BOOKING_CANCELLATION_AVAILABILITY_HOURS,
+        )
         if latest_cancellation_dt < settings.CURRENT_DT:
             raise DeletionTimeEndedError(
                 message="The time when the booking could be canceled has already expired.",

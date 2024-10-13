@@ -10,7 +10,15 @@ from app.services.bookings.schemas import (
 )
 
 from app.web.api.base.schemas import BaseErrorResponseSchema
-from app.web.api.bookings.docs import AddingBookingEnum, GettingServicesEnum, GettingHotelsEnum, GettingPremiumLevelsEnum, GettingRoomsEnum, GettingBookingsEnum
+from app.web.api.bookings.docs import (
+    AddingBookingEnum,
+    DeletingBookingEnum,
+    GettingServicesEnum,
+    GettingHotelsEnum,
+    GettingPremiumLevelsEnum,
+    GettingRoomsEnum,
+    GettingBookingsEnum,
+)
 
 
 responses_of_getting_services = {
@@ -249,6 +257,73 @@ responses_of_adding_booking = {
                     AddingBookingEnum.SERVER_ERR.name: {
                         "summary": AddingBookingEnum.SERVER_ERR.name,
                         "value": AddingBookingEnum.SERVER_ERR.value,
+                    },
+                },
+            },
+        },
+    },
+}
+
+responses_of_deleting_booking = {
+    status.HTTP_204_NO_CONTENT: {
+        "content": {
+            "application/json": {
+                "examples": {
+                    DeletingBookingEnum.SUCCESS.name: {
+                        "summary": DeletingBookingEnum.SUCCESS.name,
+                        "value": DeletingBookingEnum.SUCCESS.value,
+                    },
+                },
+            },
+        },
+    },
+    status.HTTP_404_NOT_FOUND: {
+        "model": BaseErrorResponseSchema,
+        "content": {
+            "application/json": {
+                "examples": {
+                    DeletingBookingEnum.NOT_EXISTS_ERR.name: {
+                        "summary": DeletingBookingEnum.NOT_EXISTS_ERR.name,
+                        "value": DeletingBookingEnum.NOT_EXISTS_ERR.value,
+                    },
+                },
+            },
+        },
+    },
+    status.HTTP_403_FORBIDDEN: {
+        "model": BaseErrorResponseSchema,
+        "content": {
+            "application/json": {
+                "examples": {
+                    DeletingBookingEnum.CONNECTIVITY_ERR.name: {
+                        "summary": DeletingBookingEnum.CONNECTIVITY_ERR.name,
+                        "value": DeletingBookingEnum.CONNECTIVITY_ERR.value,
+                    },
+                },
+            },
+        },
+    },
+    status.HTTP_405_METHOD_NOT_ALLOWED: {
+        "model": BaseErrorResponseSchema,
+        "content": {
+            "application/json": {
+                "examples": {
+                    DeletingBookingEnum.AVAILABILITY_ERR.name: {
+                        "summary": DeletingBookingEnum.AVAILABILITY_ERR.name,
+                        "value": DeletingBookingEnum.AVAILABILITY_ERR.value,
+                    },
+                },
+            },
+        },
+    },
+    status.HTTP_500_INTERNAL_SERVER_ERROR: {
+        "model": BaseErrorResponseSchema,
+        "content": {
+            "application/json": {
+                "examples": {
+                    DeletingBookingEnum.SERVER_ERR.name: {
+                        "summary": DeletingBookingEnum.SERVER_ERR.name,
+                        "value": DeletingBookingEnum.SERVER_ERR.value,
                     },
                 },
             },
