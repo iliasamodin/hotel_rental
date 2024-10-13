@@ -24,6 +24,10 @@ from app.db.models import classes_of_models
 
 
 class DBPreparer:
+    """
+    Database Preparer.
+    """
+
     def __init__(
         self, 
         session_maker: sessionmaker = async_session_maker, 

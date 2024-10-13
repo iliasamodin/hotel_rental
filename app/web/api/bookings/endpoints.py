@@ -3,7 +3,8 @@ from fastapi.routing import APIRouter
 from sqlalchemy.orm import sessionmaker
 from starlette import status
 
-from app.web.api.dependencies import get_user_id
+from app.settings import settings
+
 from app.services.bookings.service import BookingService
 from app.services.bookings.schemas import (
     BookingRequestSchema,
@@ -22,6 +23,7 @@ from app.services.check.services import (
 )
 from app.services.check.schemas import HotelsOrRoomsValidator, MinAndMaxDtsValidator, PriceRangeValidator
 
+from app.web.api.dependencies import get_user_id
 from app.web.api.bookings.types import hotel_stars_annotated, service_ids_annotated, premium_level_ids_annotated
 from app.web.api.bookings.responses import (
     responses_of_getting_services,
@@ -32,6 +34,8 @@ from app.web.api.bookings.responses import (
     responses_of_adding_booking,
     responses_of_deleting_booking,
 )
+
+from app.redis.redis_controller import redis_controller
 
 router = APIRouter(prefix="/bookings")
 
@@ -102,6 +106,7 @@ async def delete_booking(
     responses=responses_of_getting_services,
     summary="Get all service options.",
 )
+@redis_controller.cache(expire=settings.CACHE_RETENTION_TIME_SECONDS)
 async def get_services(
     only_for_hotels_and_only_for_rooms: HotelsOrRoomsValidator = Depends(get_only_for_hotels_and_only_for_rooms),
     session_maker: sessionmaker = Depends(get_session_maker),
@@ -120,6 +125,7 @@ async def get_services(
     responses=responses_of_getting_hotels,
     summary="Get a list of hotels in accordance with filters.",
 )
+@redis_controller.cache(expire=settings.CACHE_RETENTION_TIME_SECONDS)
 async def get_hotels(
     location: str = None,
     number_of_guests: int = None,
@@ -144,6 +150,7 @@ async def get_hotels(
     responses=responses_of_getting_premium_levels,
     summary="Get all variations of room's premium levels.",
 )
+@redis_controller.cache(expire=settings.CACHE_RETENTION_TIME_SECONDS)
 async def get_premium_levels(
     hotel_id: int = None,
     connected_with_rooms: bool = False,
@@ -164,6 +171,7 @@ async def get_premium_levels(
     responses=responses_of_getting_rooms,
     summary="Get a list of rooms in accordance with filters.",
 )
+@redis_controller.cache(expire=settings.CACHE_RETENTION_TIME_SECONDS)
 async def get_rooms(
     min_price_and_max_price: PriceRangeValidator = Depends(get_min_price_and_max_price),
     hotel_id: int = None,

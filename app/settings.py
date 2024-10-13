@@ -33,6 +33,12 @@ class Settings(BaseSettings):
     DB_ALEMBIC_SCHEMA: str = "alembic"
     DB_BOOKING_SCHEMA: str = "booking"
 
+    # Redis
+    CACHING: bool = False
+    REDIS_HOST: str = "127.0.0.1"
+    REDIS_PORT: int = 6379
+    CACHE_RETENTION_TIME_SECONDS: int = 60
+
     # Tests
     MODE: Literal["dev", "test", "stage", "prod"] = "prod"
     COMPOSE_FILE: str = "./docker/docker-compose.test.yaml"
@@ -70,6 +76,10 @@ class Settings(BaseSettings):
             f"{self.POSTGRES_USER.get_secret_value()}:{self.POSTGRES_PASSWORD.get_secret_value()}"
             f"@{self.DB_HOST}:{self.DB_PORT}/{self.POSTGRES_DB}"
         )
+
+    @property
+    def REDIS_URL(self):
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}"
 
     @property
     def DB_TIME_ZONE(self):
