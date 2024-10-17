@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hotel-rental"
-version = "0.8.0"
+version = "0.8.1"
 description = ""
 authors = ["Ilia Samodin <broobooot@gmail.com>"]
 readme = "README.md"
@@ -30,6 +30,8 @@ phonenumbers = "^8.13.35"
 bcrypt = "^4.1.2"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 fastapi-cache2 = {extras = ["redis"], version = "^0.2.2"}
+celery = "^5.4.0"
+flower = "^2.0.1"
 
 
 [build-system]

@@ -4,7 +4,7 @@ from typing import Literal
 
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import SecretStr
+from pydantic import EmailStr, SecretStr
 
 load_dotenv()
 
@@ -46,8 +46,8 @@ class Settings(BaseSettings):
     CURRENT_DATE_AND_TIME: str = "2024-08-01 12:00:00"
 
     # Authorization
-    SECRET_KEY: str
-    ALGORITHM: str
+    SECRET_KEY: SecretStr
+    ALGORITHM: SecretStr
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     ACCESS_TOKEN_COOKIE: str = "hotel_rental_access_token"
 
@@ -60,6 +60,12 @@ class Settings(BaseSettings):
     # Media
     PATH_OF_MEDIA: str = "media"
     PATH_OF_BOOKING_IMAGES: str = f"{PATH_OF_MEDIA}/images/bookings"
+
+    # Email
+    MAIL_SMTP_SERVER: str
+    MAIL_SMTP_PORT: int
+    MAIL_ADDRESS: EmailStr
+    MAIL_PASSWORD: SecretStr
 
     @property
     def DB_URL(self):
@@ -95,6 +101,10 @@ class Settings(BaseSettings):
             and datetime.strptime(self.CURRENT_DATE_AND_TIME, "%Y-%m-%d %H:%M:%S").replace(tzinfo=self.DB_TIME_ZONE)
             or datetime.now(tz=self.DB_TIME_ZONE)
         )
+
+    @property
+    def SENDING_EMAIL(self):
+        return self.CACHING
 
     model_config = SettingsConfigDict(env_file=".env")
 

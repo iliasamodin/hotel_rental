@@ -1,0 +1,55 @@
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from icecream import ic
+
+import smtplib
+
+from app.settings import settings
+
+from app.celery.celery_controller import celery_controller
+
+
+@celery_controller.task
+def send_email(
+    receiver_email: str,
+    subject: str,
+    body: str,
+    sender_email: str = settings.MAIL_ADDRESS,
+) -> bool:
+    """
+    Send a message by email.
+
+    :return: message sending status.
+    """
+
+    # Create a message
+    message = MIMEMultipart()
+    message["From"] = sender_email
+    message["To"] = receiver_email
+    message["Subject"] = subject
+
+    # Attaching text to the message
+    message.attach(payload=MIMEText(body, "plain"))
+
+    try:
+        # Connecting to the SMTP server
+        with smtplib.SMTP_SSL(
+            host=settings.MAIL_SMTP_SERVER,
+            port=settings.MAIL_SMTP_PORT,
+        ) as server:
+            server.login(
+                user=settings.MAIL_ADDRESS,
+                password=settings.MAIL_PASSWORD.get_secret_value(),
+            )
+            server.send_message(msg=message)
+
+            ic("Email sent successfully!")
+
+    except smtplib.SMTPConnectError:
+        ic("Failed to connect to the email sending resource.")
+    except smtplib.SMTPAuthenticationError:
+        ic("The sender of the emails failed to authenticate.")
+    except smtplib.SMTPException:
+        ic("Error in working with the email sending resource.")
+
+    return True

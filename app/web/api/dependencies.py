@@ -32,8 +32,8 @@ def get_user_id(access_token: str = Depends(get_access_token)) -> int:
     try:
         token_payload = jwt.decode(
             token=access_token,
-            key=settings.SECRET_KEY,
-            algorithms=settings.ALGORITHM,
+            key=settings.SECRET_KEY.get_secret_value(),
+            algorithms=settings.ALGORITHM.get_secret_value(),
         )
 
         token_expires = int(token_payload["exp"])
