@@ -289,9 +289,28 @@ class TestGetBookings:
                             "price": 5_000,
                         },
                     },
+                    {
+                        "id": 3,
+                        "user_id": 1,
+                        "room_id": 2,
+                        "number_of_persons": 2,
+                        "check_in_dt": "2024-08-10T14:00:00Z",
+                        "check_out_dt": "2024-08-22T12:00:00Z",
+                        "total_cost": 110_000,
+                        "room": {
+                            "id": 2,
+                            "name": "Room #2 of hotel #1",
+                            "desc": "Colorful description for room #2 of hotel #1.",
+                            "hotel_id": 1,
+                            "premium_level_id": 2,
+                            "ordinal_number": 2,
+                            "maximum_persons": 3,
+                            "price": 10_000,
+                        },
+                    },
                 ],
                 "Endpoint test for selecting user's bookings from the database "
-                "with filter by maximum check out date",
+                "with filter by maximum check in date",
                 id="-test-3",
             ),
             pytest.param(
@@ -327,7 +346,7 @@ class TestGetBookings:
                     },
                 ],
                 "Endpoint test for selecting user's bookings from the database "
-                "with filters by minimum check in date and maximum check out date",
+                "with filters by minimum check in date and maximum check in date",
                 id="-test-4",
             ),
             pytest.param(
@@ -352,7 +371,7 @@ class TestGetBookings:
                     },
                 },
                 "Endpoint test for selecting user's bookings from the database "
-                "with filters based on invalid check in and check out ranges",
+                "with filters based on invalid check in and check in ranges",
                 id="-test-5",
             ),
         ],

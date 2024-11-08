@@ -30,7 +30,7 @@ def load_model(package_name: str, module_name: str, class_name: str | None = Non
 
     module = import_module(f"{package_name}.{module_name}")
 
-    if class_name:
+    if class_name is not None:
         Class = getattr(module, class_name)
     else:    
         Class = getattr(

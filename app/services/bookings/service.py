@@ -1,5 +1,10 @@
 from sqlalchemy.orm import sessionmaker
 
+from app.settings import settings
+
+from app.celery.tasks import send_email
+
+from app.dao.authorization.schemas import UserDTO
 from app.dao.bookings.dao import BookingDAO
 from app.dao.bookings.schemas import (
     BookingDTO,
@@ -24,6 +29,10 @@ from app.services.bookings.schemas import (
     PremiumLevelVarietyResponseSchema,
     ExtendedRoomResponseSchema,
     HotelSchema,
+)
+from app.services.bookings.templates import (
+    body_template_for_booking_confirmation,
+    body_template_for_booking_cancellation,
 )
 from app.services.check.schemas import HotelsOrRoomsValidator, MinAndMaxDtsValidator, PriceRangeValidator
 
@@ -312,6 +321,24 @@ class BookingService:
                 item_data=new_booking,
             )
 
+            if settings.SENDING_EMAIL:
+                # Generating and sending a message via user email
+                user_dto: UserDTO = await self.booking_dao.get_item_by_id(
+                    table_name="users",
+                    item_id=user_id,
+                )
+                send_email.delay(
+                    receiver_email=user_dto.email,
+                    subject="Booking confirmation",
+                    body=body_template_for_booking_confirmation.format(
+                        room_name=room_dto.name,
+                        number_of_persons=booking_dto.number_of_persons,
+                        check_in_dt=booking_dto.check_in_dt.strftime("%Y-%m-%d %H:%M"),
+                        check_out_dt=booking_dto.check_out_dt.strftime("%Y-%m-%d %H:%M"),
+                        total_cost=booking_dto.total_cost,
+                    ),
+                )
+
             booking = BookingResponseSchema(
                 id=booking_dto.id,
                 user_id=booking_dto.user_id,
@@ -355,6 +382,28 @@ class BookingService:
                 table_name="bookings",
                 item_id=booking_id,
             )
+
+            if settings.SENDING_EMAIL:
+                # Generating and sending a message via user email
+                user_dto: UserDTO = await self.booking_dao.get_item_by_id(
+                    table_name="users",
+                    item_id=user_id,
+                )
+                room_dto: RoomDTO = await self.booking_dao.get_item_by_id(
+                    table_name="rooms",
+                    item_id=booking_dto.room_id,
+                )
+                send_email.delay(
+                    receiver_email=user_dto.email,
+                    subject="Booking cancellation",
+                    body=body_template_for_booking_cancellation.format(
+                        room_name=room_dto.name,
+                        number_of_persons=booking_dto.number_of_persons,
+                        check_in_dt=booking_dto.check_in_dt.strftime("%Y-%m-%d %H:%M"),
+                        check_out_dt=booking_dto.check_out_dt.strftime("%Y-%m-%d %H:%M"),
+                        total_cost=booking_dto.total_cost,
+                    ),
+                )
 
             booking = BookingResponseSchema(
                 id=booking_dto.id,

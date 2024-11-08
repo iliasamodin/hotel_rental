@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Coroutine
 
 from pydantic import BaseModel
 from sqlalchemy import Result
@@ -10,6 +10,7 @@ from app.db.models import classes_of_models
 from app.dao.base.exceptions import ModelNotFoundError
 from app.dao.base.adapters import get_item_by_id, get_items_by_filters, insert_item, delete_item_by_id
 from app.dao.base.helpers import get_pydantic_schema_by_sqlalchemy_model
+from app.dao.base.schemas import OccurrenceFilterDTO
 
 
 class BaseDAO:
@@ -51,11 +52,14 @@ class BaseDAO:
 
         orm_model = self._get_model_by_table_name(table_name=table_name)
 
-        query_result_of_item: Result = await get_item_by_id(
+        query_result_of_item: Result | Coroutine = get_item_by_id(
             session=self.session,
             orm_model=orm_model,
             item_id=item_id,
         )
+        if isinstance(query_result_of_item, Coroutine):
+            query_result_of_item = await query_result_of_item
+
         item = query_result_of_item.mappings().fetchone()
 
         return item
@@ -63,7 +67,8 @@ class BaseDAO:
     async def get_items_by_filters(
         self,
         table_name: str,
-        filters: dict[str, str],
+        filters: dict[str, Any] | None = None,
+        occurrence: OccurrenceFilterDTO | None = None,
     ) -> list[dict[str, Any]]:
         """
         Get items by filters.
@@ -73,20 +78,32 @@ class BaseDAO:
 
         orm_model = self._get_model_by_table_name(table_name=table_name)
 
-        # Validate query filters
-        #   for compliance with the column types of the table
-        #   from which the selection is made
         pydantic_schema: BaseModel = get_pydantic_schema_by_sqlalchemy_model(
             orm_model=orm_model,
             all_nullable=True,
         )
-        filters: BaseModel = pydantic_schema.model_validate(filters)
 
-        query_result_of_items: Result = await get_items_by_filters(
+        # Validate query filters
+        #   for compliance with the column types of the table
+        #   from which the selection is made
+        if filters is not None:
+            filters: BaseModel = pydantic_schema.model_validate(filters)
+
+        # Validate the first element of the array
+        #   to match the type of the table column
+        #   that will be used to filter by occurrence
+        if occurrence is not None:
+            pydantic_schema.model_validate(occurrence.column_and_first_value)
+
+        query_result_of_items: Result | Coroutine = get_items_by_filters(
             session=self.session,
             orm_model=orm_model,
             filters=filters,
+            occurrence=occurrence,
         )
+        if isinstance(query_result_of_items, Coroutine):
+            query_result_of_items = await query_result_of_items
+
         items = query_result_of_items.mappings().fetchall()
 
         return items
@@ -104,11 +121,14 @@ class BaseDAO:
 
         orm_model = self._get_model_by_table_name(table_name=table_name)
 
-        query_result_of_item: Result = await insert_item(
+        query_result_of_item: Result | Coroutine = insert_item(
             session=self.session,
             orm_model=orm_model,
             item_data=item_data,
         )
+        if isinstance(query_result_of_item, Coroutine):
+            query_result_of_item = await query_result_of_item
+
         item = query_result_of_item.mappings().fetchone()
 
         return item
@@ -126,11 +146,14 @@ class BaseDAO:
 
         orm_model = self._get_model_by_table_name(table_name=table_name)
 
-        query_result_of_item: Result = await delete_item_by_id(
+        query_result_of_item: Result | Coroutine = delete_item_by_id(
             session=self.session,
             orm_model=orm_model,
             item_id=item_id,
         )
+        if isinstance(query_result_of_item, Coroutine):
+            query_result_of_item = await query_result_of_item
+
         item = query_result_of_item.mappings().fetchone()
 
         return item

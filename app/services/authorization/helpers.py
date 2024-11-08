@@ -60,8 +60,8 @@ def get_access_token(
     }
     encoded_jwt = jwt.encode(
         claims=data_to_encode,
-        key=settings.SECRET_KEY,
-        algorithm=settings.ALGORITHM,
+        key=settings.SECRET_KEY.get_secret_value(),
+        algorithm=settings.ALGORITHM.get_secret_value(),
     )
 
     access_token = TokenResponseSchema(token=encoded_jwt, expires=token_expires)

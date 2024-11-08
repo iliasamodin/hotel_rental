@@ -17,6 +17,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     Configuring the start and end of the application lifespan.
     """
 
+    # Initializing a connection to redis
     redis = aioredis.from_url(url=settings.REDIS_URL)
     FastAPICache.init(
         backend=RedisBackend(redis=redis),
@@ -27,5 +28,6 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         yield
 
     finally:
+        # Closing connections to external resources
         async_session_maker.close_all()
         await redis.close()

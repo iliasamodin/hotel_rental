@@ -199,7 +199,7 @@ def get_filters_for_bookings(
     if min_and_max_dts.min_dt is not None:
         query_filters.append(BookingsModel.check_in_dt >= min_and_max_dts.min_dt)
     if min_and_max_dts.max_dt is not None:
-        query_filters.append(BookingsModel.check_out_dt <= min_and_max_dts.max_dt)
+        query_filters.append(BookingsModel.check_in_dt <= min_and_max_dts.max_dt)
     if number_of_guests is not None:
         query_filters.append(BookingsModel.number_of_persons == number_of_guests)
     if room_id is not None:
