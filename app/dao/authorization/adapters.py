@@ -1,7 +1,9 @@
-from typing import Callable
+from typing import Callable, Coroutine
+
 from sqlalchemy import insert, select
 from sqlalchemy.engine import Result
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 from icecream import ic
 
@@ -17,7 +19,7 @@ from app.services.check.schemas import UserAuthenticationValidator
 
 
 async def add_user(
-    session: AsyncSession,
+    session: Session | AsyncSession,
     user: UserRequestSchema,
 ) -> Result:
     """
@@ -35,7 +37,9 @@ async def add_user(
     )
 
     try:
-        query_result = await session.execute(query)
+        query_result: Result | Coroutine = session.execute(query)
+        if isinstance(query_result, Coroutine):
+            query_result = await query_result
 
     except IntegrityError as error:
         ic(error._message())
@@ -69,7 +73,7 @@ async def add_user(
 
 
 async def get_user(
-    session: AsyncSession,
+    session: Session | AsyncSession,
     authentication_data: UserAuthenticationValidator,
     get_query_filters: Callable = get_filters_by_email_or_password,
 ) -> Result:
@@ -86,6 +90,8 @@ async def get_user(
         .where(*query_filters)
     )
 
-    query_result = await session.execute(query)
+    query_result: Result | Coroutine = session.execute(query)
+    if isinstance(query_result, Coroutine):
+        query_result = await query_result
 
     return query_result

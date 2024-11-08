@@ -9,7 +9,7 @@ from app.settings import settings
 from app.celery.celery_controller import celery_controller
 
 
-@celery_controller.task
+@celery_controller.task(name="send_email")
 def send_email(
     receiver_email: str,
     subject: str,
@@ -47,9 +47,14 @@ def send_email(
 
     except smtplib.SMTPConnectError:
         ic("Failed to connect to the email sending resource.")
+        return False
+
     except smtplib.SMTPAuthenticationError:
         ic("The sender of the emails failed to authenticate.")
+        return False
+
     except smtplib.SMTPException:
         ic("Error in working with the email sending resource.")
+        return False
 
     return True

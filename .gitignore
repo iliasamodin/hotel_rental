@@ -7,3 +7,4 @@ __pycache__/
 .env
 alembic.log
 dump.rdb
+celerybeat-schedule.db

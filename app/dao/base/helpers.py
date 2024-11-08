@@ -4,6 +4,7 @@ from sqlalchemy.orm.decl_api import DeclarativeAttributeIntercept
 from icecream import ic
 
 from app.dao.base.exceptions import ValidatorGenerationError
+from app.dao.base.schemas import OccurrenceFilterDTO
 
 ignore_orm_config = ConfigDict(
     from_attributes=True,
@@ -84,7 +85,8 @@ def get_pydantic_schema_by_sqlalchemy_model(
 
 def get_filters_for_model(
     orm_model: type[DeclarativeAttributeIntercept],
-    filters: BaseModel,
+    filters: BaseModel | None = None,
+    occurrence: OccurrenceFilterDTO | None = None,
     *args,
     **kwargs,
 ) -> list[BinaryExpression]:
@@ -95,11 +97,22 @@ def get_filters_for_model(
     """
 
     query_filters = []
-    for column_name, value in filters.model_dump().items():
-        if hasattr(orm_model, column_name):
-            if value is not None:
-                column = getattr(orm_model, column_name)
-                query_filters.append(column == value)
+
+    if filters is not None:
+        for column_name, value in filters.model_dump().items():
+            if hasattr(orm_model, column_name):
+                if value is not None:
+                    column = getattr(orm_model, column_name)
+                    query_filters.append(column == value)
+
+            else:
+                ic(f"Model {orm_model.__name__} has no column {column_name}.")
+
+    if occurrence is not None:
+        if hasattr(orm_model, occurrence.column_name):
+            if occurrence.array:
+                column = getattr(orm_model, occurrence.column_name)
+                query_filters.append(column.in_(occurrence.array))
 
         else:
             ic(f"Model {orm_model.__name__} has no column {column_name}.")

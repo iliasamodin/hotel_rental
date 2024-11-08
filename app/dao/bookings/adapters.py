@@ -1,6 +1,8 @@
-from typing import Callable
-from sqlalchemy import insert, select, func
+from typing import Callable, Coroutine
+
+from sqlalchemy import select, func
 from sqlalchemy.engine import Result
+from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models.bookings_model import BookingsModel
@@ -24,7 +26,7 @@ from app.services.check.schemas import HotelsOrRoomsValidator, MinAndMaxDtsValid
 
 
 async def get_services(
-    session: AsyncSession,
+    session: Session | AsyncSession,
     only_for_hotels_and_only_for_rooms: HotelsOrRoomsValidator,
 ) -> Result:
     """
@@ -52,13 +54,15 @@ async def get_services(
 
     query.order_by(ServiceVarietiesModel.id)
 
-    query_result = await session.execute(query)
+    query_result: Result | Coroutine = session.execute(query)
+    if isinstance(query_result, Coroutine):
+        query_result = await query_result
 
     return query_result
 
 
 async def get_hotels(
-    session: AsyncSession,
+    session: Session | AsyncSession,
     location: str | None = None,
     number_of_guests: int | None = None,
     stars: int | None = None,
@@ -116,13 +120,15 @@ async def get_hotels(
         .order_by(HotelsModel.id, ServiceVarietiesModel.id)
     )
 
-    query_result = await session.execute(query)
+    query_result: Result | Coroutine = session.execute(query)
+    if isinstance(query_result, Coroutine):
+        query_result = await query_result
 
     return query_result
 
 
 async def get_premium_levels(
-    session: AsyncSession,
+    session: Session | AsyncSession,
     hotel_id: int | None = None,
     connected_with_rooms: bool = False,
 ) -> Result:
@@ -138,7 +144,7 @@ async def get_premium_levels(
         .distinct(PremiumLevelVarietiesModel.id)
     )
 
-    if hotel_id:
+    if hotel_id is not None:
         query = (
             query
             .join(
@@ -159,13 +165,15 @@ async def get_premium_levels(
 
     query.order_by(PremiumLevelVarietiesModel.id)
 
-    query_result = await session.execute(query)
+    query_result: Result | Coroutine = session.execute(query)
+    if isinstance(query_result, Coroutine):
+        query_result = await query_result
 
     return query_result
 
 
 async def get_rooms(
-    session: AsyncSession,
+    session: Session | AsyncSession,
     min_price_and_max_price: PriceRangeValidator,
     hotel_id: int = None,
     number_of_guests: int = None,
@@ -222,13 +230,15 @@ async def get_rooms(
         .order_by(RoomsModel.id)
     )
 
-    query_result = await session.execute(query)
+    query_result: Result | Coroutine = session.execute(query)
+    if isinstance(query_result, Coroutine):
+        query_result = await query_result
 
     return query_result
 
 
 async def get_bookings(
-    session: AsyncSession,
+    session: Session | AsyncSession,
     min_and_max_dts: MinAndMaxDtsValidator,
     number_of_guests: int = None,
     user_id: int | None = None,
@@ -262,6 +272,8 @@ async def get_bookings(
         .order_by(BookingsModel.id)
     )
 
-    query_result = await session.execute(query)
+    query_result: Result | Coroutine = session.execute(query)
+    if isinstance(query_result, Coroutine):
+        query_result = await query_result
 
     return query_result

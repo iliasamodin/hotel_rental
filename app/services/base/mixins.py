@@ -8,7 +8,7 @@ from pydantic_core.core_schema import ValidationInfo
 
 class PhoneValidatorMixin:
     @field_validator("phone")
-    def phone_validator(cls, phone: str | None):
+    def phone_validator(cls, phone: str | None) -> str | None:
         if phone is not None:
             phone = PhoneNumber._validate(phone, ValidationInfo)
             phone = phone.replace("tel:", "")
@@ -18,7 +18,7 @@ class PhoneValidatorMixin:
 
 class PasswordValidatorMixin:
     @field_validator("password")
-    def password_validator(cls, password: str):
+    def password_validator(cls, password: str) -> str:
         valid_characters = set(digits + ascii_letters + punctuation)
         if not set(password).issubset(valid_characters):
             raise PydanticCustomError("value_error", "value is not a valid password")

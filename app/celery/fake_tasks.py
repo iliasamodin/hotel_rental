@@ -7,4 +7,4 @@ class FakeTask:
         return self
 
     def __call__(self, *args, **kwargs):
-        return False
+        return self

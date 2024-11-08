@@ -1,3 +1,5 @@
+from typing import Coroutine
+
 from sqlalchemy.engine import Result
 
 from app.dao.base.dao import BaseDAO
@@ -33,10 +35,13 @@ class BookingDAO(BaseDAO):
         :return: list of services.
         """
 
-        query_result_of_services: Result = await get_services(
+        query_result_of_services: Result | Coroutine = get_services(
             session=self.session,
             only_for_hotels_and_only_for_rooms=only_for_hotels_and_only_for_rooms,
         )
+        if isinstance(query_result_of_services, Coroutine):
+            query_result_of_services = await query_result_of_services
+
         rows_with_services = query_result_of_services.fetchall()
 
         services = [
@@ -59,13 +64,16 @@ class BookingDAO(BaseDAO):
         :return: list of hotels.
         """
 
-        query_result_of_hotels: Result = await get_hotels(
+        query_result_of_hotels: Result | Coroutine = get_hotels(
             session=self.session,
             location=location,
             number_of_guests=number_of_guests,
             stars=stars,
             services=services,
         )
+        if isinstance(query_result_of_hotels, Coroutine):
+            query_result_of_hotels = await query_result_of_hotels
+
         rows_with_hotels = query_result_of_hotels.fetchall()
 
         map_of_hotel_ids_and_hotels: dict[int, ExtendedHotelDTO] = {}
@@ -97,11 +105,14 @@ class BookingDAO(BaseDAO):
         :return: list of premium levels.
         """
 
-        query_result_of_premium_levels: Result = await get_premium_levels(
+        query_result_of_premium_levels: Result | Coroutine = get_premium_levels(
             session=self.session,
             hotel_id=hotel_id,
             connected_with_rooms=connected_with_rooms,
         )
+        if isinstance(query_result_of_premium_levels, Coroutine):
+            query_result_of_premium_levels = await query_result_of_premium_levels
+
         rows_with_premium_levels = query_result_of_premium_levels.fetchall()
 
         premium_levels = [
@@ -125,7 +136,7 @@ class BookingDAO(BaseDAO):
         :return: list of rooms.
         """
 
-        query_result_of_rooms: Result = await get_rooms(
+        query_result_of_rooms: Result | Coroutine = get_rooms(
             session=self.session,
             min_price_and_max_price=min_price_and_max_price,
             hotel_id=hotel_id,
@@ -133,6 +144,9 @@ class BookingDAO(BaseDAO):
             services=services,
             premium_levels=premium_levels,
         )
+        if isinstance(query_result_of_rooms, Coroutine):
+            query_result_of_rooms = await query_result_of_rooms
+
         rows_with_rooms = query_result_of_rooms.fetchall()
 
         map_of_room_ids_and_rooms: dict[int, ExtendedRoomDTO] = {}
@@ -169,7 +183,7 @@ class BookingDAO(BaseDAO):
         :return: list of bookings.
         """
 
-        query_result_of_bookings: Result = await get_bookings(
+        query_result_of_bookings: Result | Coroutine = get_bookings(
             session=self.session,
             user_id=user_id,
             min_and_max_dts=min_and_max_dts,
@@ -177,6 +191,9 @@ class BookingDAO(BaseDAO):
             room_id=room_id,
             get_query_filters=get_filters_for_booking_overlaps if booking_overlaps else get_filters_for_bookings,
         )
+        if isinstance(query_result_of_bookings, Coroutine):
+            query_result_of_bookings = await query_result_of_bookings
+
         rows_with_bookings = query_result_of_bookings.fetchall()
 
         bookings: list[ExtendedBookingDTO] = []

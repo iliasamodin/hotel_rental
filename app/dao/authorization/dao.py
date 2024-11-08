@@ -1,5 +1,6 @@
+from typing import Coroutine
+
 from sqlalchemy.engine import Result
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dao.base.dao import BaseDAO
 from app.dao.authorization.adapters import add_user, get_user
@@ -25,10 +26,13 @@ class AuthorizationDAO(BaseDAO):
         :return: data of new user.
         """
 
-        query_result_of_user: Result = await add_user(
+        query_result_of_user: Result | Coroutine = add_user(
             session=self.session,
             user=user,
         )
+        if isinstance(query_result_of_user, Coroutine):
+            query_result_of_user = await query_result_of_user
+
         row_with_user = query_result_of_user.fetchone()
 
         user = UserDTO.model_validate(row_with_user)
@@ -45,10 +49,13 @@ class AuthorizationDAO(BaseDAO):
         :return: data of user.
         """
 
-        query_result_of_user: Result = await get_user(
+        query_result_of_user: Result | Coroutine = get_user(
             session=self.session,
             authentication_data=authentication_data,
         )
+        if isinstance(query_result_of_user, Coroutine):
+            query_result_of_user = await query_result_of_user
+
         row_with_user = query_result_of_user.scalar_one_or_none()
 
         if row_with_user is None:

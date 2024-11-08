@@ -1,16 +1,18 @@
-from typing import Any, Callable
+from typing import Any, Callable, Coroutine
 
 from pydantic import BaseModel
 from sqlalchemy import delete, insert, select
 from sqlalchemy.engine import Result
+from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.decl_api import DeclarativeAttributeIntercept
 
 from app.dao.base.helpers import get_filter_by_id, get_filters_for_model
+from app.dao.base.schemas import OccurrenceFilterDTO
 
 
 async def get_item_by_id(
-    session: AsyncSession,
+    session: Session | AsyncSession,
     orm_model: DeclarativeAttributeIntercept,
     item_id: int,
     get_query_filters: Callable = get_filter_by_id,
@@ -34,15 +36,18 @@ async def get_item_by_id(
         .where(*query_filters)
     )
 
-    query_result = await session.execute(query)
+    query_result: Result | Coroutine = session.execute(query)
+    if isinstance(query_result, Coroutine):
+        query_result = await query_result
 
     return query_result
 
 
 async def get_items_by_filters(
-    session: AsyncSession,
+    session: Session | AsyncSession,
     orm_model: DeclarativeAttributeIntercept,
-    filters: BaseModel,
+    filters: BaseModel | None = None,
+    occurrence: OccurrenceFilterDTO | None = None,
     get_query_filters: Callable = get_filters_for_model,
 ) -> Result:
     """
@@ -54,6 +59,7 @@ async def get_items_by_filters(
     query_filters = get_query_filters(
         orm_model=orm_model,
         filters=filters,
+        occurrence=occurrence,
     )
 
     query = (
@@ -64,13 +70,15 @@ async def get_items_by_filters(
         .where(*query_filters)
     )
 
-    query_result = await session.execute(query)
+    query_result: Result | Coroutine = session.execute(query)
+    if isinstance(query_result, Coroutine):
+        query_result = await query_result
 
     return query_result
 
 
 async def insert_item(
-    session: AsyncSession,
+    session: Session | AsyncSession,
     orm_model: DeclarativeAttributeIntercept,
     item_data: dict[str, Any] | BaseModel,
 ) -> Result:
@@ -90,13 +98,15 @@ async def insert_item(
         .returning(*orm_model.__table__.columns)
     )
 
-    query_result = await session.execute(query)
+    query_result: Result | Coroutine = session.execute(query)
+    if isinstance(query_result, Coroutine):
+        query_result = await query_result
 
     return query_result
 
 
 async def delete_item_by_id(
-    session: AsyncSession,
+    session: Session | AsyncSession,
     orm_model: DeclarativeAttributeIntercept,
     item_id: int,
     get_query_filters: Callable = get_filter_by_id,
@@ -119,6 +129,8 @@ async def delete_item_by_id(
         .returning(*orm_model.__table__.columns)
     )
 
-    query_result = await session.execute(query)
+    query_result: Result | Coroutine = session.execute(query)
+    if isinstance(query_result, Coroutine):
+        query_result = await query_result
 
     return query_result
