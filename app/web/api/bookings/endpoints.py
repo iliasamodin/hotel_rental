@@ -106,7 +106,10 @@ async def delete_booking(
     responses=responses_of_getting_services,
     summary="Get all service options.",
 )
-@redis_controller.cache(expire=settings.CACHE_RETENTION_TIME_SECONDS)
+@redis_controller.cache(
+    warming_up=True,
+    expire=settings.CACHE_RETENTION_TIME_SECONDS,
+)
 async def get_services(
     only_for_hotels_and_only_for_rooms: HotelsOrRoomsValidator = Depends(get_only_for_hotels_and_only_for_rooms),
     session_maker: sessionmaker = Depends(get_session_maker),
@@ -125,7 +128,10 @@ async def get_services(
     responses=responses_of_getting_hotels,
     summary="Get a list of hotels in accordance with filters.",
 )
-@redis_controller.cache(expire=settings.CACHE_RETENTION_TIME_SECONDS)
+@redis_controller.cache(
+    warming_up=True,
+    expire=settings.CACHE_RETENTION_TIME_SECONDS,
+)
 async def get_hotels(
     location: str = None,
     number_of_guests: int = None,
@@ -150,7 +156,10 @@ async def get_hotels(
     responses=responses_of_getting_premium_levels,
     summary="Get all variations of room's premium levels.",
 )
-@redis_controller.cache(expire=settings.CACHE_RETENTION_TIME_SECONDS)
+@redis_controller.cache(
+    warming_up=True,
+    expire=settings.CACHE_RETENTION_TIME_SECONDS,
+)
 async def get_premium_levels(
     hotel_id: int = None,
     connected_with_rooms: bool = False,
@@ -171,7 +180,10 @@ async def get_premium_levels(
     responses=responses_of_getting_rooms,
     summary="Get a list of rooms in accordance with filters.",
 )
-@redis_controller.cache(expire=settings.CACHE_RETENTION_TIME_SECONDS)
+@redis_controller.cache(
+    warming_up=True,
+    expire=settings.CACHE_RETENTION_TIME_SECONDS,
+)
 async def get_rooms(
     min_price_and_max_price: PriceRangeValidator = Depends(get_min_price_and_max_price),
     hotel_id: int = None,

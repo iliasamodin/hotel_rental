@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     REDIS_HOST: str = "127.0.0.1"
     REDIS_PORT: int = 6379
     CACHE_RETENTION_TIME_SECONDS: int = Field(default=60, ge=1)
+    WARM_UP_CACHE: bool = False
 
     # Tests
     MODE: Literal["dev", "test", "stage", "prod"] = "prod"
@@ -62,6 +63,7 @@ class Settings(BaseSettings):
     PATH_OF_BOOKING_IMAGES: str = f"{PATH_OF_MEDIA}/images/bookings"
 
     # Email
+    SENDING_EMAIL: bool = False
     MAIL_SMTP_SERVER: str
     MAIL_SMTP_PORT: int
     MAIL_ADDRESS: EmailStr
@@ -104,6 +106,14 @@ class Settings(BaseSettings):
         return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}"
 
     @property
+    def NEED_TO_WARM_UP_CACHE(self):
+        return self.CACHING and self.WARM_UP_CACHE
+
+    @property
+    def WARM_UP_CACHE_SECONDS(self):
+        return self.CACHE_RETENTION_TIME_SECONDS + 1
+
+    @property
     def DB_TIME_ZONE(self):
         return timezone(
             offset=timedelta(hours=self.DB_TIME_ZONE_OFFSET_HOURS),
@@ -119,8 +129,8 @@ class Settings(BaseSettings):
         )
 
     @property
-    def SENDING_EMAIL(self):
-        return self.CACHING
+    def NEED_TO_SENDING_EMAIL(self):
+        return self.CACHING and self.SENDING_EMAIL
 
     model_config = SettingsConfigDict(env_file=".env")
 

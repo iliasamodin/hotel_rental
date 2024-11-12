@@ -321,7 +321,7 @@ class BookingService:
                 item_data=new_booking,
             )
 
-            if settings.SENDING_EMAIL:
+            if settings.NEED_TO_SENDING_EMAIL:
                 # Generating and sending a message via user email
                 user_dto: UserDTO = await self.booking_dao.get_item_by_id(
                     table_name="users",
@@ -383,7 +383,7 @@ class BookingService:
                 item_id=booking_id,
             )
 
-            if settings.SENDING_EMAIL:
+            if settings.NEED_TO_SENDING_EMAIL:
                 # Generating and sending a message via user email
                 user_dto: UserDTO = await self.booking_dao.get_item_by_id(
                     table_name="users",
