@@ -13,6 +13,8 @@ from app.web.api.handlers import registering_exception_handlers
 
 from app.tools import ic, get_data_to_display_in_openapi
 
+from app.redis.redis_controller import redis_controller
+
 openapi_params = get_data_to_display_in_openapi()
 
 # FastAPI instance declaration
@@ -31,6 +33,9 @@ app.mount(
 
 # Registering exception handlers
 registering_exception_handlers(app=app)
+
+# Forwarding app to redis controller
+redis_controller.app = app
 
 if __name__ == "__main__":
     # Getting the project directory 

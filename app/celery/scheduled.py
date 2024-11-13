@@ -6,13 +6,16 @@ import asyncio
 
 from icecream import ic
 
-from app.dao.base.schemas import OccurrenceFilterDTO
+from app.main import app
 from app.settings import settings
+
+from app.redis.redis_controller import redis_controller
 
 from app.celery.celery_controller import celery_controller
 from app.celery.templates import body_template_for_booking_reminders
 from app.celery.tasks import send_email
 
+from app.dao.base.schemas import OccurrenceFilterDTO
 from app.dao.authorization.schemas import UserDTO
 from app.dao.bookings.dao import BookingDAO
 from app.dao.bookings.schemas import ExtendedBookingDTO
@@ -79,3 +82,16 @@ def booking_reminders(
             )
 
     return True
+
+
+@celery_controller.task(name="warm_up_cache")
+def warm_up_cache():
+    """
+    Warm up redis cache.
+
+    :return: cache warm-up status.
+    """
+
+    warm_up_status: bool = redis_controller.warm_up_cache()
+
+    return warm_up_status
