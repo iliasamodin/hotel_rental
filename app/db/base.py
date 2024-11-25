@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import MetaData, TIMESTAMP
+from sqlalchemy import ColumnCollection, MetaData, TIMESTAMP
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -13,6 +13,16 @@ class Base(DeclarativeBase):
     type_annotation_map = {
         datetime: TIMESTAMP(timezone=True),
     }
+
+    @classmethod
+    def get_columns(cls) -> ColumnCollection:
+        """
+        Get columns of model.
+
+        :return: columns.
+        """
+
+        return cls.__table__.columns
 
     @classmethod
     def get_hybrid_properties(cls):

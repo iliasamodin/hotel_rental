@@ -1,5 +1,5 @@
-from sqlalchemy import Integer, ForeignKey, select, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Integer, ForeignKey, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from app.settings import settings
@@ -28,6 +28,8 @@ class ImagesModel(Base):
         index=True,
     )
 
+    hotels: Mapped[list["HotelsModel"]] = relationship("HotelsModel", back_populates="image")  # type: ignore
+
     @hybrid_property
     def filepath(self):
         return f"{settings.PATH_OF_BOOKING_IMAGES}/{self.key}"
@@ -39,3 +41,6 @@ class ImagesModel(Base):
             "/",
             cls.key,
         ).label("filepath")
+
+    def __str__(self) -> str:
+        return self.name
