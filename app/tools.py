@@ -1,9 +1,12 @@
+from pathlib import Path
+from types import ModuleType
 from typing import Any
 
 from icecream import ic
+from importlib import import_module
 
-import os
 import toml
+import re
 
 from app.settings import settings
 
@@ -23,13 +26,7 @@ def get_project_data() -> dict[str, Any]:
     :return: dict with project data.
     """
 
-    full_path_of_pyproject = os.path.join(
-        os.path.dirname(
-            os.path.realpath(__file__),
-        ),
-        os.pardir,
-        settings.PATH_OF_PYPROJECT,
-    )
+    full_path_of_pyproject = settings.PROJECT_PATH.joinpath(settings.PATH_OF_PYPROJECT)
 
     pyproject = toml.load(full_path_of_pyproject)
 
@@ -53,3 +50,41 @@ def get_data_to_display_in_openapi() -> dict[str, Any]:
     }
 
     return openapi_params
+
+
+def load_module(
+    package_name: str,
+    module_name: str,
+) -> ModuleType:
+    """
+    Dynamic module import.
+
+    :return: module.
+    """
+
+    module = import_module(f"{package_name}.{module_name}")
+
+    return module
+
+
+def load_modules(path: Path) -> list[ModuleType]:
+    """
+    Dynamic import for modules.
+
+    :return: modules.
+    """
+
+    modules: list[ModuleType] = []
+    for module_directory, _, names_of_modules in path.walk():
+        relative_module_directory = module_directory.relative_to(settings.PROJECT_PATH)
+        relative_module_directory = str(relative_module_directory).strip("\\/")
+        relative_module_directory = re.sub(r"[\\/]", ".", relative_module_directory)
+
+        for module_name in names_of_modules:
+            if module_name.endswith(".py"):
+                module_name = module_name.replace(".py", "")
+
+                module = load_module(package_name=relative_module_directory, module_name=module_name)
+                modules.append(module)
+
+    return modules
