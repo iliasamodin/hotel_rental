@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Literal
 
 from dotenv import load_dotenv
@@ -41,7 +42,7 @@ class Settings(BaseSettings):
 
     # Tests
     MODE: Literal["dev", "test", "stage", "prod"] = "prod"
-    COMPOSE_FILE: str = "./docker/docker-compose.test.yaml"
+    COMPOSE_FILE: str = "docker/docker-compose.test.yaml"
     PATH_OF_TEST_DUMP: str = "tests/db_dumps/dump_of_lookup_tables.sql"
     CURRENT_DATE_AND_TIME: str = "2024-08-01 12:00:00"
 
@@ -68,6 +69,14 @@ class Settings(BaseSettings):
     MAIL_SMTP_PORT: int
     MAIL_ADDRESS: EmailStr
     MAIL_PASSWORD: SecretStr
+
+    @property
+    def PROJECT_PATH(self):
+        return Path(__file__).resolve().parent.parent
+
+    @property
+    def APP_PATH(self):
+        return Path(__file__).resolve().parent
 
     @property
     def DB_URL(self):

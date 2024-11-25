@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any, Sequence
 
 from contextlib import asynccontextmanager
@@ -14,7 +15,6 @@ from icecream import ic
 import pytest
 import sqlparse
 import asyncio
-import os
 
 from app.settings import settings
 
@@ -39,20 +39,8 @@ class DBPreparer:
         self.session_maker = session_maker
         self.engine = session_maker.kw["bind"]
 
-        self.full_path_of_test_dump = os.path.join(
-            os.path.dirname(
-                os.path.realpath(__file__),
-            ),
-            os.pardir,
-            path_of_test_dump,
-        )
-        self.full_path_of_alembic_ini = os.path.join(
-            os.path.dirname(
-                os.path.realpath(__file__),
-            ),
-            os.pardir,
-            path_of_alembic_ini,
-        )
+        self.full_path_of_test_dump = Path(__file__).resolve().parent.parent.joinpath(path_of_test_dump)
+        self.full_path_of_alembic_ini = Path(__file__).resolve().parent.parent.joinpath(path_of_alembic_ini)
 
         self.base_class_of_models = base_class_of_models
         self.classes_of_models = classes_of_models
