@@ -18,6 +18,7 @@ from app.tools import ic, get_data_to_display_in_openapi
 from app.redis.redis_controller import redis_controller
 
 from app.admin_panel.router import registering_views
+from app.admin_panel.auth import authentication_backend
 
 openapi_params = get_data_to_display_in_openapi()
 
@@ -45,6 +46,8 @@ redis_controller.app = app
 admin_panel = Admin(
     app=app,
     engine=async_engine,
+    base_url=settings.ADMIN_PANEL_BASE_URL,
+    authentication_backend=authentication_backend,
 )
 registering_views(admin_panel=admin_panel)
 

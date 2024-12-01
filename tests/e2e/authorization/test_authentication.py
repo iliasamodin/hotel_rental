@@ -21,6 +21,7 @@ users_for_test = [
         "first_name": "Freddie",
         "last_name": "Mercury",
         "password": get_password_hash(password="Password1"),
+        "is_admin": True,
     },
 ]
 

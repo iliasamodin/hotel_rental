@@ -41,6 +41,7 @@ class AuthorizationService:
                 phone=user_dto.phone,
                 first_name=user_dto.first_name,
                 last_name=user_dto.last_name,
+                is_admin=user_dto.is_admin,
             )
 
         return user
@@ -76,6 +77,7 @@ class AuthorizationService:
                 phone=user_dto.phone,
                 first_name=user_dto.first_name,
                 last_name=user_dto.last_name,
+                is_admin=user_dto.is_admin,
             )
             access_token: TokenResponseSchema = get_access_token(user=user)
 

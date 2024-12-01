@@ -78,6 +78,7 @@ class TestRegistration:
                     "first_name": "Till",
                     "last_name": "Lindemann",
                     "id": 3,
+                    "is_admin": False,
                 },
                 "Endpoint test for registering a user and adding him to the database",
                 id="-test-1",
@@ -98,6 +99,7 @@ class TestRegistration:
                     "first_name": "Freddie",
                     "last_name": "Mercury",
                     "id": 3,
+                    "is_admin": False,
                 },
                 "Endpoint test for registering a user with first name, last name and password "
                 "that is already associated with another user in the database",

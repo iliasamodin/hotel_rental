@@ -23,3 +23,9 @@ class ExpiredTokenError(BaseAuthorizationApiError):
     """
     Authorization token has expired.
     """
+
+
+class UserIsNotAdminError(BaseAuthorizationApiError):
+    """
+    User is not admin.
+    """

@@ -70,6 +70,10 @@ class Settings(BaseSettings):
     MAIL_ADDRESS: EmailStr
     MAIL_PASSWORD: SecretStr
 
+    # Admin panel
+    ADMIN_PANEL_BASE_URL: str = "/admin"
+    ADMIN_PANEL_ACCESS_TOKEN_COOKIE: str = "hotel_rental_admin_access_token"
+
     @property
     def PROJECT_PATH(self):
         return Path(__file__).resolve().parent.parent

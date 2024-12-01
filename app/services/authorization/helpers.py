@@ -56,6 +56,7 @@ def get_access_token(
     token_expires = datetime.now(timezone.utc) + expires_delta
     data_to_encode = {
         "sub": str(user.id),
+        "admin": str(int(user.is_admin)),
         "exp": token_expires,
     }
     encoded_jwt = jwt.encode(
