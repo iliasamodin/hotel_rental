@@ -1,4 +1,4 @@
-from sqlalchemy import ColumnCollection, Integer, String
+from sqlalchemy import Boolean, ColumnCollection, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -28,6 +28,10 @@ class UsersModel(Base):
     last_name: Mapped[str] = mapped_column(
         String,
         index=True,
+    )
+    is_admin: Mapped[bool] = mapped_column(
+        Boolean,
+        server_default="false",
     )
 
     bookings: Mapped[list["BookingsModel"]] = relationship("BookingsModel", back_populates="user")  # type: ignore
