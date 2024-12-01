@@ -5,7 +5,12 @@ from jose import jwt, JWTError
 
 from app.settings import settings
 
-from app.web.api.authorization.exceptions import TokenMissingError, InvalidTokenError, ExpiredTokenError
+from app.web.api.authorization.exceptions import (
+    TokenMissingError,
+    InvalidTokenError,
+    ExpiredTokenError,
+    UserIsNotAdminError,
+)
 
 
 def get_access_token(request: Request) -> str:
@@ -50,3 +55,34 @@ def get_user_id(access_token: str = Depends(get_access_token)) -> int:
         raise ExpiredTokenError(message=f"Access token has expired {token_expires}.")
 
     return user_id
+
+
+def check_is_user_admin(access_token: str = Depends(get_access_token)) -> bool:
+    """
+    Check if the user is an admin.
+
+    :return: admin status.
+    """
+
+    try:
+        token_payload = jwt.decode(
+            token=access_token,
+            key=settings.SECRET_KEY.get_secret_value(),
+            algorithms=settings.ALGORITHM.get_secret_value(),
+        )
+
+        is_admin = bool(int(token_payload["admin"]))
+
+    except (
+        JWTError,
+        KeyError,
+        ValueError,
+    ):
+        raise InvalidTokenError(message=f"Invalid access token {access_token}.")
+
+    if not is_admin:
+        raise UserIsNotAdminError(
+            message="The user doesn't have rights to access the resource because he is not an administrator.",
+        )
+
+    return is_admin

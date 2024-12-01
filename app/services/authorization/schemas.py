@@ -18,6 +18,7 @@ class UserRequestSchema(BaseUserSchema, PasswordValidatorMixin):
 
 class UserResponseSchema(BaseUserSchema):
     id: int
+    is_admin: bool = False
 
 
 class TokenResponseSchema(BaseModel):

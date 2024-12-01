@@ -20,7 +20,7 @@ from app.services.check.exceptions import BaseCheckServiceError
 from app.services.authorization.exceptions import IncorrectPasswordError
 
 from app.web.api.base.exceptions import BaseApiError
-from app.web.api.authorization.exceptions import BaseAuthorizationApiError
+from app.web.api.authorization.exceptions import BaseAuthorizationApiError, UserIsNotAdminError
 
 
 def registering_exception_handlers(app: FastAPI):
@@ -152,6 +152,16 @@ def registering_exception_handlers(app: FastAPI):
     async def _exception(request: Request, exc: BaseServiceError):
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={
+                "detail": exc.message,
+                "extras": exc.extras,
+            },
+        )
+
+    @app.exception_handler(UserIsNotAdminError)
+    async def _exception(request: Request, exc: UserIsNotAdminError):
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
             content={
                 "detail": exc.message,
                 "extras": exc.extras,

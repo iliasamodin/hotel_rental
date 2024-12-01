@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hotel-rental"
-version = "0.10.1"
+version = "0.11.0"
 description = ""
 authors = ["Ilia Samodin <broobooot@gmail.com>"]
 readme = "README.md"
@@ -33,6 +33,7 @@ fastapi-cache2 = {extras = ["redis"], version = "^0.2.2"}
 celery = "^5.4.0"
 flower = "^2.0.1"
 psycopg2-binary = "^2.9.10"
+sqladmin = "^0.20.1"
 
 
 [build-system]

@@ -1,5 +1,6 @@
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import ForeignKey, select
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from app.db.base import Base
 from app.db.models.hotels_model import HotelsModel
@@ -27,3 +28,9 @@ class HotelsServicesModel(Base):
         primary_key=True,
         index=True,
     )
+
+    hotel: Mapped[HotelsModel] = relationship(HotelsModel, back_populates="m2m_services")
+    service: Mapped[ServiceVarietiesModel] = relationship(ServiceVarietiesModel, back_populates="m2m_hotels")
+
+    def __str__(self) -> str:
+        return f"M2M relation for hotel {self.hotel_id} and service {self.service_variety_id}"

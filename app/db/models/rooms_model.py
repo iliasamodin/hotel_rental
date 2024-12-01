@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from sqlalchemy import Integer, ForeignKey, Numeric
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 from app.db.models.hotels_model import HotelsModel
@@ -47,3 +47,14 @@ class RoomsModel(Base):
         ),
         index=True,
     )
+
+    hotel: Mapped[HotelsModel] = relationship(HotelsModel, back_populates="rooms")
+    premium_level: Mapped[PremiumLevelVarietiesModel] = relationship(PremiumLevelVarietiesModel, back_populates="rooms")
+    bookings: Mapped[list["BookingsModel"]] = relationship("BookingsModel", back_populates="room")  # type: ignore
+    m2m_services: Mapped[list["RoomsServicesModel"]] = relationship(  # type: ignore
+        "RoomsServicesModel",
+        back_populates="room",
+    )
+
+    def __str__(self) -> str:
+        return self.name
