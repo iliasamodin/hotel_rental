@@ -11,6 +11,7 @@ from app.domain.bookings.exceptions import (
     ItemNotExistsError,
     DeletionTimeEndedError,
     ItemNotBelongUserError,
+    RentalPeriodError,
     RoomCapacityError,
     RoomAlreadyBookedError,
 )
@@ -62,6 +63,16 @@ def registering_exception_handlers(app: FastAPI):
     async def _exception(request: Request, exc: BaseDAOError):
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={
+                "detail": exc.message,
+                "extras": exc.extras,
+            },
+        )
+
+    @app.exception_handler(RentalPeriodError)
+    async def _exception(request: Request, exc: RentalPeriodError):
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
             content={
                 "detail": exc.message,
                 "extras": exc.extras,

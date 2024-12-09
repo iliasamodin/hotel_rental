@@ -7,6 +7,12 @@ class BaseBookingDomainError(BaseDomainError):
     """
 
 
+class RentalPeriodError(BaseBookingDomainError):
+    """
+    Error in the length of the rental period.
+    """
+
+
 class RoomCapacityError(BaseBookingDomainError):
     """
     Error in room capacity in number of persons.

@@ -208,7 +208,31 @@ class TestAddBooking:
             ),
             pytest.param(
                 {
-                    "check_in_date": "2024-08-10",
+                    "check_in_date": "2024-08-11",
+                    "check_out_date": "2024-08-11",
+                    "room_id": 2,
+                    "number_of_persons": 1,
+                },
+                cookies_of_first_user,
+                hotels_for_test,
+                rooms_for_test,
+                users_for_test,
+                bookings_for_test,
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
+                {
+                    "detail": "Check-out date must be later than check-in date.",
+                    "extras": {
+                        "check_in_date": "2024-08-11",
+                        "check_out_date": "2024-08-11",
+                    },
+                },
+                "Endpoint test for adding booking to the database "
+                "with incorrect check-in and check-out dates",
+                id="-test-4",
+            ),
+            pytest.param(
+                {
+                    "check_in_date": "2024-08-11",
                     "check_out_date": "2024-07-29",
                     "room_id": 2,
                     "number_of_persons": 1,
@@ -222,13 +246,37 @@ class TestAddBooking:
                 {
                     "detail": "Check-out date must be later than check-in date.",
                     "extras": {
-                        "check_in_date": "2024-08-10",
+                        "check_in_date": "2024-08-11",
                         "check_out_date": "2024-07-29",
                     },
                 },
                 "Endpoint test for adding booking to the database "
                 "with incorrect check-in and check-out dates",
-                id="-test-4",
+                id="-test-5",
+            ),
+            pytest.param(
+                {
+                    "check_in_date": "2024-07-29",
+                    "check_out_date": "2025-09-10",
+                    "room_id": 2,
+                    "number_of_persons": 1,
+                },
+                cookies_of_first_user,
+                hotels_for_test,
+                rooms_for_test,
+                users_for_test,
+                bookings_for_test,
+                status.HTTP_422_UNPROCESSABLE_ENTITY,
+                {
+                    "detail": f"The maximum rental period is {settings.MAX_RENTAL_INTERVAL_DAYS} days.",
+                    "extras": {
+                        "check_in_date": "2024-07-29",
+                        "check_out_date": "2025-09-10",
+                    },
+                },
+                "Endpoint test for adding booking to the database "
+                "with unacceptably long rental period",
+                id="-test-6",
             ),
             pytest.param(
                 {
@@ -251,7 +299,7 @@ class TestAddBooking:
                 },
                 "Endpoint test for adding booking to the database "
                 "with incorrect number of person booked",
-                id="-test-5",
+                id="-test-7",
             ),
             pytest.param(
                 {
@@ -277,7 +325,7 @@ class TestAddBooking:
                 },
                 "Endpoint test for adding booking to the database "
                 "with a number of persons exceeding the room capacity",
-                id="-test-6",
+                id="-test-8",
             ),
             pytest.param(
                 {
@@ -303,7 +351,7 @@ class TestAddBooking:
                 },
                 "Endpoint test for adding booking to the database "
                 "with overlapping booking",
-                id="-test-7",
+                id="-test-9",
             ),
             pytest.param(
                 {
@@ -329,7 +377,7 @@ class TestAddBooking:
                 },
                 "Endpoint test for adding booking to the database "
                 "with overlapping booking",
-                id="-test-8",
+                id="-test-10",
             ),
             pytest.param(
                 {
@@ -359,7 +407,7 @@ class TestAddBooking:
                 },
                 "Endpoint test for adding booking to the database "
                 "with overlapping bookings",
-                id="-test-9",
+                id="-test-11",
             ),
             pytest.param(
                 {
@@ -389,7 +437,7 @@ class TestAddBooking:
                 },
                 "Endpoint test for adding booking to the database "
                 "with overlapping bookings",
-                id="-test-10",
+                id="-test-12",
             ),
         ],
     )

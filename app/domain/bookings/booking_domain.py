@@ -8,6 +8,7 @@ from app.domain.bookings.exceptions import (
     ItemNotExistsError,
     DeletionTimeEndedError,
     ItemNotBelongUserError,
+    RentalPeriodError,
     RoomCapacityError,
     RoomAlreadyBookedError,
 )
@@ -33,6 +34,8 @@ class AddBookingDomainModel:
         :return: data for new booking.
         """
 
+        self.check_consistency_of_rental_period()
+        self.check_that_rental_period_is_within_upper_limit()
         self.check_number_of_persons()
 
         check_in_time = time(
@@ -65,6 +68,39 @@ class AddBookingDomainModel:
         )
 
         return booking
+
+    def check_consistency_of_rental_period(self) -> None:
+        """
+        Check the consistency of the check-in and check-out dates.
+
+        :raise: RentalPeriodError
+        """
+
+        if self.booking.check_in_date >= self.booking.check_out_date:
+            raise RentalPeriodError(
+                message=f"Check-out date must be later than check-in date.",
+                extras={
+                    "check_in_date": self.booking.check_in_date.strftime("%Y-%m-%d"),
+                    "check_out_date": self.booking.check_out_date.strftime("%Y-%m-%d"),
+                },
+            )
+
+    def check_that_rental_period_is_within_upper_limit(self) -> None:
+        """
+        Checking that the rental period
+        does not exceed the maximum rental period.
+
+        :raise: RentalPeriodError
+        """
+
+        if (self.booking.check_out_date - self.booking.check_in_date).days > settings.MAX_RENTAL_INTERVAL_DAYS:
+            raise RentalPeriodError(
+                message=f"The maximum rental period is {settings.MAX_RENTAL_INTERVAL_DAYS} days.",
+                extras={
+                    "check_in_date": self.booking.check_in_date.strftime("%Y-%m-%d"),
+                    "check_out_date": self.booking.check_out_date.strftime("%Y-%m-%d"),
+                },
+            )
 
     def check_number_of_persons(self) -> None:
         """
