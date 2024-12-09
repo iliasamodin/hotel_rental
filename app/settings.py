@@ -29,6 +29,12 @@ class Settings(BaseSettings):
     DB_TIME_ZONE_NAME: str = "UTC"
     PATH_OF_ALEMBIC_INI: str = "alembic.ini"
 
+    TEST_DB_NAME: str
+    TEST_DB_USER: SecretStr
+    TEST_DB_PASSWORD: SecretStr
+    TEST_DB_HOST: str
+    TEST_DB_PORT: int
+
     # DB schemas
     DB_ALEMBIC_SCHEMA: str = "alembic"
     DB_BOOKING_SCHEMA: str = "booking"
@@ -56,6 +62,7 @@ class Settings(BaseSettings):
     CHECK_IN_TIME: int = Field(default=14, ge=0, le=21)
     CHECK_OUT_TIME: int = Field(default=12, ge=2, le=23)
     MIN_RENTAL_INTERVAL_HOURS: int = Field(default=22, ge=22)
+    MAX_RENTAL_INTERVAL_DAYS: int = Field(default=180, ge=1)
     BOOKING_CANCELLATION_AVAILABILITY_HOURS: int = Field(default=72, ge=0)
     NOTIFICATION_ABOUT_SOON_BOOKING_HOURS: int = Field(default=24, ge=24)
 
@@ -84,35 +91,75 @@ class Settings(BaseSettings):
 
     @property
     def DB_URL(self):
-        return (
-            f"postgresql+asyncpg://"
-            f"{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
-            f"@{self.DB_HOST}:{self.DB_PORT}/{self.POSTGRES_DB}"
-        )
+        if self.MODE == "test":
+            url = (
+                f"postgresql+asyncpg://"
+                f"{self.TEST_DB_USER}:{self.TEST_DB_PASSWORD}"
+                f"@{self.TEST_DB_HOST}:{self.TEST_DB_PORT}/{self.TEST_DB_NAME}"
+            )
+
+        else:
+            url = (
+                f"postgresql+asyncpg://"
+                f"{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
+                f"@{self.DB_HOST}:{self.DB_PORT}/{self.POSTGRES_DB}"
+            )
+
+        return url
 
     @property
     def DB_SECRET_URL(self):
-        return (
-            f"postgresql+asyncpg://"
-            f"{self.POSTGRES_USER.get_secret_value()}:{self.POSTGRES_PASSWORD.get_secret_value()}"
-            f"@{self.DB_HOST}:{self.DB_PORT}/{self.POSTGRES_DB}"
-        )
+        if self.MODE == "test":
+            url = (
+                f"postgresql+asyncpg://"
+                f"{self.TEST_DB_USER.get_secret_value()}:{self.TEST_DB_PASSWORD.get_secret_value()}"
+                f"@{self.TEST_DB_HOST}:{self.TEST_DB_PORT}/{self.TEST_DB_NAME}"
+            )
+
+        else:
+            url = (
+                f"postgresql+asyncpg://"
+                f"{self.POSTGRES_USER.get_secret_value()}:{self.POSTGRES_PASSWORD.get_secret_value()}"
+                f"@{self.DB_HOST}:{self.DB_PORT}/{self.POSTGRES_DB}"
+            )
+
+        return url
 
     @property
     def SYNC_DB_URL(self):
-        return (
-            f"postgresql+psycopg2://"
-            f"{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
-            f"@{self.DB_HOST}:{self.DB_PORT}/{self.POSTGRES_DB}"
-        )
+        if self.MODE == "test":
+            url = (
+                f"postgresql+psycopg2://"
+                f"{self.TEST_DB_USER}:{self.TEST_DB_PASSWORD}"
+                f"@{self.TEST_DB_HOST}:{self.TEST_DB_PORT}/{self.TEST_DB_NAME}"
+            )
+
+        else:
+            url = (
+                f"postgresql+psycopg2://"
+                f"{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
+                f"@{self.DB_HOST}:{self.DB_PORT}/{self.POSTGRES_DB}"
+            )
+
+        return url
 
     @property
     def SYNC_DB_SECRET_URL(self):
-        return (
-            f"postgresql+psycopg2://"
-            f"{self.POSTGRES_USER.get_secret_value()}:{self.POSTGRES_PASSWORD.get_secret_value()}"
-            f"@{self.DB_HOST}:{self.DB_PORT}/{self.POSTGRES_DB}"
-        )
+        if self.MODE == "test":
+            url = (
+                f"postgresql+psycopg2://"
+                f"{self.TEST_DB_USER.get_secret_value()}:{self.TEST_DB_PASSWORD.get_secret_value()}"
+                f"@{self.TEST_DB_HOST}:{self.TEST_DB_PORT}/{self.TEST_DB_NAME}"
+            )
+
+        else:
+            url = (
+                f"postgresql+psycopg2://"
+                f"{self.POSTGRES_USER.get_secret_value()}:{self.POSTGRES_PASSWORD.get_secret_value()}"
+                f"@{self.DB_HOST}:{self.DB_PORT}/{self.POSTGRES_DB}"
+            )
+
+        return url
 
     @property
     def REDIS_URL(self):

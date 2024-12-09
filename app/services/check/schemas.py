@@ -128,17 +128,23 @@ class CheckInAndCheckOutValidator(BaseModel):
         raise: DataValidationError
         """
 
-        if (
-            self.check_in_date is not None
-            and self.check_out_date is not None
-            and self.check_in_date >= self.check_out_date
-        ):
-            raise DataValidationError(
-                message=f"Check-out date must be later than check-in date.",
-                extras={
-                    "check_in_date": self.check_in_date.strftime("%Y-%m-%d"),
-                    "check_out_date": self.check_out_date.strftime("%Y-%m-%d"),
-                },
-            )
+        if self.check_in_date is not None and self.check_out_date is not None:
+            if self.check_in_date >= self.check_out_date:
+                raise DataValidationError(
+                    message=f"Check-out date must be later than check-in date.",
+                    extras={
+                        "check_in_date": self.check_in_date.strftime("%Y-%m-%d"),
+                        "check_out_date": self.check_out_date.strftime("%Y-%m-%d"),
+                    },
+                )
+
+            elif (self.check_out_date - self.check_in_date).days > settings.MAX_RENTAL_INTERVAL_DAYS:
+                raise DataValidationError(
+                    message=f"The maximum rental period is {settings.MAX_RENTAL_INTERVAL_DAYS} days.",
+                    extras={
+                        "check_in_date": self.check_in_date.strftime("%Y-%m-%d"),
+                        "check_out_date": self.check_out_date.strftime("%Y-%m-%d"),
+                    },
+                )
 
         return self
