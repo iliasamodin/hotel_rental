@@ -6,7 +6,6 @@ from app.dao.base.dao import BaseDAO
 from app.dao.bookings.adapters import get_bookings, get_services, get_hotels, get_premium_levels, get_rooms
 from app.dao.bookings.helpers import get_filters_for_booking_overlaps, get_filters_for_bookings
 from app.dao.bookings.schemas import (
-    BookingDTO,
     ExtendedBookingDTO,
     ImageDTO,
     RoomDTO,
@@ -44,10 +43,7 @@ class BookingDAO(BaseDAO):
 
         rows_with_services = query_result_of_services.fetchall()
 
-        services = [
-            ServiceVarietyDTO.model_validate(row.ServiceVarietiesModel)
-            for row in rows_with_services
-        ]
+        services = [ServiceVarietyDTO.model_validate(row.ServiceVarietiesModel) for row in rows_with_services]
 
         return services
 
@@ -116,8 +112,7 @@ class BookingDAO(BaseDAO):
         rows_with_premium_levels = query_result_of_premium_levels.fetchall()
 
         premium_levels = [
-            PremiumLevelVarietyDTO.model_validate(row.PremiumLevelVarietiesModel)
-            for row in rows_with_premium_levels
+            PremiumLevelVarietyDTO.model_validate(row.PremiumLevelVarietiesModel) for row in rows_with_premium_levels
         ]
 
         return premium_levels
@@ -153,9 +148,8 @@ class BookingDAO(BaseDAO):
         for row in rows_with_rooms:
             room = ExtendedRoomDTO.model_validate(row.RoomsModel)
             room.hotel = HotelDTO.model_validate(row.HotelsModel)
-            room.premium_level = (
-                row.PremiumLevelVarietiesModel
-                and PremiumLevelVarietyDTO.model_validate(row.PremiumLevelVarietiesModel)
+            room.premium_level = row.PremiumLevelVarietiesModel and PremiumLevelVarietyDTO.model_validate(
+                row.PremiumLevelVarietiesModel,
             )
 
             room.services = []

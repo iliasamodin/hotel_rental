@@ -9,8 +9,9 @@ from alembic import context
 
 from app.settings import settings
 from app.db.base import Base
+
 # Allows the alembic to find models
-from app.db.models import classes_of_models
+from app.db.models import classes_of_models  # noqa: F401
 from app.db.utils import create_schemas
 
 
@@ -63,10 +64,10 @@ def run_migrations_offline() -> None:
 
 def do_run_migrations(connection: Connection) -> None:
     context.configure(
-        connection=connection, 
+        connection=connection,
         target_metadata=target_metadata,
         version_table_schema=settings.DB_ALEMBIC_SCHEMA,
-        # Scan schemas in the database 
+        # Scan schemas in the database
         #   when comparing states of models and tables
         include_schemas=True,
     )

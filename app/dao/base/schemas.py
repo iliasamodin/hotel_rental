@@ -9,7 +9,7 @@ class OccurrenceFilterDTO[V](BaseModel):
     array: array[V]
 
     class Config:
-        arbitrary_types_allowed=True
+        arbitrary_types_allowed = True
 
     @field_validator("array")
     def array_validator(cls, array):

@@ -9,7 +9,7 @@ class HotelsModel(Base):
     __tablename__ = "hotels"
 
     id: Mapped[int] = mapped_column(
-        Integer, 
+        Integer,
         primary_key=True,
         index=True,
         unique=True,
@@ -26,16 +26,19 @@ class HotelsModel(Base):
     )
     main_image_id: Mapped[int | None] = mapped_column(
         ForeignKey(
-            ImagesModel.id, 
+            ImagesModel.id,
             onupdate="CASCADE",
             ondelete="SET NULL",
         ),
         index=True,
     )
 
-    rooms: Mapped[list["RoomsModel"]] = relationship("RoomsModel", back_populates="hotel")  # type: ignore
+    rooms: Mapped[list["RoomsModel"]] = relationship(  # type: ignore  # noqa: F821
+        "RoomsModel",
+        back_populates="hotel",
+    )
     image: Mapped[ImagesModel] = relationship(ImagesModel, back_populates="hotels")
-    m2m_services: Mapped[list["HotelsServicesModel"]] = relationship(  # type: ignore
+    m2m_services: Mapped[list["HotelsServicesModel"]] = relationship(  # type: ignore  # noqa: F821
         "HotelsServicesModel",
         back_populates="hotel",
     )

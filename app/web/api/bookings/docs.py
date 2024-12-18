@@ -208,7 +208,7 @@ class AddingBookingEnum(Enum):
         ),
     ]
     CONSISTENCY_ERR: BaseErrorResponseSchema = BaseErrorResponseSchema(
-        detail=f"Check-out date must be later than check-in date.",
+        detail="Check-out date must be later than check-in date.",
         extras={
             "check_in_date": "2024-07-29",
             "check_out_date": "2024-07-28",
@@ -253,7 +253,7 @@ class DeletingBookingEnum(Enum):
         },
     )
     CONNECTIVITY_ERR: BaseErrorResponseSchema = BaseErrorResponseSchema(
-        detail=f"The booking being canceled does not belong to the user who is deleting it.",
+        detail="The booking being canceled does not belong to the user who is deleting it.",
         extras={
             "user_id": 1,
             "user_id_of_booking": 2,

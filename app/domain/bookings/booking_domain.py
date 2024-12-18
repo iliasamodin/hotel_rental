@@ -1,4 +1,4 @@
-from datetime import datetime, time, timedelta, timezone
+from datetime import datetime, time, timedelta
 
 from app.settings import settings
 
@@ -78,7 +78,7 @@ class AddBookingDomainModel:
 
         if self.booking.check_in_date >= self.booking.check_out_date:
             raise RentalPeriodError(
-                message=f"Check-out date must be later than check-in date.",
+                message="Check-out date must be later than check-in date.",
                 extras={
                     "check_in_date": self.booking.check_in_date.strftime("%Y-%m-%d"),
                     "check_out_date": self.booking.check_out_date.strftime("%Y-%m-%d"),
@@ -150,9 +150,9 @@ class AddBookingDomainModel:
             overlapping_dates.sort(key=lambda dts_of_booking: dts_of_booking["check_in_date"])
 
             raise RoomAlreadyBookedError(
-                    message="The room is already booked on these dates.",
-                    extras=overlapping_dates,
-                )
+                message="The room is already booked on these dates.",
+                extras=overlapping_dates,
+            )
 
 
 class DeleteBookingDomainModel:

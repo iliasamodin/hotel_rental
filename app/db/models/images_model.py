@@ -11,7 +11,7 @@ class ImagesModel(Base):
     __tablename__ = "images"
 
     id: Mapped[int] = mapped_column(
-        Integer, 
+        Integer,
         primary_key=True,
         index=True,
         unique=True,
@@ -21,14 +21,17 @@ class ImagesModel(Base):
     desc: Mapped[str | None]
     room_id: Mapped[int | None] = mapped_column(
         ForeignKey(
-            f"{Base.metadata.schema}.rooms.id", 
+            f"{Base.metadata.schema}.rooms.id",
             onupdate="CASCADE",
             ondelete="SET NULL",
         ),
         index=True,
     )
 
-    hotels: Mapped[list["HotelsModel"]] = relationship("HotelsModel", back_populates="image")  # type: ignore
+    hotels: Mapped[list["HotelsModel"]] = relationship(  # type: ignore  # noqa: F821
+        "HotelsModel",
+        back_populates="image",
+    )
 
     @hybrid_property
     def filepath(self):
