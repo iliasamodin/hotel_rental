@@ -13,7 +13,7 @@ class RoomsModel(Base):
     __tablename__ = "rooms"
 
     id: Mapped[int] = mapped_column(
-        Integer, 
+        Integer,
         primary_key=True,
         index=True,
         unique=True,
@@ -22,7 +22,7 @@ class RoomsModel(Base):
     desc: Mapped[str | None]
     hotel_id: Mapped[int] = mapped_column(
         ForeignKey(
-            HotelsModel.id, 
+            HotelsModel.id,
             onupdate="CASCADE",
             ondelete="CASCADE",
         ),
@@ -30,7 +30,7 @@ class RoomsModel(Base):
     )
     premium_level_id: Mapped[int | None] = mapped_column(
         ForeignKey(
-            PremiumLevelVarietiesModel.id, 
+            PremiumLevelVarietiesModel.id,
             onupdate="CASCADE",
             ondelete="SET NULL",
         ),
@@ -41,7 +41,7 @@ class RoomsModel(Base):
     price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
     main_image_id: Mapped[int | None] = mapped_column(
         ForeignKey(
-            ImagesModel.id, 
+            ImagesModel.id,
             onupdate="CASCADE",
             ondelete="SET NULL",
         ),
@@ -50,8 +50,11 @@ class RoomsModel(Base):
 
     hotel: Mapped[HotelsModel] = relationship(HotelsModel, back_populates="rooms")
     premium_level: Mapped[PremiumLevelVarietiesModel] = relationship(PremiumLevelVarietiesModel, back_populates="rooms")
-    bookings: Mapped[list["BookingsModel"]] = relationship("BookingsModel", back_populates="room")  # type: ignore
-    m2m_services: Mapped[list["RoomsServicesModel"]] = relationship(  # type: ignore
+    bookings: Mapped[list["BookingsModel"]] = relationship(  # type: ignore  # noqa: F821
+        "BookingsModel",
+        back_populates="room",
+    )
+    m2m_services: Mapped[list["RoomsServicesModel"]] = relationship(  # type: ignore  # noqa: F821
         "RoomsServicesModel",
         back_populates="room",
     )

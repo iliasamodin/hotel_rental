@@ -15,7 +15,7 @@ class HotelsOrRoomsValidator(BaseModel):
     @model_validator(mode="after")
     def consistency_of_mutually_exclusive_boolean_values_validator(self) -> "HotelsOrRoomsValidator":
         """
-        Check that mutually exclusive boolean values 
+        Check that mutually exclusive boolean values
         are consistent with each other.
 
         :return: scheme for limiting service query.
@@ -131,7 +131,7 @@ class CheckInAndCheckOutValidator(BaseModel):
         if self.check_in_date is not None and self.check_out_date is not None:
             if self.check_in_date >= self.check_out_date:
                 raise DataValidationError(
-                    message=f"Check-out date must be later than check-in date.",
+                    message="Check-out date must be later than check-in date.",
                     extras={
                         "check_in_date": self.check_in_date.strftime("%Y-%m-%d"),
                         "check_out_date": self.check_out_date.strftime("%Y-%m-%d"),

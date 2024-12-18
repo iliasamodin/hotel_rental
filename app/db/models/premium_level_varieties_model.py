@@ -8,7 +8,7 @@ class PremiumLevelVarietiesModel(Base):
     __tablename__ = "premium_level_varieties"
 
     id: Mapped[int] = mapped_column(
-        Integer, 
+        Integer,
         primary_key=True,
         index=True,
         unique=True,
@@ -17,7 +17,10 @@ class PremiumLevelVarietiesModel(Base):
     name: Mapped[str | None]
     desc: Mapped[str | None]
 
-    rooms: Mapped[list["RoomsModel"]] = relationship("RoomsModel", back_populates="premium_level")  # type: ignore
+    rooms: Mapped[list["RoomsModel"]] = relationship(  # type: ignore  # noqa: F821
+        "RoomsModel",
+        back_populates="premium_level",
+    )
 
     def __str__(self) -> str:
         return self.name

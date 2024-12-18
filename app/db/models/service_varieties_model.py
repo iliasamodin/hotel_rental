@@ -8,7 +8,7 @@ class ServiceVarietiesModel(Base):
     __tablename__ = "service_varieties"
 
     id: Mapped[int] = mapped_column(
-        Integer, 
+        Integer,
         primary_key=True,
         index=True,
         unique=True,
@@ -17,11 +17,11 @@ class ServiceVarietiesModel(Base):
     name: Mapped[str | None]
     desc: Mapped[str | None]
 
-    m2m_hotels: Mapped[list["HotelsServicesModel"]] = relationship(  # type: ignore
+    m2m_hotels: Mapped[list["HotelsServicesModel"]] = relationship(  # type: ignore  # noqa: F821
         "HotelsServicesModel",
         back_populates="service",
     )
-    m2m_rooms: Mapped[list["RoomsServicesModel"]] = relationship(  # type: ignore
+    m2m_rooms: Mapped[list["RoomsServicesModel"]] = relationship(  # type: ignore  # noqa: F821
         "RoomsServicesModel",
         back_populates="service",
     )

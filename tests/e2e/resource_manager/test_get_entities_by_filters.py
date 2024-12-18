@@ -1,4 +1,3 @@
-from json import JSONDecodeError
 from typing import Any
 
 from fastapi import FastAPI
@@ -67,7 +66,7 @@ class TestGetEntitiesByFilters:
                         "key": "spa",
                         "name": "Availability of spa",
                         "desc": None,
-                    }
+                    },
                 ],
                 "Endpoint test for selecting entities from the database",
                 id="-test-1",
@@ -149,8 +148,7 @@ class TestGetEntitiesByFilters:
                         },
                     ],
                 },
-                "Endpoint test for selecting entities from the database "
-                "with a non-existent entity name",
+                "Endpoint test for selecting entities from the database with a non-existent entity name",
                 id="-test-5",
             ),
             pytest.param(

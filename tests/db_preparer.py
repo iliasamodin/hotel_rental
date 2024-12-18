@@ -29,8 +29,8 @@ class DBPreparer:
     """
 
     def __init__(
-        self, 
-        session_maker: sessionmaker = async_session_maker, 
+        self,
+        session_maker: sessionmaker = async_session_maker,
         path_of_test_dump: str = settings.PATH_OF_TEST_DUMP,
         path_of_alembic_ini: str = settings.PATH_OF_ALEMBIC_INI,
         base_class_of_models: DeclarativeBase = Base,
@@ -46,7 +46,7 @@ class DBPreparer:
         self.classes_of_models = classes_of_models
 
     def deploy_migrations(
-        self, 
+        self,
         deploy_migrations: bool = True,
         revision: str = "head",
     ) -> None:
@@ -79,9 +79,9 @@ class DBPreparer:
             async with self.session_maker() as session:
                 with open(self.full_path_of_test_dump, "r") as sql_file:
                     sql_commands = sqlparse.parsestream(sql_file)
-                    for command in sql_commands:
-                        if command.get_type() == "INSERT":
-                            await session.execute(text(str(command)))
+                    for sql_command in sql_commands:
+                        if sql_command.get_type() == "INSERT":
+                            await session.execute(text(str(sql_command)))
                             await session.commit()
 
         except IntegrityError as error:
@@ -136,11 +136,11 @@ class DBPreparer:
 
         async with self.engine.begin() as connect:
             await connect.run_sync(
-                self.base_class_of_models.metadata.drop_all, 
+                self.base_class_of_models.metadata.drop_all,
                 tables=[orm_model.__table__],
             )
             await connect.run_sync(
-                self.base_class_of_models.metadata.create_all, 
+                self.base_class_of_models.metadata.create_all,
                 tables=[orm_model.__table__],
             )
 
@@ -151,7 +151,7 @@ class DBPreparer:
         """
         Restore the sequence in the table.
 
-        :return: primary key of the model 
+        :return: primary key of the model
         and current value of the restored sequence.
         """
 
@@ -191,10 +191,7 @@ class DBPreparer:
         :returns: set of tuples with primary keys.
         """
 
-        set_with_column_names_of_pk = {
-            column.name
-            for column in pk_of_orm_model
-        }
+        set_with_column_names_of_pk = {column.name for column in pk_of_orm_model}
 
         # Generate a set with the primary key values ​​of all rows
         set_of_pk_values: set[tuple[tuple[Any]]] = set()
@@ -235,14 +232,10 @@ class DBPreparer:
                 query_filters.append(and_(*filters_for_deleting_the_row))
 
             # Delete rows from database
-            query = (
-                delete(orm_model)
-                .where(or_(*query_filters))
-                .returning(*pk_of_orm_model)
-            )
+            query = delete(orm_model).where(or_(*query_filters)).returning(*pk_of_orm_model)
             query_result: Result = await session.execute(query)
 
-        # Verifying that only test data has been removed 
+        # Verifying that only test data has been removed
         #   from the database
         if need_to_check_deletion:
             maps_of_pks_and_values_for_deleted_rows = query_result.mappings().fetchall()
@@ -270,7 +263,7 @@ class DBPreparer:
         need_to_check_deletion: bool = True,
     ):
         """
-        Add data to the database before the test 
+        Add data to the database before the test
         and delete it after the test.
 
         :return: list of primary keys for rows.
@@ -280,11 +273,7 @@ class DBPreparer:
 
         async with self.session_maker.begin() as session:
             # Add rows to the database
-            query = (
-                insert(orm_model)
-                .values(data_for_insert)
-                .returning(*pk_of_orm_model)
-            )
+            query = insert(orm_model).values(data_for_insert).returning(*pk_of_orm_model)
             query_result: Result = await session.execute(query)
 
         await self.restore_seq_in_table(orm_model=orm_model)

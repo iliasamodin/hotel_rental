@@ -6,7 +6,7 @@ import asyncio
 
 from icecream import ic
 
-from app.main import app
+from app.main import app  # noqa: F401
 from app.settings import settings
 
 from app.redis.redis_controller import redis_controller
@@ -40,9 +40,8 @@ def booking_reminders(
             min_dt=settings.CURRENT_DT,
             max_dt=settings.CURRENT_DT + timedelta(hours=settings.NOTIFICATION_ABOUT_SOON_BOOKING_HOURS),
         )
-        print(dts_of_soon_bookings)
         bookings: list[ExtendedBookingDTO] = asyncio.run(
-            booking_dao.get_bookings(min_and_max_dts=dts_of_soon_bookings)
+            booking_dao.get_bookings(min_and_max_dts=dts_of_soon_bookings),
         )
 
         map_of_user_ids_and_soon_bookings: dict[int, list[ExtendedBookingDTO]] = defaultdict(list)

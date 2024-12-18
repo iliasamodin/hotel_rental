@@ -1,6 +1,5 @@
-from sqlalchemy import ForeignKey, select
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.ext.hybrid import hybrid_property
 
 from app.db.base import Base
 from app.db.models.hotels_model import HotelsModel
@@ -12,7 +11,7 @@ class HotelsServicesModel(Base):
 
     hotel_id: Mapped[int] = mapped_column(
         ForeignKey(
-            HotelsModel.id, 
+            HotelsModel.id,
             onupdate="CASCADE",
             ondelete="CASCADE",
         ),
@@ -21,7 +20,7 @@ class HotelsServicesModel(Base):
     )
     service_variety_id: Mapped[int] = mapped_column(
         ForeignKey(
-            ServiceVarietiesModel.id, 
+            ServiceVarietiesModel.id,
             onupdate="CASCADE",
             ondelete="CASCADE",
         ),

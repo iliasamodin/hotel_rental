@@ -8,7 +8,7 @@ class UsersModel(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(
-        Integer, 
+        Integer,
         primary_key=True,
         index=True,
         unique=True,
@@ -34,7 +34,10 @@ class UsersModel(Base):
         server_default="false",
     )
 
-    bookings: Mapped[list["BookingsModel"]] = relationship("BookingsModel", back_populates="user")  # type: ignore
+    bookings: Mapped[list["BookingsModel"]] = relationship(  # type: ignore  # noqa: F821
+        "BookingsModel",
+        back_populates="user",
+    )
 
     @classmethod
     def get_columns(cls) -> ColumnCollection:
@@ -45,9 +48,7 @@ class UsersModel(Base):
         """
 
         columns = {
-            column_name: column
-            for column_name, column in cls.__table__.columns.items()
-            if column_name != "password"
+            column_name: column for column_name, column in cls.__table__.columns.items() if column_name != "password"
         }
 
         collumn_collection = ColumnCollection(columns.items())

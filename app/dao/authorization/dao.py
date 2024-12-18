@@ -64,7 +64,7 @@ class AuthorizationDAO(BaseDAO):
                 extras={
                     key: value
                     for key, value in authentication_data.model_dump().items()
-                    if key is not "password" and value is not None
+                    if key != "password" and value is not None
                 },
             )
 
