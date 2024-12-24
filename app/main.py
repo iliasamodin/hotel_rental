@@ -14,6 +14,7 @@ from app.web.api.router import api_router
 from app.web.api.handlers import registering_exception_handlers
 
 from app.tools import ic, get_data_to_display_in_openapi  # noqa: F401
+from app.logger import logger  # noqa: F401
 
 from app.redis.redis_controller import redis_controller
 

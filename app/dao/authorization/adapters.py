@@ -5,7 +5,7 @@ from sqlalchemy.engine import Result
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
-from icecream import ic
+from loguru import logger
 
 import re
 
@@ -30,11 +30,7 @@ async def add_user(
     """
 
     map_of_user_data = user.model_dump()
-    query = (
-        insert(UsersModel)
-        .values(map_of_user_data)
-        .returning(*UsersModel.__table__.columns)
-    )
+    query = insert(UsersModel).values(map_of_user_data).returning(*UsersModel.__table__.columns)
 
     try:
         query_result: Result | Coroutine = session.execute(query)
@@ -42,10 +38,10 @@ async def add_user(
             query_result = await query_result
 
     except IntegrityError as error:
-        ic(error._message())
+        logger.error(error._message())
 
         # If a request to add a new user to the database fails
-        #   and the cause of that error 
+        #   and the cause of that error
         #   is a violation of a unique key constraint
         #   in the "users" table,
         #   then an appropriate exception will be raised
@@ -64,7 +60,7 @@ async def add_user(
                 },
             )
 
-        else: 
+        else:
             raise BaseAuthorizationDAOError(
                 message="Registration error at database query level.",
             )
@@ -85,10 +81,7 @@ async def get_user(
 
     query_filters = get_query_filters(authentication_data=authentication_data)
 
-    query = (
-        select(UsersModel)
-        .where(*query_filters)
-    )
+    query = select(UsersModel).where(*query_filters)
 
     query_result: Result | Coroutine = session.execute(query)
     if isinstance(query_result, Coroutine):

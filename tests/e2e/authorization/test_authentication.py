@@ -2,8 +2,8 @@ from typing import Any
 
 from fastapi import FastAPI
 from httpx import AsyncClient, ASGITransport
-from icecream import ic
 from starlette import status
+from loguru import logger
 
 import pytest
 
@@ -66,8 +66,7 @@ class TestAuthentication:
                     "token",
                     "expires",
                 },
-                "Endpoint test for user authentication "
-                "by email and password",
+                "Endpoint test for user authentication by email and password",
                 id="-test-1",
             ),
             pytest.param(
@@ -81,8 +80,7 @@ class TestAuthentication:
                     "token",
                     "expires",
                 },
-                "Endpoint test for user authentication "
-                "by phone and password",
+                "Endpoint test for user authentication by phone and password",
                 id="-test-2",
             ),
             pytest.param(
@@ -97,8 +95,7 @@ class TestAuthentication:
                     "token",
                     "expires",
                 },
-                "Endpoint test for user authentication "
-                "by email, phone and password",
+                "Endpoint test for user authentication by email, phone and password",
                 id="-test-3",
             ),
         ],
@@ -112,7 +109,7 @@ class TestAuthentication:
         expected_result: dict[str, Any],
         test_description: str,
     ):
-        ic(test_description)
+        logger.info(test_description)
 
         # Inserting test data into the database before each test
         #   and deleting this data after each test
@@ -125,9 +122,9 @@ class TestAuthentication:
                 )
 
                 status_code_of_response = api_response.status_code
-                ic(status_code_of_response)
+                logger.debug(status_code_of_response)
                 dict_of_response = api_response.json()
-                ic(dict_of_response)
+                logger.debug(dict_of_response)
 
             keys_of_response = set(dict_of_response.keys())
 
@@ -156,8 +153,7 @@ class TestAuthentication:
                         "phone": None,
                     },
                 },
-                "Endpoint test for user authentication "
-                "without email and phone",
+                "Endpoint test for user authentication without email and phone",
                 id="-test-1",
             ),
             pytest.param(
@@ -173,8 +169,7 @@ class TestAuthentication:
                         "email": "user2@example.com",
                     },
                 },
-                "Endpoint test for user authentication "
-                "by email and password for a user who is not in the database",
+                "Endpoint test for user authentication by email and password for a user who is not in the database",
                 id="-test-2",
             ),
             pytest.param(
@@ -190,8 +185,7 @@ class TestAuthentication:
                         "phone": "+7-999-999-99-98",
                     },
                 },
-                "Endpoint test for user authentication "
-                "by phone and password for a user who is not in the database",
+                "Endpoint test for user authentication by phone and password for a user who is not in the database",
                 id="-test-3",
             ),
             pytest.param(
@@ -226,8 +220,7 @@ class TestAuthentication:
                         "password": "Password2",
                     },
                 },
-                "Endpoint test for user authentication "
-                "by email and invalid password",
+                "Endpoint test for user authentication by email and invalid password",
                 id="-test-5",
             ),
             pytest.param(
@@ -243,8 +236,7 @@ class TestAuthentication:
                         "password": "Password2",
                     },
                 },
-                "Endpoint test for user authentication "
-                "by phone and invalid password",
+                "Endpoint test for user authentication by phone and invalid password",
                 id="-test-6",
             ),
             pytest.param(
@@ -261,8 +253,7 @@ class TestAuthentication:
                         "password": "Password2",
                     },
                 },
-                "Endpoint test for user authentication "
-                "by email, phone and invalid password",
+                "Endpoint test for user authentication by email, phone and invalid password",
                 id="-test-7",
             ),
         ],
@@ -276,7 +267,7 @@ class TestAuthentication:
         expected_result: dict[str, Any],
         test_description: str,
     ):
-        ic(test_description)
+        logger.info(test_description)
 
         # Inserting test data into the database before each test
         #   and deleting this data after each test
@@ -289,9 +280,9 @@ class TestAuthentication:
                 )
 
                 status_code_of_response = api_response.status_code
-                ic(status_code_of_response)
+                logger.debug(status_code_of_response)
                 dict_of_response = api_response.json()
-                ic(dict_of_response)
+                logger.debug(dict_of_response)
 
             assert status_code_of_response == expected_status_code, "The returned status code is not as expected"
             assert dict_of_response == expected_result, "The data returned by the endpoint is not as expected"

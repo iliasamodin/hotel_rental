@@ -2,7 +2,7 @@ from typing import Any
 
 from fastapi import FastAPI
 from httpx import AsyncClient, ASGITransport
-from icecream import ic
+from loguru import logger
 from starlette import status
 
 import pytest
@@ -189,7 +189,7 @@ class TestGetEntitiesByFilters:
         expected_result: list[dict[str, Any]] | dict[str, Any],
         test_description: str,
     ):
-        ic(test_description)
+        logger.info(test_description)
 
         # Client for test requests to API
         async with self.client_maker(transport=self.transport_for_client) as client:
@@ -199,9 +199,9 @@ class TestGetEntitiesByFilters:
             )
 
             status_code_of_response = api_response.status_code
-            ic(status_code_of_response)
+            logger.debug(status_code_of_response)
             dict_of_response = api_response.json()
-            ic(dict_of_response)
+            logger.debug(dict_of_response)
 
         assert status_code_of_response == expected_status_code, "The returned status code is not as expected"
         assert dict_of_response == expected_result, "The data returned by the endpoint is not as expected"

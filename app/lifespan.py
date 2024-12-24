@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis import asyncio as aioredis
-from icecream import ic
+from loguru import logger
 
 from app.settings import settings
 
@@ -44,7 +44,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
                     await call_result
 
             except Exception:
-                ic(
+                logger.error(
                     f"Connection to external resource could not be closed. "
                     f"Call {connection_killer.__name__} failed."
                 )

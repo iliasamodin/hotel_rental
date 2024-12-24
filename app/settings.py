@@ -81,6 +81,11 @@ class Settings(BaseSettings):
     ADMIN_PANEL_BASE_URL: str = "/admin"
     ADMIN_PANEL_ACCESS_TOKEN_COOKIE: str = "hotel_rental_admin_access_token"
 
+    # Logging
+    LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "DEBUG"
+    LOG_PATH: str = "./logs/app.log"
+    LOG_DATE_FMT: str = "%Y-%m-%dT%H:%M:%S%Z"
+
     @property
     def PROJECT_PATH(self):
         return Path(__file__).resolve().parent.parent

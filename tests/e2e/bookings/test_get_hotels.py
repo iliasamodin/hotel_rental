@@ -2,7 +2,7 @@ from typing import Any
 
 from fastapi import FastAPI
 from httpx import AsyncClient, ASGITransport
-from icecream import ic
+from loguru import logger
 from starlette import status
 
 import pytest
@@ -142,7 +142,7 @@ class TestGetHotels:
                             "name": "Image of hoter #1",
                             "desc": "Main image of hotel #1.",
                             "room_id": None,
-                            "filepath": "media/images/bookings/hoter_1.jpg"
+                            "filepath": "media/images/bookings/hoter_1.jpg",
                         },
                         "services": [
                             {
@@ -156,7 +156,7 @@ class TestGetHotels:
                                 "key": "spa",
                                 "name": "Availability of spa",
                                 "desc": None,
-                            }
+                            },
                         ],
                     },
                     {
@@ -214,8 +214,7 @@ class TestGetHotels:
                         "services": [],
                     },
                 ],
-                "Endpoint test for selecting hotels from the database "
-                "with filter by location",
+                "Endpoint test for selecting hotels from the database with filter by location",
                 id="-test-2",
             ),
             pytest.param(
@@ -314,7 +313,7 @@ class TestGetHotels:
                             "name": "Image of hoter #1",
                             "desc": "Main image of hotel #1.",
                             "room_id": None,
-                            "filepath": "media/images/bookings/hoter_1.jpg"
+                            "filepath": "media/images/bookings/hoter_1.jpg",
                         },
                         "services": [
                             {
@@ -328,7 +327,7 @@ class TestGetHotels:
                                 "key": "spa",
                                 "name": "Availability of spa",
                                 "desc": None,
-                            }
+                            },
                         ],
                     },
                 ],
@@ -375,7 +374,7 @@ class TestGetHotels:
                             "name": "Image of hoter #1",
                             "desc": "Main image of hotel #1.",
                             "room_id": None,
-                            "filepath": "media/images/bookings/hoter_1.jpg"
+                            "filepath": "media/images/bookings/hoter_1.jpg",
                         },
                         "services": [
                             {
@@ -389,12 +388,11 @@ class TestGetHotels:
                                 "key": "spa",
                                 "name": "Availability of spa",
                                 "desc": None,
-                            }
+                            },
                         ],
                     },
                 ],
-                "Endpoint test for selecting hotels from the database "
-                "with filter by hotel service",
+                "Endpoint test for selecting hotels from the database with filter by hotel service",
                 id="-test-8",
             ),
             pytest.param(
@@ -438,7 +436,7 @@ class TestGetHotels:
                             "name": "Image of hoter #1",
                             "desc": "Main image of hotel #1.",
                             "room_id": None,
-                            "filepath": "media/images/bookings/hoter_1.jpg"
+                            "filepath": "media/images/bookings/hoter_1.jpg",
                         },
                         "services": [
                             {
@@ -452,7 +450,7 @@ class TestGetHotels:
                                 "key": "spa",
                                 "name": "Availability of spa",
                                 "desc": None,
-                            }
+                            },
                         ],
                     },
                 ],
@@ -503,7 +501,7 @@ class TestGetHotels:
         expected_result: list[dict[str, Any]] | dict[str, Any],
         test_description: str,
     ):
-        ic(test_description)
+        logger.info(test_description)
 
         # Inserting test data into the database before each test
         #   and deleting this data after each test
@@ -511,7 +509,7 @@ class TestGetHotels:
             self.db_preparer.insert_test_data(orm_model=ImagesModel, data_for_insert=images_for_test),
             self.db_preparer.insert_test_data(orm_model=HotelsModel, data_for_insert=hotels_for_test),
             self.db_preparer.insert_test_data(
-                orm_model=HotelsServicesModel, 
+                orm_model=HotelsServicesModel,
                 data_for_insert=services_of_hotels_for_test,
             ),
             self.db_preparer.insert_test_data(orm_model=RoomsModel, data_for_insert=rooms_for_test),
@@ -524,9 +522,9 @@ class TestGetHotels:
                 )
 
                 status_code_of_response = api_response.status_code
-                ic(status_code_of_response)
+                logger.debug(status_code_of_response)
                 dict_of_response = api_response.json()
-                ic(dict_of_response)
+                logger.debug(dict_of_response)
 
             assert status_code_of_response == expected_status_code, "The returned status code is not as expected"
             assert dict_of_response == expected_result, "The data returned by the endpoint is not as expected"

@@ -5,6 +5,6 @@ __pycache__/
 .pytest_cache/
 
 .env
-alembic.log
+*.log
 dump.rdb
 celerybeat-schedule.db

@@ -3,7 +3,7 @@ from typing import Any
 
 from fastapi import FastAPI
 from httpx import AsyncClient, ASGITransport
-from icecream import ic
+from loguru import logger
 from starlette import status
 
 import pytest
@@ -226,8 +226,7 @@ class TestAddBooking:
                         "check_out_date": "2024-08-11",
                     },
                 },
-                "Endpoint test for adding booking to the database "
-                "with incorrect check-in and check-out dates",
+                "Endpoint test for adding booking to the database with incorrect check-in and check-out dates",
                 id="-test-4",
             ),
             pytest.param(
@@ -250,8 +249,7 @@ class TestAddBooking:
                         "check_out_date": "2024-07-29",
                     },
                 },
-                "Endpoint test for adding booking to the database "
-                "with incorrect check-in and check-out dates",
+                "Endpoint test for adding booking to the database with incorrect check-in and check-out dates",
                 id="-test-5",
             ),
             pytest.param(
@@ -274,8 +272,7 @@ class TestAddBooking:
                         "check_out_date": "2025-09-10",
                     },
                 },
-                "Endpoint test for adding booking to the database "
-                "with unacceptably long rental period",
+                "Endpoint test for adding booking to the database with unacceptably long rental period",
                 id="-test-6",
             ),
             pytest.param(
@@ -297,8 +294,7 @@ class TestAddBooking:
                         "number_of_person_booked": 0,
                     },
                 },
-                "Endpoint test for adding booking to the database "
-                "with incorrect number of person booked",
+                "Endpoint test for adding booking to the database with incorrect number of person booked",
                 id="-test-7",
             ),
             pytest.param(
@@ -349,8 +345,7 @@ class TestAddBooking:
                         },
                     ],
                 },
-                "Endpoint test for adding booking to the database "
-                "with overlapping booking",
+                "Endpoint test for adding booking to the database with overlapping booking",
                 id="-test-9",
             ),
             pytest.param(
@@ -375,8 +370,7 @@ class TestAddBooking:
                         },
                     ],
                 },
-                "Endpoint test for adding booking to the database "
-                "with overlapping booking",
+                "Endpoint test for adding booking to the database with overlapping booking",
                 id="-test-10",
             ),
             pytest.param(
@@ -405,8 +399,7 @@ class TestAddBooking:
                         },
                     ],
                 },
-                "Endpoint test for adding booking to the database "
-                "with overlapping bookings",
+                "Endpoint test for adding booking to the database with overlapping bookings",
                 id="-test-11",
             ),
             pytest.param(
@@ -435,8 +428,7 @@ class TestAddBooking:
                         },
                     ],
                 },
-                "Endpoint test for adding booking to the database "
-                "with overlapping bookings",
+                "Endpoint test for adding booking to the database with overlapping bookings",
                 id="-test-12",
             ),
         ],
@@ -454,7 +446,7 @@ class TestAddBooking:
         expected_result: dict[str, Any],
         test_description: str,
     ):
-        ic(test_description)
+        logger.info(test_description)
 
         # Inserting test data into the database before each test
         #   and deleting this data after each test
@@ -473,9 +465,9 @@ class TestAddBooking:
                 )
 
                 status_code_of_response = api_response.status_code
-                ic(status_code_of_response)
+                logger.debug(status_code_of_response)
                 dict_of_response = api_response.json()
-                ic(dict_of_response)
+                logger.debug(dict_of_response)
 
             # Delete data added to the database by endpoint
             await self.db_preparer.delete_test_data(orm_model=BookingsModel, data_for_delete=[dict_of_response])

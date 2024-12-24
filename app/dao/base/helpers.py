@@ -1,7 +1,7 @@
 from pydantic import BaseModel, ConfigDict, create_model
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.orm.decl_api import DeclarativeAttributeIntercept
-from icecream import ic
+from loguru import logger
 
 from app.dao.base.exceptions import ValidatorGenerationError
 from app.dao.base.schemas import OccurrenceFilterDTO
@@ -106,7 +106,7 @@ def get_filters_for_model(
                     query_filters.append(column == value)
 
             else:
-                ic(f"Model {orm_model.__name__} has no column {column_name}.")
+                logger.debug(f"Model {orm_model.__name__} has no column {column_name}.")
 
     if occurrence is not None:
         if hasattr(orm_model, occurrence.column_name):
@@ -115,6 +115,6 @@ def get_filters_for_model(
                 query_filters.append(column.in_(occurrence.array))
 
         else:
-            ic(f"Model {orm_model.__name__} has no column {column_name}.")
+            logger.debug(f"Model {orm_model.__name__} has no column {column_name}.")
 
     return query_filters
