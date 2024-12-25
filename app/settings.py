@@ -85,6 +85,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "DEBUG"
     LOG_PATH: str = "./logs/app.log"
     LOG_DATE_FMT: str = "%Y-%m-%dT%H:%M:%S%Z"
+    CUTOFF_OF_SLOW_REQUESTS: float = Field(default=0.5, ge=0)
 
     @property
     def PROJECT_PATH(self):
