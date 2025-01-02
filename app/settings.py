@@ -87,6 +87,11 @@ class Settings(BaseSettings):
     LOG_DATE_FMT: str = "%Y-%m-%dT%H:%M:%S%Z"
     CUTOFF_OF_SLOW_REQUESTS: float = Field(default=0.5, ge=0)
 
+    # Sentry
+    SENTRY_TRACKING: bool = False
+    SENTRY_DSN: SecretStr = SecretStr("")
+    SENTRY_TRACES_SAMPLE_RATE: float = Field(default=1, ge=0, le=1)
+
     @property
     def PROJECT_PATH(self):
         return Path(__file__).resolve().parent.parent
@@ -197,6 +202,10 @@ class Settings(BaseSettings):
     @property
     def NEED_TO_SENDING_EMAIL(self):
         return self.CACHING and self.SENDING_EMAIL
+
+    @property
+    def SENTRY_SECRET_DSN(self):
+        return self.SENTRY_DSN.get_secret_value()
 
     model_config = SettingsConfigDict(env_file=".env")
 
