@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from icecream import ic
+from loguru import logger
 
 import pytest
 import asyncio
@@ -70,7 +70,7 @@ def event_loop(
     And starts preparing the test database.
     """
 
-    ic(f"Connect to {settings.DB_URL}")
+    logger.info(f"Connect to {settings.DB_URL}")
     assert settings.MODE == "test"
 
     db_preparer = DBPreparer()

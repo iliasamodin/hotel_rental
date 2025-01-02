@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi_cache.decorator import cache
 from starlette.routing import NoMatchFound
 from httpx import Client
-from icecream import ic
+from loguru import logger
 
 from app.settings import settings
 
@@ -69,7 +69,7 @@ class RedisController:
                     )
 
                 except NoMatchFound:
-                    ic(f"The function {func.__name__} is not a request handler.")
+                    logger.debug(f"The function {func.__name__} is not a request handler.")
 
         return True
 

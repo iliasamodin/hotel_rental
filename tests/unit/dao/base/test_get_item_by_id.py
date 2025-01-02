@@ -1,6 +1,6 @@
 from contextlib import AbstractContextManager, nullcontext as does_not_raise
 from fastapi import FastAPI
-from icecream import ic
+from loguru import logger
 
 import pytest
 
@@ -46,7 +46,7 @@ class TestGetItemById:
                 "booking.service_varieties.id, "
                 "booking.service_varieties.key, "
                 "booking.service_varieties.name, "
-                "booking.service_varieties.\"desc\" \n"
+                'booking.service_varieties."desc" \n'
                 "FROM booking.service_varieties \n"
                 "WHERE booking.service_varieties.id = 1",
                 does_not_raise(),
@@ -58,8 +58,7 @@ class TestGetItemById:
                 1,
                 None,
                 pytest.raises(ModelNotFoundError),
-                "Testing a query to select a record by its ID "
-                "from a non-existent table",
+                "Testing a query to select a record by its ID from a non-existent table",
                 id="-test-2",
             ),
         ],
@@ -73,7 +72,7 @@ class TestGetItemById:
         expectation: AbstractContextManager,
         test_description: str,
     ):
-        ic(test_description)
+        logger.info(test_description)
 
         # Context manager for catching and checking exceptions
         #   raised by the object under test

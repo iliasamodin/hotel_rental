@@ -2,7 +2,7 @@ from typing import Any
 
 from fastapi import FastAPI
 from httpx import AsyncClient, ASGITransport
-from icecream import ic
+from loguru import logger
 from starlette import status
 
 import pytest
@@ -495,8 +495,7 @@ class TestGetRooms:
                         ],
                     },
                 ],
-                "Endpoint test for selecting rooms from the database "
-                "with a filter by hotel ID",
+                "Endpoint test for selecting rooms from the database with a filter by hotel ID",
                 id="-test-7",
             ),
             pytest.param(
@@ -508,8 +507,7 @@ class TestGetRooms:
                 services_of_rooms_for_test,
                 status.HTTP_200_OK,
                 [],
-                "Endpoint test for selecting rooms from the database "
-                "with filter by non-existent hotel ID",
+                "Endpoint test for selecting rooms from the database with filter by non-existent hotel ID",
                 id="-test-8",
             ),
             pytest.param(
@@ -592,8 +590,7 @@ class TestGetRooms:
                         ],
                     },
                 ],
-                "Endpoint test for selecting rooms from the database "
-                "with filter by number of guests",
+                "Endpoint test for selecting rooms from the database with filter by number of guests",
                 id="-test-9",
             ),
             pytest.param(
@@ -651,8 +648,7 @@ class TestGetRooms:
                         ],
                     },
                 ],
-                "Endpoint test for selecting rooms from the database "
-                "with filtering by premium levels",
+                "Endpoint test for selecting rooms from the database with filtering by premium levels",
                 id="-test-11",
             ),
             pytest.param(
@@ -716,8 +712,7 @@ class TestGetRooms:
                         ],
                     },
                 ],
-                "Endpoint test for selecting rooms from the database "
-                "with filtering by room service",
+                "Endpoint test for selecting rooms from the database with filtering by room service",
                 id="-test-13",
             ),
             pytest.param(
@@ -792,8 +787,7 @@ class TestGetRooms:
                         "max_price": 35_000,
                     },
                 },
-                "Endpoint test for selecting rooms from the database "
-                "with an invalid price range as a filter",
+                "Endpoint test for selecting rooms from the database with an invalid price range as a filter",
                 id="-test-15",
             ),
         ],
@@ -809,7 +803,7 @@ class TestGetRooms:
         expected_result: list[dict[str, Any]] | dict[str, Any],
         test_description: str,
     ):
-        ic(test_description)
+        logger.info(test_description)
 
         # Inserting test data into the database before each test
         #   and deleting this data after each test
@@ -817,7 +811,7 @@ class TestGetRooms:
             self.db_preparer.insert_test_data(orm_model=HotelsModel, data_for_insert=hotels_for_test),
             self.db_preparer.insert_test_data(orm_model=RoomsModel, data_for_insert=rooms_for_test),
             self.db_preparer.insert_test_data(
-                orm_model=RoomsServicesModel, 
+                orm_model=RoomsServicesModel,
                 data_for_insert=services_of_rooms_for_test,
             ),
         ):
@@ -829,9 +823,9 @@ class TestGetRooms:
                 )
 
                 status_code_of_response = api_response.status_code
-                ic(status_code_of_response)
+                logger.debug(status_code_of_response)
                 dict_of_response = api_response.json()
-                ic(dict_of_response)
+                logger.debug(dict_of_response)
 
             assert status_code_of_response == expected_status_code, "The returned status code is not as expected"
             assert dict_of_response == expected_result, "The data returned by the endpoint is not as expected"

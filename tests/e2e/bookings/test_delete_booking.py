@@ -4,7 +4,7 @@ from typing import Any
 
 from fastapi import FastAPI
 from httpx import AsyncClient, ASGITransport
-from icecream import ic
+from loguru import logger
 from starlette import status
 
 import pytest
@@ -175,8 +175,7 @@ class TestDeleteBooking:
                         "booking_id": 5,
                     },
                 },
-                "Endpoint test for deleting user's bookings from the database "
-                "for a non-existent booking",
+                "Endpoint test for deleting user's bookings from the database for a non-existent booking",
                 id="-test-2",
             ),
             pytest.param(
@@ -236,7 +235,7 @@ class TestDeleteBooking:
         expected_result: dict[str, Any] | None,
         test_description: str,
     ):
-        ic(test_description)
+        logger.info(test_description)
 
         # Inserting test data into the database before each test
         #   and deleting this data after each test
@@ -258,14 +257,14 @@ class TestDeleteBooking:
                 )
 
                 status_code_of_response = api_response.status_code
-                ic(status_code_of_response)
+                logger.debug(status_code_of_response)
 
                 # Duck typing of response body
                 try:
                     dict_of_response = api_response.json()
                 except JSONDecodeError:
                     dict_of_response = None
-                ic(dict_of_response)
+                logger.debug(dict_of_response)
 
             assert status_code_of_response == expected_status_code, "The returned status code is not as expected"
             assert dict_of_response == expected_result, "The data returned by the endpoint is not as expected"

@@ -4,7 +4,7 @@ from datetime import timedelta
 
 import asyncio
 
-from icecream import ic
+from loguru import logger
 
 from app.main import app  # noqa: F401
 from app.settings import settings
@@ -55,7 +55,7 @@ def booking_reminders(
             )
 
         except ValueError:
-            ic("There are no soon user bookings.")
+            logger.info("There are no soon user bookings.")
             return False
 
         users: list[UserDTO] = asyncio.run(

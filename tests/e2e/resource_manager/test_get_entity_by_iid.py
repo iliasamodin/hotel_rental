@@ -3,7 +3,7 @@ from typing import Any
 
 from fastapi import FastAPI
 from httpx import AsyncClient, ASGITransport
-from icecream import ic
+from loguru import logger
 from starlette import status
 
 import pytest
@@ -92,8 +92,7 @@ class TestGetEntityByIid:
                         },
                     ],
                 },
-                "Endpoint test for selecting entity by its iid from the database "
-                "with a non-existent entity name",
+                "Endpoint test for selecting entity by its iid from the database with a non-existent entity name",
                 id="-test-3",
             ),
         ],
@@ -106,7 +105,7 @@ class TestGetEntityByIid:
         expected_result: dict[str, Any] | None,
         test_description: str,
     ):
-        ic(test_description)
+        logger.info(test_description)
 
         # Client for test requests to API
         async with self.client_maker(transport=self.transport_for_client) as client:
@@ -115,14 +114,14 @@ class TestGetEntityByIid:
             )
 
             status_code_of_response = api_response.status_code
-            ic(status_code_of_response)
+            logger.debug(status_code_of_response)
 
             # Duck typing of response body
             try:
                 dict_of_response = api_response.json()
             except JSONDecodeError:
                 dict_of_response = None
-            ic(dict_of_response)
+            logger.debug(dict_of_response)
 
         assert status_code_of_response == expected_status_code, "The returned status code is not as expected"
         assert dict_of_response == expected_result, "The data returned by the endpoint is not as expected"

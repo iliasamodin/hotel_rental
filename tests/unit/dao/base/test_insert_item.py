@@ -1,6 +1,6 @@
 from contextlib import AbstractContextManager, nullcontext as does_not_raise
 from fastapi import FastAPI
-from icecream import ic
+from loguru import logger
 
 import pytest
 
@@ -45,13 +45,13 @@ class TestInsertItem:
                     "key": "wifi",
                     "desc": "Free Wi-Fi",
                 },
-                "INSERT INTO booking.service_varieties (key, \"desc\") "
+                'INSERT INTO booking.service_varieties (key, "desc") '
                 "VALUES ('wifi', 'Free Wi-Fi') "
                 "RETURNING "
                 "booking.service_varieties.id, "
                 "booking.service_varieties.key, "
                 "booking.service_varieties.name, "
-                "booking.service_varieties.\"desc\"",
+                'booking.service_varieties."desc"',
                 does_not_raise(),
                 "Testing a query to insert a record",
                 id="-test-1",
@@ -64,8 +64,7 @@ class TestInsertItem:
                 },
                 None,
                 pytest.raises(ModelNotFoundError),
-                "Testing a query to insert a record "
-                "into non-existent table",
+                "Testing a query to insert a record into non-existent table",
                 id="-test-2",
             ),
         ],
@@ -79,7 +78,7 @@ class TestInsertItem:
         expectation: AbstractContextManager,
         test_description: str,
     ):
-        ic(test_description)
+        logger.info(test_description)
 
         # Context manager for catching and checking exceptions
         #   raised by the object under test

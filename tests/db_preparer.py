@@ -10,7 +10,7 @@ from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from sqlalchemy.exc import IntegrityError, DBAPIError, ProgrammingError
 from sqlalchemy.orm.decl_api import DeclarativeAttributeIntercept
 from sqlalchemy.sql.elements import BinaryExpression
-from icecream import ic
+from loguru import logger
 
 import pytest
 import sqlparse
@@ -57,7 +57,7 @@ class DBPreparer:
         if deploy_migrations:
             alembic_config = Config(self.full_path_of_alembic_ini)
             command.upgrade(alembic_config, revision)
-            ic(f"Deployed migrations: {revision}, on {settings.DB_URL}")
+            logger.info(f"Deployed migrations: {revision}, on {settings.DB_URL}")
 
     async def clean_table(
         self,
@@ -85,7 +85,7 @@ class DBPreparer:
                             await session.commit()
 
         except IntegrityError as error:
-            ic(f"The database is already full:\n{error._message()}")
+            logger.info(f"The database is already full:\n{error._message()}")
         except ProgrammingError as error:
             pytest.exit(f"Error in startup conditions:\n{error._message()}")
         except DBAPIError as error:

@@ -12,8 +12,10 @@ from app.db.session import async_engine
 
 from app.web.api.router import api_router
 from app.web.api.handlers import registering_exception_handlers
+from app.web.api.middlewares import registering_middlewares
 
 from app.tools import ic, get_data_to_display_in_openapi  # noqa: F401
+from app.logger import logger  # noqa: F401
 
 from app.redis.redis_controller import redis_controller
 
@@ -38,6 +40,7 @@ app.mount(
 
 # Registering exception handlers
 registering_exception_handlers(app=app)
+registering_middlewares(app=app)
 
 # Forwarding app to redis controller
 redis_controller.app = app

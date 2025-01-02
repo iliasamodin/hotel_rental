@@ -2,7 +2,7 @@ from typing import Any
 
 from fastapi import FastAPI
 from httpx import AsyncClient, ASGITransport
-from icecream import ic
+from loguru import logger
 from starlette import status
 
 import pytest
@@ -258,7 +258,7 @@ class TestRegistration:
         expected_result: dict[str, Any],
         test_description: str,
     ):
-        ic(test_description)
+        logger.info(test_description)
 
         # Inserting test data into the database before each test
         #   and deleting this data after each test
@@ -271,9 +271,9 @@ class TestRegistration:
                 )
 
                 status_code_of_response = api_response.status_code
-                ic(status_code_of_response)
+                logger.debug(status_code_of_response)
                 dict_of_response = api_response.json()
-                ic(dict_of_response)
+                logger.debug(dict_of_response)
 
             # Delete data added to the database by endpoint
             await self.db_preparer.delete_test_data(orm_model=UsersModel, data_for_delete=[dict_of_response])

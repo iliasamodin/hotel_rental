@@ -1,6 +1,6 @@
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from icecream import ic
+from loguru import logger
 
 import smtplib
 
@@ -43,18 +43,18 @@ def send_email(
             )
             server.send_message(msg=message)
 
-            ic("Email sent successfully!")
+            logger.info("Email sent successfully!")
 
     except smtplib.SMTPConnectError:
-        ic("Failed to connect to the email sending resource.")
+        logger.error("Failed to connect to the email sending resource.")
         return False
 
     except smtplib.SMTPAuthenticationError:
-        ic("The sender of the emails failed to authenticate.")
+        logger.error("The sender of the emails failed to authenticate.")
         return False
 
     except smtplib.SMTPException:
-        ic("Error in working with the email sending resource.")
+        logger.error("Error in working with the email sending resource.")
         return False
 
     return True

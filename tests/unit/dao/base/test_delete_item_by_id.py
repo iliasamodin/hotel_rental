@@ -1,6 +1,6 @@
 from contextlib import AbstractContextManager, nullcontext as does_not_raise
 from fastapi import FastAPI
-from icecream import ic
+from loguru import logger
 
 import pytest
 
@@ -48,7 +48,7 @@ class TestDeleteItemById:
                 "booking.service_varieties.id, "
                 "booking.service_varieties.key, "
                 "booking.service_varieties.name, "
-                "booking.service_varieties.\"desc\"",
+                'booking.service_varieties."desc"',
                 does_not_raise(),
                 "Testing a query to delete a record by its ID",
                 id="-test-1",
@@ -58,8 +58,7 @@ class TestDeleteItemById:
                 1,
                 None,
                 pytest.raises(ModelNotFoundError),
-                "Testing a query to delete a record by its ID "
-                "from a non-existent table",
+                "Testing a query to delete a record by its ID from a non-existent table",
                 id="-test-2",
             ),
         ],
@@ -73,7 +72,7 @@ class TestDeleteItemById:
         expectation: AbstractContextManager,
         test_description: str,
     ):
-        ic(test_description)
+        logger.info(test_description)
 
         # Context manager for catching and checking exceptions
         #   raised by the object under test
