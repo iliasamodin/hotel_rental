@@ -26,6 +26,13 @@ class RedisController:
         self.redis_decorator_manager = redis_decorator_manager
         self.client_maker = client_maker
 
+    def registering_app_to_controller(self, app: FastAPI) -> None:
+        """
+        Registering app to redis controller.
+        """
+
+        self.app = app
+
     def cache(
         self,
         warming_up=False,
