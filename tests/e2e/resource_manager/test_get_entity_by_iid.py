@@ -8,7 +8,7 @@ from starlette import status
 
 import pytest
 
-from app.web.api.resource_manager.types import EntityNamePathParams
+from app.api.version_1.resource_manager.types import EntityNamePathParams
 
 from tests.db_preparer import DBPreparer
 

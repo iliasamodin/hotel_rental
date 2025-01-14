@@ -1,4 +1,4 @@
-from app.web.api.base.exceptions import BaseApiError
+from app.api.base.exceptions import BaseApiError
 
 
 class BaseAuthorizationApiError(BaseApiError):

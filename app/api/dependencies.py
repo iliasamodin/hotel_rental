@@ -5,7 +5,7 @@ from jose import jwt, JWTError
 
 from app.settings import settings
 
-from app.web.api.authorization.exceptions import (
+from app.api.version_1.authorization.exceptions import (
     TokenMissingError,
     InvalidTokenError,
     ExpiredTokenError,

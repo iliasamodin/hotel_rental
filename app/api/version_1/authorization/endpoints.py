@@ -10,7 +10,7 @@ from app.services.authorization.schemas import UserRequestSchema, UserResponseSc
 from app.services.check.services import get_session_maker
 from app.services.check.schemas import UserAuthenticationValidator
 
-from app.web.api.authorization.responses import registration_responses, authentication_responses
+from app.api.version_1.authorization.responses import registration_responses, authentication_responses
 
 router = APIRouter(prefix="/users")
 

@@ -23,9 +23,9 @@ from app.services.check.services import (
 )
 from app.services.check.schemas import HotelsOrRoomsValidator, MinAndMaxDtsValidator, PriceRangeValidator
 
-from app.web.api.dependencies import get_user_id
-from app.web.api.bookings.types import hotel_stars_annotated, service_ids_annotated, premium_level_ids_annotated
-from app.web.api.bookings.responses import (
+from app.api.dependencies import get_user_id
+from app.api.version_1.bookings.types import hotel_stars_annotated, service_ids_annotated, premium_level_ids_annotated
+from app.api.version_1.bookings.responses import (
     responses_of_getting_services,
     responses_of_getting_hotels,
     responses_of_getting_premium_levels,

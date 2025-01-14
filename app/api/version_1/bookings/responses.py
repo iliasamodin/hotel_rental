@@ -9,8 +9,8 @@ from app.services.bookings.schemas import (
     ExtendedBookingResponseSchema,
 )
 
-from app.web.api.base.schemas import BaseErrorResponseSchema
-from app.web.api.bookings.docs import (
+from app.api.base.schemas import BaseErrorResponseSchema
+from app.api.version_1.bookings.docs import (
     AddingBookingEnum,
     DeletingBookingEnum,
     GettingServicesEnum,

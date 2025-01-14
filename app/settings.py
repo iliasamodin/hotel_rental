@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     # API
     HOST: str = "127.0.0.1"
     PORT: int = 1500
-    API_PREFIX: str = "/api/v1"
+    API_PREFIX: str = "/api"
     PATH_OF_PYPROJECT: str = "pyproject.toml"
 
     # Unicorn

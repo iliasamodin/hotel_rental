@@ -7,7 +7,7 @@ from app.services.bookings.schemas import (
     RoomSchema,
 )
 
-from app.web.api.base.schemas import BaseErrorResponseSchema
+from app.api.base.schemas import BaseErrorResponseSchema
 
 
 class GettingEntityEnum(Enum):

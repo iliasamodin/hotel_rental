@@ -7,9 +7,9 @@ import sys
 from app.lifespan import lifespan
 from app.settings import settings
 
-from app.web.api.router import api_router
-from app.web.api.handlers import registering_exception_handlers
-from app.web.api.middlewares import registering_middlewares
+from app.api.version_1.router import api_router
+from app.api.handlers import registering_exception_handlers
+from app.api.middlewares import registering_middlewares
 
 from app.tools import ic, get_data_to_display_in_openapi  # noqa: F401
 from app.logger import logger  # noqa: F401

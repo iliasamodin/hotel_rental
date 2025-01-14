@@ -4,9 +4,9 @@ class BaseApiError(Exception):
     """
 
     def __init__(
-        self, 
-        message: str | None = "Unspecified primary adapter level error.", 
-        extras: dict | str | Exception | None = None, 
+        self,
+        message: str | None = "Unspecified primary adapter level error.",
+        extras: dict | str | Exception | None = None,
         *args,
         **kwargs,
     ):
