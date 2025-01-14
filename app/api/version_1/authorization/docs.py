@@ -2,7 +2,7 @@ from enum import Enum
 
 from app.services.authorization.schemas import UserResponseSchema, TokenResponseSchema
 
-from app.web.api.base.schemas import BaseErrorResponseSchema
+from app.api.base.schemas import BaseErrorResponseSchema
 
 
 class RegistrationEnum(Enum):
@@ -21,7 +21,7 @@ class RegistrationEnum(Enum):
         detail="User with this email already exists.",
         extras={
             "email": "user@example.com",
-        }
+        },
     )
     DAO_ERR: BaseErrorResponseSchema = BaseErrorResponseSchema(
         detail="Registration error at database query level.",

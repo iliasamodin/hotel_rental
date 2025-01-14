@@ -2,8 +2,8 @@ from starlette import status
 
 from app.services.authorization.schemas import UserResponseSchema, TokenResponseSchema
 
-from app.web.api.base.schemas import BaseErrorResponseSchema
-from app.web.api.authorization.docs import RegistrationEnum, AuthenticationEnum
+from app.api.base.schemas import BaseErrorResponseSchema
+from app.api.version_1.authorization.docs import RegistrationEnum, AuthenticationEnum
 
 
 registration_responses = {

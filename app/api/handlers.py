@@ -20,8 +20,8 @@ from app.services.base.exceptions import BaseServiceError
 from app.services.check.exceptions import BaseCheckServiceError
 from app.services.authorization.exceptions import IncorrectPasswordError
 
-from app.web.api.base.exceptions import BaseApiError
-from app.web.api.authorization.exceptions import BaseAuthorizationApiError, UserIsNotAdminError
+from app.api.base.exceptions import BaseApiError
+from app.api.version_1.authorization.exceptions import BaseAuthorizationApiError, UserIsNotAdminError
 
 
 def registering_exception_handlers(app: FastAPI):

@@ -1,12 +1,12 @@
 from fastapi.routing import APIRouter
 
-from app.web.api import authorization
-from app.web.api import resource_manager
-from app.web.api import bookings
+from app.api.version_1 import authorization
+from app.api.version_1 import resource_manager
+from app.api.version_1 import bookings
 
-api_router = APIRouter()
+api_router = APIRouter(prefix="/v1")
 api_router.include_router(
-    router=authorization.router, 
+    router=authorization.router,
     tags=["Authorization"],
 )
 api_router.include_router(
@@ -14,6 +14,6 @@ api_router.include_router(
     tags=["Resource Manager"],
 )
 api_router.include_router(
-    router=bookings.router, 
+    router=bookings.router,
     tags=["Bookings"],
 )

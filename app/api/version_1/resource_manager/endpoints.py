@@ -11,8 +11,8 @@ from app.services.resource_manager.service import ResourceManagerService
 
 from app.services.check.services import get_session_maker
 
-from app.web.api.resource_manager.types import entity_name_annotated
-from app.web.api.resource_manager.responses import responses_of_getting_entity, responses_of_getting_entities
+from app.api.version_1.resource_manager.types import entity_name_annotated
+from app.api.version_1.resource_manager.responses import responses_of_getting_entity, responses_of_getting_entities
 
 from app.redis.redis_controller import redis_controller
 

@@ -7,8 +7,8 @@ from app.services.bookings.schemas import (
     RoomSchema,
 )
 
-from app.web.api.base.schemas import BaseErrorResponseSchema
-from app.web.api.resource_manager.docs import GettingEntityEnum
+from app.api.base.schemas import BaseErrorResponseSchema
+from app.api.version_1.resource_manager.docs import GettingEntityEnum
 
 
 responses_of_getting_entity = {

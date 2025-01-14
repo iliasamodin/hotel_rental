@@ -14,8 +14,8 @@ from app.services.authorization.service import AuthorizationService
 from app.services.authorization.exceptions import IncorrectPasswordError
 from app.services.check.schemas import UserAuthenticationValidator
 
-from app.web.api.authorization.exceptions import ExpiredTokenError, InvalidTokenError, UserIsNotAdminError
-from app.web.api.dependencies import check_is_user_admin, get_user_id
+from app.api.version_1.authorization.exceptions import ExpiredTokenError, InvalidTokenError, UserIsNotAdminError
+from app.api.dependencies import check_is_user_admin, get_user_id
 
 
 class AdminAuth(AuthenticationBackend):
