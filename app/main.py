@@ -7,16 +7,16 @@ import sys
 from app.lifespan import lifespan
 from app.settings import settings
 
-from app.api.version_1.router import api_router
-from app.api.handlers import registering_exception_handlers
-from app.api.middlewares import registering_middlewares
+from app.adapters.primary.api.version_1.router import api_router
+from app.adapters.primary.api.handlers import registering_exception_handlers
+from app.adapters.primary.api.middlewares import registering_middlewares
 
 from app.tools import ic, get_data_to_display_in_openapi  # noqa: F401
 from app.logger import logger  # noqa: F401
 
-from app.redis.redis_controller import redis_controller
+from app.utils.redis.redis_controller import redis_controller
 
-from app.admin_panel.admin_controller import admin_panel_controller
+from app.utils.admin_panel.admin_controller import admin_panel_controller
 
 openapi_params = get_data_to_display_in_openapi()
 
