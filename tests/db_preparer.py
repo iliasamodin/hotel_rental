@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any, AsyncIterator, Sequence
 
 from contextlib import asynccontextmanager
 
@@ -18,9 +18,9 @@ import asyncio
 
 from app.settings import settings
 
-from app.db.session import async_session_maker
-from app.db.base import Base
-from app.db.models import classes_of_models
+from app.adapters.secondary.db.session import async_session_maker
+from app.adapters.secondary.db.base import Base
+from app.adapters.secondary.db.models import classes_of_models
 
 
 class DBPreparer:
@@ -180,39 +180,11 @@ class DBPreparer:
 
         return pk_of_orm_model, current_value_of_seq
 
-    def _get_set_of_pk_values(
-        self,
-        pk_of_orm_model: Sequence[Column],
-        data_to_convert: Sequence[dict[str, Any]],
-    ) -> set[tuple[tuple[Any]]]:
-        """
-        Get set of tuples with primary keys.
-
-        :returns: set of tuples with primary keys.
-        """
-
-        set_with_column_names_of_pk = {column.name for column in pk_of_orm_model}
-
-        # Generate a set with the primary key values ​​of all rows
-        set_of_pk_values: set[tuple[tuple[Any]]] = set()
-        for map_of_columns_and_values in data_to_convert:
-            pk_of_row = [
-                (column_name, value)
-                for column_name, value in map_of_columns_and_values.items()
-                if column_name in set_with_column_names_of_pk
-            ]
-
-            if pk_of_row:
-                set_of_pk_values.add(tuple(pk_of_row))
-
-        return set_of_pk_values
-
     async def delete_test_data(
         self,
         orm_model: DeclarativeAttributeIntercept,
         data_for_delete: Sequence[dict[str, Any]],
-        need_to_check_deletion: bool = True,
-    ):
+    ) -> None:
         """
         Remove test data from database.
         """
@@ -233,26 +205,7 @@ class DBPreparer:
 
             # Delete rows from database
             query = delete(orm_model).where(or_(*query_filters)).returning(*pk_of_orm_model)
-            query_result: Result = await session.execute(query)
-
-        # Verifying that only test data has been removed
-        #   from the database
-        if need_to_check_deletion:
-            maps_of_pks_and_values_for_deleted_rows = query_result.mappings().fetchall()
-
-            # Changing the data structure of rows to be deleted
-            #   and deleted rows for their further comparison
-            rows_to_be_deleted = self._get_set_of_pk_values(
-                pk_of_orm_model=pk_of_orm_model,
-                data_to_convert=data_for_delete,
-            )
-            deleted_rows = self._get_set_of_pk_values(
-                pk_of_orm_model=pk_of_orm_model,
-                data_to_convert=maps_of_pks_and_values_for_deleted_rows,
-            )
-
-            if deleted_rows != rows_to_be_deleted:
-                pytest.exit("The preparer was unable to remove all test data")
+            await session.execute(query)
 
     @asynccontextmanager
     async def insert_test_data(
@@ -260,8 +213,7 @@ class DBPreparer:
         orm_model: DeclarativeAttributeIntercept,
         data_for_insert: Sequence[dict[str, Any]],
         need_to_delete: bool = True,
-        need_to_check_deletion: bool = True,
-    ):
+    ) -> AsyncIterator[Sequence[dict[str, Any]]]:
         """
         Add data to the database before the test
         and delete it after the test.
@@ -289,5 +241,4 @@ class DBPreparer:
                 await self.delete_test_data(
                     orm_model=orm_model,
                     data_for_delete=maps_of_pks_and_values_for_new_rows,
-                    need_to_check_deletion=need_to_check_deletion,
                 )

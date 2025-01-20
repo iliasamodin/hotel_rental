@@ -4,10 +4,10 @@ from loguru import logger
 
 import pytest
 
-from app.db.models.service_varieties_model import ServiceVarietiesModel
+from app.adapters.secondary.db.models.service_varieties_model import ServiceVarietiesModel
 
-from app.dao.base.dao import BaseDAO
-from app.dao.base.exceptions import ModelNotFoundError
+from app.adapters.secondary.db.dao.base.dao import BaseDAO
+from app.adapters.secondary.db.dao.base.exceptions import ModelNotFoundError
 
 from tests.db_preparer import DBPreparer
 from tests.fake_session import FakeAsyncSession
@@ -82,7 +82,8 @@ class TestGetItemsByFilters:
         # Context manager for catching and checking exceptions
         #   raised by the object under test
         with expectation:
-            base_dao = BaseDAO(session=self.fake_async_session)
+            base_dao = BaseDAO()
+            base_dao.session = self.fake_async_session
             await base_dao.get_items_by_filters(
                 table_name=table_name,
                 filters=filters,

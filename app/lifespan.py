@@ -11,7 +11,7 @@ import sentry_sdk
 
 from app.settings import settings
 
-from app.db.session import async_engine, async_session_maker, sync_engine, sync_session_maker
+from app.adapters.secondary.db.session import async_engine, async_session_maker, sync_engine, sync_session_maker
 
 
 @asynccontextmanager
