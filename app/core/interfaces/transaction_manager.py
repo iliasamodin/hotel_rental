@@ -12,14 +12,14 @@ class ITransactionManager(ABC):
     ) -> AsyncIterator[int]: ...
 
     @abstractmethod
-    def prepare_daos(
+    def _prepare_daos(
         self,
         daos: list[BaseDAOPort],
         session,
     ) -> int: ...
 
     @abstractmethod
-    def liberate_daos(
+    def _liberate_daos(
         self,
         session_id: int,
     ) -> None: ...

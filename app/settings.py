@@ -10,8 +10,12 @@ load_dotenv()
 
 
 class Settings(BaseSettings):
+    # APP
+    APP_HOME_DIR: str = "hotel_rental"
+    WORKERS: int = 4
+
     # API
-    HOST: str = "127.0.0.1"
+    HOST: str = "0.0.0.0"
     PORT: int = 1500
     API_PREFIX: str = "/api"
     PATH_OF_PYPROJECT: str = "pyproject.toml"
@@ -23,8 +27,9 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
     POSTGRES_USER: SecretStr
     POSTGRES_PASSWORD: SecretStr
-    DB_HOST: str
-    DB_PORT: int
+    DB_HOST: str = "0.0.0.0"
+    DB_PORT: int = 5432
+    HOST_MACHINE_DB_PORT: int = 5432
     DB_TIME_ZONE_OFFSET_HOURS: int = Field(default=0, ge=-12, le=14)
     DB_TIME_ZONE_NAME: str = "UTC"
     PATH_OF_ALEMBIC_INI: str = "alembic.ini"
@@ -32,8 +37,8 @@ class Settings(BaseSettings):
     TEST_DB_NAME: str
     TEST_DB_USER: SecretStr
     TEST_DB_PASSWORD: SecretStr
-    TEST_DB_HOST: str
-    TEST_DB_PORT: int
+    TEST_DB_HOST: str = "0.0.0.0"
+    TEST_DB_PORT: int = 5432
 
     # DB schemas
     DB_ALEMBIC_SCHEMA: str = "alembic"
@@ -41,14 +46,18 @@ class Settings(BaseSettings):
 
     # Redis
     CACHING: bool = False
-    REDIS_HOST: str = "127.0.0.1"
+    REDIS_HOST: str = "0.0.0.0"
     REDIS_PORT: int = 6379
+    HOST_MACHINE_REDIS_PORT: int = 6379
     CACHE_RETENTION_TIME_SECONDS: int = Field(default=60, ge=1)
     WARM_UP_CACHE: bool = False
 
+    # Celery
+    FLOWER_PORT: int = 5555
+
     # Tests
     MODE: Literal["dev", "test", "stage", "prod"] = "prod"
-    COMPOSE_FILE: str = "docker/docker-compose.test.yaml"
+    COMPOSE_FILE: str = "docker-compose.test.yaml"
     PATH_OF_TEST_DUMP: str = "tests/db_dumps/dump_of_lookup_tables.sql"
     CURRENT_DATE_AND_TIME: str = "2024-08-01 12:00:00"
 
