@@ -71,7 +71,8 @@ def event_loop(
     """
 
     logger.info(f"Connect to {settings.DB_URL}")
-    assert settings.MODE == "test"
+    if settings.MODE != "test":
+        pytest.exit("Tests can only be run in test mode.")
 
     db_preparer = DBPreparer()
 

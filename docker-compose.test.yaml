@@ -1,15 +1,19 @@
 version: '3'
 
 services:
-  db:
-    image: postgres:15
-    container_name: db_for_pytest
+  pytest_db:
+    image: postgres:17
+    container_name: pytest_db
     env_file: 
-      - ../.env
+      - .env
+    environment:
+      - POSTGRES_DB=${TEST_DB_NAME}  
+      - POSTGRES_USER=${TEST_DB_USER}
+      - POSTGRES_PASSWORD=${TEST_DB_PASSWORD}
     ports: 
-      - 5632:5432
+      - ${TEST_DB_PORT}:5432
     volumes:
-      - db_for_pytest:/var/lib/postgresql/data
+      - pytest_db:/var/lib/postgresql/data
     networks:
       - pytest_network
     restart: always
@@ -20,8 +24,8 @@ services:
       retries: 3
 
 volumes:
-  db_for_pytest:
-    name: db_for_pytest
+  pytest_db:
+    name: pytest_db
 
 networks:
   pytest_network:

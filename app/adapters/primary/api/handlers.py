@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from pydantic_core import ValidationError
 from starlette import status
 from starlette.responses import JSONResponse
+from loguru import logger
 
 from app.adapters.secondary.db.dao.base.exceptions import BaseDAOError
 from app.adapters.secondary.db.dao.authorization.exceptions import AlreadyExistsError, NotExistsError
@@ -212,6 +213,8 @@ def registering_exception_handlers(app: FastAPI):
 
     @app.exception_handler(Exception)
     async def _(request: Request, exc: Exception):
+        logger.error(exc)
+
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={

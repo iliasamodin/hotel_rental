@@ -34,16 +34,16 @@ class TransactionManager(ITransactionManager):
 
         try:
             async with self.session_maker() as session:
-                session_id = self.prepare_daos(daos=daos, session=session)
+                session_id = self._prepare_daos(daos=daos, session=session)
 
                 yield session_id
 
         finally:
             await session.close()
 
-            self.liberate_daos(session_id=session_id)
+            self._liberate_daos(session_id=session_id)
 
-    def prepare_daos(
+    def _prepare_daos(
         self,
         daos: list[BaseDAOPort],
         session: AsyncSession,
@@ -63,7 +63,7 @@ class TransactionManager(ITransactionManager):
 
         return session_id
 
-    def liberate_daos(
+    def _liberate_daos(
         self,
         session_id: int,
     ) -> None:
