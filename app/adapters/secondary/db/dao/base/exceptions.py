@@ -26,7 +26,13 @@ class ValidatorGenerationError(BaseDAOError):
     """
 
 
-class SessionNotFoundError(BaseDAOError):
+class TransactionContextAttrNotSetError(BaseDAOError):
     """
-    Session not found error.
+    Transaction context attribute not set.
+    """
+
+
+class TransactionContextAttrAlreadySetError(BaseDAOError):
+    """
+    Transaction context attribute already set.
     """

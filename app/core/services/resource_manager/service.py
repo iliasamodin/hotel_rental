@@ -1,11 +1,11 @@
 from typing import Any
 from enum import Enum
 
-from app.core.services.resource_manager.exceptions import EntityNotExistsError
 from app.ports.primary.resource_manager import ResourceManagerServicePort
 from app.ports.secondary.db.dao.resource_manager import ResourceManagerDAOPort
 
-from app.core.interfaces.transaction_manager import ITransactionManager
+from app.core.interfaces.transaction_context import IStaticAsyncTransactionContextFactory
+from app.core.services.resource_manager.exceptions import EntityNotExistsError
 
 
 class ResourceManagerService(ResourceManagerServicePort):
@@ -15,10 +15,10 @@ class ResourceManagerService(ResourceManagerServicePort):
 
     def __init__(
         self,
-        transaction_manager: ITransactionManager,
+        transaction_context_factory: IStaticAsyncTransactionContextFactory,
         resource_manager_dao: ResourceManagerDAOPort,
     ):
-        self.transaction_manager = transaction_manager
+        self.transaction_context_factory = transaction_context_factory
         self.resource_manager_dao = resource_manager_dao
 
     async def get_entity_by_iid(
@@ -32,8 +32,10 @@ class ResourceManagerService(ResourceManagerServicePort):
         :return: entity.
         """
 
-        async with self.transaction_manager(self.resource_manager_dao):
+        transaction_context = self.transaction_context_factory.init_transaction_context()
+        async with transaction_context():
             entity: dict[str, Any] | None = await self.resource_manager_dao.get_item_by_id(
+                transaction_context=transaction_context,
                 table_name=entity_name.value,
                 item_id=iid,
             )
@@ -60,8 +62,10 @@ class ResourceManagerService(ResourceManagerServicePort):
         :return: entities.
         """
 
-        async with self.transaction_manager(self.resource_manager_dao):
+        transaction_context = self.transaction_context_factory.init_transaction_context()
+        async with transaction_context():
             entity: list[dict[str, Any]] = await self.resource_manager_dao.get_items_by_filters(
+                transaction_context=transaction_context,
                 table_name=entity_name.value,
                 filters=filters,
             )

@@ -5,7 +5,7 @@ from app.utils.celery.tasks import send_email
 from app.ports.primary.bookings import BookingServicePort
 from app.ports.secondary.db.dao.bookings import BookingDAOPort
 
-from app.core.interfaces.transaction_manager import ITransactionManager
+from app.core.interfaces.transaction_context import IStaticAsyncTransactionContextFactory
 from app.core.services.authorization.dtos import UserDTO
 from app.core.services.bookings.dtos import (
     BookingDTO,
@@ -44,10 +44,10 @@ class BookingService(BookingServicePort):
 
     def __init__(
         self,
-        transaction_manager: ITransactionManager,
+        transaction_context_factory: IStaticAsyncTransactionContextFactory,
         booking_dao: BookingDAOPort,
     ):
-        self.transaction_manager = transaction_manager
+        self.transaction_context_factory = transaction_context_factory
         self.booking_dao = booking_dao
 
     async def get_services(
@@ -60,8 +60,10 @@ class BookingService(BookingServicePort):
         :return: list of services.
         """
 
-        async with self.transaction_manager(self.booking_dao):
+        transaction_context = self.transaction_context_factory.init_transaction_context()
+        async with transaction_context():
             services_dto: list[ServiceVarietyDTO] = await self.booking_dao.get_services(
+                transaction_context=transaction_context,
                 only_for_hotels_and_only_for_rooms=only_for_hotels_and_only_for_rooms,
             )
 
@@ -90,8 +92,10 @@ class BookingService(BookingServicePort):
         :return: list of hotels.
         """
 
-        async with self.transaction_manager(self.booking_dao):
+        transaction_context = self.transaction_context_factory.init_transaction_context()
+        async with transaction_context():
             hotels_dto: list[ExtendedHotelDTO] = await self.booking_dao.get_hotels(
+                transaction_context=transaction_context,
                 location=location,
                 number_of_guests=number_of_guests,
                 stars=stars,
@@ -146,8 +150,10 @@ class BookingService(BookingServicePort):
         :return: list of premium levels.
         """
 
-        async with self.transaction_manager(self.booking_dao):
+        transaction_context = self.transaction_context_factory.init_transaction_context()
+        async with transaction_context():
             premium_levels_dto: list[PremiumLevelVarietyDTO] = await self.booking_dao.get_premium_levels(
+                transaction_context=transaction_context,
                 hotel_id=hotel_id,
                 connected_with_rooms=connected_with_rooms,
             )
@@ -178,8 +184,10 @@ class BookingService(BookingServicePort):
         :return: list of rooms.
         """
 
-        async with self.transaction_manager(self.booking_dao):
+        transaction_context = self.transaction_context_factory.init_transaction_context()
+        async with transaction_context():
             rooms_dto: list[ExtendedRoomDTO] = await self.booking_dao.get_rooms(
+                transaction_context=transaction_context,
                 min_price_and_max_price=min_price_and_max_price,
                 hotel_id=hotel_id,
                 number_of_guests=number_of_guests,
@@ -243,8 +251,10 @@ class BookingService(BookingServicePort):
         :return: list of bookings.
         """
 
-        async with self.transaction_manager(self.booking_dao):
+        transaction_context = self.transaction_context_factory.init_transaction_context()
+        async with transaction_context():
             bookings_dto: list[ExtendedBookingDTO] = await self.booking_dao.get_bookings(
+                transaction_context=transaction_context,
                 user_id=user_id,
                 min_and_max_dts=min_and_max_dts,
                 number_of_guests=number_of_guests,
@@ -287,8 +297,10 @@ class BookingService(BookingServicePort):
         :return: data of new booking.
         """
 
-        async with self.transaction_manager(self.booking_dao) as session_id:
+        transaction_context = self.transaction_context_factory.init_transaction_context()
+        async with transaction_context():
             room_dto: RoomDTO = await self.booking_dao.get_item_by_id(
+                transaction_context=transaction_context,
                 table_name="rooms",
                 item_id=booking_data.room_id,
             )
@@ -306,6 +318,7 @@ class BookingService(BookingServicePort):
                 max_dt=new_booking.check_out_dt,
             )
             overlapping_bookings_dto: list[BookingDTO] = await self.booking_dao.get_bookings(
+                transaction_context=transaction_context,
                 min_and_max_dts=min_and_max_dts,
                 room_id=new_booking.room_id,
                 booking_overlaps=True,
@@ -313,15 +326,17 @@ class BookingService(BookingServicePort):
             add_booking_domain_model.check_room_availability(overlapping_bookings=overlapping_bookings_dto)
 
             booking_dto: BookingDTO = await self.booking_dao.insert_item(
+                transaction_context=transaction_context,
                 table_name="bookings",
                 item_data=new_booking,
             )
 
-            await self.transaction_manager.commit(session_id=session_id)
+            await transaction_context.commit()
 
             if settings.NEED_TO_SENDING_EMAIL:
                 # Generating and sending a message via user email
                 user_dto: UserDTO = await self.booking_dao.get_item_by_id(
+                    transaction_context=transaction_context,
                     table_name="users",
                     item_id=user_id,
                 )
@@ -360,8 +375,10 @@ class BookingService(BookingServicePort):
         :return: data of deleted booking.
         """
 
-        async with self.transaction_manager(self.booking_dao) as session_id:
+        transaction_context = self.transaction_context_factory.init_transaction_context()
+        async with transaction_context():
             booking_dto: BookingDTO = await self.booking_dao.get_item_by_id(
+                transaction_context=transaction_context,
                 table_name="bookings",
                 item_id=booking_id,
             )
@@ -375,19 +392,22 @@ class BookingService(BookingServicePort):
             delete_booking_domain_model.execute()
 
             booking_dto: BookingDTO = await self.booking_dao.delete_item_by_id(
+                transaction_context=transaction_context,
                 table_name="bookings",
                 item_id=booking_id,
             )
 
-            await self.transaction_manager.commit(session_id=session_id)
+            await transaction_context.commit()
 
             if settings.NEED_TO_SENDING_EMAIL:
                 # Generating and sending a message via user email
                 user_dto: UserDTO = await self.booking_dao.get_item_by_id(
+                    transaction_context=transaction_context,
                     table_name="users",
                     item_id=user_id,
                 )
                 room_dto: RoomDTO = await self.booking_dao.get_item_by_id(
+                    transaction_context=transaction_context,
                     table_name="rooms",
                     item_id=booking_dto.room_id,
                 )

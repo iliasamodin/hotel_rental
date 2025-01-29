@@ -2,7 +2,6 @@ from typing import Any, Coroutine
 
 from pydantic import BaseModel
 from sqlalchemy import Result
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.decl_api import DeclarativeAttributeIntercept
 
 from app.ports.secondary.db.dao.base import BaseDAOPort
@@ -18,6 +17,7 @@ from app.adapters.secondary.db.dao.base.queries import (
 )
 from app.adapters.secondary.db.dao.base.helpers import get_pydantic_schema_by_sqlalchemy_model
 
+from app.core.interfaces.transaction_context import IStaticSyncTransactionContext
 from app.core.services.base.dtos import OccurrenceFilterDTO
 
 
@@ -25,9 +25,6 @@ class BaseDAO(BaseDAOPort):
     """
     DAO layer base class.
     """
-
-    def __init__(self):
-        self.session: AsyncSession | None = None
 
     def _get_model_by_table_name(self, table_name: str) -> DeclarativeAttributeIntercept:
         """
@@ -49,6 +46,7 @@ class BaseDAO(BaseDAOPort):
 
     async def get_item_by_id(
         self,
+        transaction_context: IStaticSyncTransactionContext,
         table_name: str,
         item_id: int,
     ) -> dict[str, Any] | None:
@@ -61,7 +59,7 @@ class BaseDAO(BaseDAOPort):
         orm_model = self._get_model_by_table_name(table_name=table_name)
 
         query_result_of_item: Result | Coroutine = get_item_by_id(
-            session=self.session,
+            session=transaction_context.session,
             orm_model=orm_model,
             item_id=item_id,
         )
@@ -74,6 +72,7 @@ class BaseDAO(BaseDAOPort):
 
     async def get_items_by_filters(
         self,
+        transaction_context: IStaticSyncTransactionContext,
         table_name: str,
         filters: dict[str, Any] | None = None,
         occurrence: OccurrenceFilterDTO | None = None,
@@ -104,7 +103,7 @@ class BaseDAO(BaseDAOPort):
             pydantic_schema.model_validate(occurrence.column_and_first_value)
 
         query_result_of_items: Result | Coroutine = get_items_by_filters(
-            session=self.session,
+            session=transaction_context.session,
             orm_model=orm_model,
             filters=filters,
             occurrence=occurrence,
@@ -118,6 +117,7 @@ class BaseDAO(BaseDAOPort):
 
     async def insert_item(
         self,
+        transaction_context: IStaticSyncTransactionContext,
         table_name: str,
         item_data: dict[str, Any] | BaseModel,
     ) -> None:
@@ -130,7 +130,7 @@ class BaseDAO(BaseDAOPort):
         orm_model = self._get_model_by_table_name(table_name=table_name)
 
         query_result_of_item: Result | Coroutine = insert_item(
-            session=self.session,
+            session=transaction_context.session,
             orm_model=orm_model,
             item_data=item_data,
         )
@@ -143,6 +143,7 @@ class BaseDAO(BaseDAOPort):
 
     async def delete_item_by_id(
         self,
+        transaction_context: IStaticSyncTransactionContext,
         table_name: str,
         item_id: int,
     ) -> dict[str, Any]:
@@ -155,7 +156,7 @@ class BaseDAO(BaseDAOPort):
         orm_model = self._get_model_by_table_name(table_name=table_name)
 
         query_result_of_item: Result | Coroutine = delete_item_by_id(
-            session=self.session,
+            session=transaction_context.session,
             orm_model=orm_model,
             item_id=item_id,
         )

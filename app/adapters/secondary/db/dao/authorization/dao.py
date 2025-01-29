@@ -8,6 +8,7 @@ from app.adapters.secondary.db.dao.base.dao import BaseDAO
 from app.adapters.secondary.db.dao.authorization.queries import add_user, get_user
 from app.adapters.secondary.db.dao.authorization.exceptions import NotExistsError
 
+from app.core.interfaces.transaction_context import IStaticSyncTransactionContext
 from app.core.services.authorization.dtos import UserDTO
 from app.core.services.authorization.schemas import UserRequestSchema
 from app.core.services.check.schemas import UserAuthenticationValidator
@@ -20,6 +21,7 @@ class AuthorizationDAO(BaseDAO, AuthorizationDAOPort):
 
     async def add_user(
         self,
+        transaction_context: IStaticSyncTransactionContext,
         user: UserRequestSchema,
     ) -> UserDTO:
         """
@@ -29,7 +31,7 @@ class AuthorizationDAO(BaseDAO, AuthorizationDAOPort):
         """
 
         query_result_of_user: Result | Coroutine = add_user(
-            session=self.session,
+            session=transaction_context.session,
             user=user,
         )
         if isinstance(query_result_of_user, Coroutine):
@@ -43,6 +45,7 @@ class AuthorizationDAO(BaseDAO, AuthorizationDAOPort):
 
     async def get_user(
         self,
+        transaction_context: IStaticSyncTransactionContext,
         authentication_data: UserAuthenticationValidator,
     ) -> UserDTO:
         """
@@ -52,7 +55,7 @@ class AuthorizationDAO(BaseDAO, AuthorizationDAOPort):
         """
 
         query_result_of_user: Result | Coroutine = get_user(
-            session=self.session,
+            session=transaction_context.session,
             authentication_data=authentication_data,
         )
         if isinstance(query_result_of_user, Coroutine):

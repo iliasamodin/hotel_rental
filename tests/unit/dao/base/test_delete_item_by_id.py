@@ -10,7 +10,7 @@ from app.adapters.secondary.db.dao.base.dao import BaseDAO
 from app.adapters.secondary.db.dao.base.exceptions import ModelNotFoundError
 
 from tests.db_preparer import DBPreparer
-from tests.fake_session import FakeAsyncSession
+from tests.fake_transaction_context import FakeStaticAsyncTransactionContext
 
 
 @pytest.mark.asyncio
@@ -24,11 +24,11 @@ class TestDeleteItemById:
         self,
         app: FastAPI,
         db_preparer: DBPreparer = DBPreparer,
-        fake_async_session: FakeAsyncSession = FakeAsyncSession,
+        fake_transaction_context: FakeStaticAsyncTransactionContext = FakeStaticAsyncTransactionContext,
     ):
         self.app = app
         self.db_preparer = db_preparer()
-        self.fake_async_session = fake_async_session(engine=self.db_preparer.engine)
+        self.fake_transaction_context = fake_transaction_context(engine=self.db_preparer.engine)
 
     @pytest.mark.parametrize(
         argnames=(
@@ -78,12 +78,12 @@ class TestDeleteItemById:
         #   raised by the object under test
         with expectation:
             base_dao = BaseDAO()
-            base_dao.session = self.fake_async_session
             await base_dao.delete_item_by_id(
+                transaction_context=self.fake_transaction_context,
                 table_name=table_name,
                 item_id=item_id,
             )
 
-            sql_query = self.fake_async_session.query
+            sql_query = self.fake_transaction_context.query
 
             assert sql_query == expected_result, "The sql query is not as expected"

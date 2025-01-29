@@ -1,15 +1,15 @@
 from sqladmin.authentication import AuthenticationBackend
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
-from sqlalchemy.orm import sessionmaker
 from starlette import status
 
 from app.settings import settings
 
+from app.adapters.secondary.db.dao.authorization.exceptions import NotExistsError
+from app.adapters.secondary.db.dao.transaction_context import StaticAsyncTransactionContextFactory
 from app.adapters.secondary.db.session import async_session_maker
 
-from app.adapters.secondary.db.dao.authorization.exceptions import NotExistsError
-
+from app.core.interfaces.transaction_context import IStaticAsyncTransactionContextFactory
 from app.core.services.authorization.service import AuthorizationService
 from app.core.services.authorization.exceptions import IncorrectPasswordError
 from app.core.services.check.schemas import UserAuthenticationValidator
@@ -19,6 +19,7 @@ from app.adapters.primary.api.version_1.authorization.exceptions import (
     InvalidTokenError,
     UserIsNotAdminError,
 )
+
 from app.dependencies.auth import check_is_user_admin, get_user_id
 
 
@@ -29,13 +30,13 @@ class AdminAuth(AuthenticationBackend):
 
     def __init__(
         self,
-        session_maker: sessionmaker = async_session_maker,
+        transaction_context_factory: IStaticAsyncTransactionContextFactory,
         *args,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
 
-        self.session_maker = session_maker
+        self.transaction_context_factory = transaction_context_factory
 
     async def login(self, request: Request) -> bool:
         """
@@ -50,7 +51,9 @@ class AdminAuth(AuthenticationBackend):
             password=form.get("password"),
         )
 
-        authorization_service = AuthorizationService(session_maker=self.session_maker)
+        authorization_service = AuthorizationService(
+            transaction_context_factory=self.transaction_context_factory,
+        )
 
         try:
             access_token = await authorization_service.authentication(authentication_data=authentication_data)
@@ -98,4 +101,7 @@ class AdminAuth(AuthenticationBackend):
         return is_admin
 
 
-authentication_backend = AdminAuth(secret_key=settings.SECRET_KEY.get_secret_value())
+authentication_backend = AdminAuth(
+    transaction_context_factory=StaticAsyncTransactionContextFactory(session_maker=async_session_maker),
+    secret_key=settings.SECRET_KEY.get_secret_value(),
+)
