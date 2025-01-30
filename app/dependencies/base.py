@@ -1,9 +1,9 @@
 from fastapi import Depends
+
 from sqlalchemy.orm import sessionmaker
 
+from app.adapters.secondary.db.dao.transaction_context import StaticAsyncTransactionContextFactory
 from app.adapters.secondary.db.session import async_session_maker
-
-from app.adapters.secondary.db.dao.transaction_manager import TransactionManager
 
 
 def get_async_session_maker() -> sessionmaker:
@@ -16,15 +16,15 @@ def get_async_session_maker() -> sessionmaker:
     return async_session_maker
 
 
-def get_transaction_manager(
+def get_transaction_context_factory(
     async_session_maker: sessionmaker = Depends(get_async_session_maker),
-) -> TransactionManager:
+) -> StaticAsyncTransactionContextFactory:
     """
-    Get transaction manager.
+    Get factory of transaction contexts.
 
-    :return: transaction manager.
+    :return: transaction context factory.
     """
 
-    transaction_manager = TransactionManager(session_maker=async_session_maker)
+    transaction_context_factory = StaticAsyncTransactionContextFactory(session_maker=async_session_maker)
 
-    return transaction_manager
+    return transaction_context_factory

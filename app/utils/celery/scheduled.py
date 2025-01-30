@@ -33,15 +33,19 @@ def booking_reminders(
     :return: message sending status.
     """
 
-    with celery_controller.session_maker.begin() as session:
-        booking_dao = BookingDAO(session=session)
+    transaction_context = celery_controller.transaction_context_factory.init_transaction_context()
+    with transaction_context():
+        booking_dao = BookingDAO()
 
         dts_of_soon_bookings = MinAndMaxDtsValidator(
             min_dt=settings.CURRENT_DT,
             max_dt=settings.CURRENT_DT + timedelta(hours=settings.NOTIFICATION_ABOUT_SOON_BOOKING_HOURS),
         )
         bookings: list[ExtendedBookingDTO] = asyncio.run(
-            booking_dao.get_bookings(min_and_max_dts=dts_of_soon_bookings),
+            booking_dao.get_bookings(
+                transaction_context=transaction_context,
+                min_and_max_dts=dts_of_soon_bookings,
+            ),
         )
 
         map_of_user_ids_and_soon_bookings: dict[int, list[ExtendedBookingDTO]] = defaultdict(list)
@@ -60,6 +64,7 @@ def booking_reminders(
 
         users: list[UserDTO] = asyncio.run(
             booking_dao.get_items_by_filters(
+                transaction_context=transaction_context,
                 table_name="users",
                 occurrence=occurrence_filter,
             ),

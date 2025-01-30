@@ -4,6 +4,7 @@ from typing import Any
 from pydantic import BaseModel
 from sqlalchemy.orm.decl_api import DeclarativeAttributeIntercept
 
+from app.core.interfaces.transaction_context import IStaticSyncTransactionContext
 from app.core.services.base.dtos import OccurrenceFilterDTO
 
 
@@ -18,6 +19,7 @@ class BaseDAOPort(ABC):
     @abstractmethod
     async def get_item_by_id(
         self,
+        transaction_context: IStaticSyncTransactionContext,
         table_name: str,
         item_id: int,
     ) -> dict[str, Any] | None: ...
@@ -25,6 +27,7 @@ class BaseDAOPort(ABC):
     @abstractmethod
     async def get_items_by_filters(
         self,
+        transaction_context: IStaticSyncTransactionContext,
         table_name: str,
         filters: dict[str, Any] | None = None,
         occurrence: OccurrenceFilterDTO | None = None,
@@ -33,6 +36,7 @@ class BaseDAOPort(ABC):
     @abstractmethod
     async def insert_item(
         self,
+        transaction_context: IStaticSyncTransactionContext,
         table_name: str,
         item_data: dict[str, Any] | BaseModel,
     ) -> None: ...
@@ -40,6 +44,7 @@ class BaseDAOPort(ABC):
     @abstractmethod
     async def delete_item_by_id(
         self,
+        transaction_context: IStaticSyncTransactionContext,
         table_name: str,
         item_id: int,
     ) -> dict[str, Any]: ...

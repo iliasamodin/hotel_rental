@@ -1,12 +1,16 @@
 from celery import Celery
-from sqlalchemy.orm import sessionmaker
 
 from app.settings import settings
 
 from app.adapters.secondary.db.session import sync_session_maker
+from app.adapters.secondary.db.dao.transaction_context import StaticSyncTransactionContextFactory
+
+from app.core.interfaces.transaction_context import IStaticSyncTransactionContextFactory
 
 from app.utils.celery.celery_app import celery_app
-from app.utils.celery.fake_task import FakeTask
+from app.utils.celery.fake_task import FakeTask, fake_task
+
+transaction_context_factory = StaticSyncTransactionContextFactory(session_maker=sync_session_maker)
 
 
 class CeleryController:
@@ -17,11 +21,11 @@ class CeleryController:
     def __init__(
         self,
         celery_app: Celery = celery_app,
-        session_maker: sessionmaker = sync_session_maker,
-        fake_task: FakeTask = FakeTask,
+        transaction_context_factory: IStaticSyncTransactionContextFactory = transaction_context_factory,
+        fake_task: FakeTask = fake_task,
     ):
         self.celery_app = celery_app
-        self.session_maker = session_maker
+        self.transaction_context_factory = transaction_context_factory
         self.fake_task = fake_task
 
     def task(self, *args, **opts):
@@ -32,7 +36,7 @@ class CeleryController:
         if settings.NEED_TO_SENDING_EMAIL and settings.MODE != "test":
             return self.celery_app.task(*args, **opts)
 
-        return self.fake_task()
+        return self.fake_task
 
 
 celery_controller = CeleryController()

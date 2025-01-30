@@ -1,11 +1,11 @@
 from fastapi import Depends
 
 from app.adapters.secondary.db.dao.resource_manager.dao import ResourceManagerDAO
-from app.adapters.secondary.db.dao.transaction_manager import TransactionManager
+from app.adapters.secondary.db.dao.transaction_context import StaticAsyncTransactionContextFactory
 
 from app.core.services.resource_manager.service import ResourceManagerService
 
-from app.dependencies.base import get_transaction_manager
+from app.dependencies.base import get_transaction_context_factory
 
 
 def get_resource_manager_dao() -> ResourceManagerDAO:
@@ -21,7 +21,7 @@ def get_resource_manager_dao() -> ResourceManagerDAO:
 
 
 def get_resource_manager_service(
-    transaction_manager: TransactionManager = Depends(get_transaction_manager),
+    transaction_context_factory: StaticAsyncTransactionContextFactory = Depends(get_transaction_context_factory),
     resource_manager_dao: ResourceManagerDAO = Depends(get_resource_manager_dao),
 ) -> ResourceManagerService:
     """
@@ -31,7 +31,7 @@ def get_resource_manager_service(
     """
 
     service = ResourceManagerService(
-        transaction_manager=transaction_manager,
+        transaction_context_factory=transaction_context_factory,
         resource_manager_dao=resource_manager_dao,
     )
 

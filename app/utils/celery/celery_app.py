@@ -1,5 +1,4 @@
 from celery import Celery
-from celery.schedules import crontab
 
 from app.settings import settings
 
@@ -15,12 +14,10 @@ celery_app = Celery(
 
 beat_schedule = {}
 if settings.NEED_TO_SENDING_EMAIL:
+    NUMBER_OF_SECONDS_PER_DAY = 86400
     beat_schedule["booking_reminders"] = {
         "task": "booking_reminders",
-        "schedule": crontab(
-            hour=str(settings.CHECK_IN_TIME),
-            minute="0",
-        ),
+        "schedule": NUMBER_OF_SECONDS_PER_DAY,
     }
 if settings.NEED_TO_WARM_UP_CACHE:
     beat_schedule["warm_up_cache"] = {

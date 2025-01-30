@@ -14,6 +14,7 @@ from app.adapters.secondary.db.dao.bookings.queries import (
 )
 from app.adapters.secondary.db.dao.bookings.helpers import get_filters_for_booking_overlaps, get_filters_for_bookings
 
+from app.core.interfaces.transaction_context import IStaticSyncTransactionContext
 from app.core.services.bookings.dtos import (
     ExtendedBookingDTO,
     ImageDTO,
@@ -34,6 +35,7 @@ class BookingDAO(BaseDAO, BookingDAOPort):
 
     async def get_services(
         self,
+        transaction_context: IStaticSyncTransactionContext,
         only_for_hotels_and_only_for_rooms: HotelsOrRoomsValidator,
     ) -> list[ServiceVarietyDTO]:
         """
@@ -43,13 +45,13 @@ class BookingDAO(BaseDAO, BookingDAOPort):
         """
 
         query_result_of_services: Result | Coroutine = get_services(
-            session=self.session,
+            session=transaction_context.session,
             only_for_hotels_and_only_for_rooms=only_for_hotels_and_only_for_rooms,
         )
         if isinstance(query_result_of_services, Coroutine):
             query_result_of_services = await query_result_of_services
 
-        rows_with_services = query_result_of_services.fetchall()
+        rows_with_services = query_result_of_services.mappings().fetchall()
 
         services = [ServiceVarietyDTO.model_validate(row.ServiceVarietiesModel) for row in rows_with_services]
 
@@ -57,6 +59,7 @@ class BookingDAO(BaseDAO, BookingDAOPort):
 
     async def get_hotels(
         self,
+        transaction_context: IStaticSyncTransactionContext,
         location: str | None = None,
         number_of_guests: int | None = None,
         stars: int | None = None,
@@ -69,7 +72,7 @@ class BookingDAO(BaseDAO, BookingDAOPort):
         """
 
         query_result_of_hotels: Result | Coroutine = get_hotels(
-            session=self.session,
+            session=transaction_context.session,
             location=location,
             number_of_guests=number_of_guests,
             stars=stars,
@@ -100,6 +103,7 @@ class BookingDAO(BaseDAO, BookingDAOPort):
 
     async def get_premium_levels(
         self,
+        transaction_context: IStaticSyncTransactionContext,
         hotel_id: int | None = None,
         connected_with_rooms: bool = False,
     ) -> list[PremiumLevelVarietyDTO]:
@@ -110,7 +114,7 @@ class BookingDAO(BaseDAO, BookingDAOPort):
         """
 
         query_result_of_premium_levels: Result | Coroutine = get_premium_levels(
-            session=self.session,
+            session=transaction_context.session,
             hotel_id=hotel_id,
             connected_with_rooms=connected_with_rooms,
         )
@@ -127,6 +131,7 @@ class BookingDAO(BaseDAO, BookingDAOPort):
 
     async def get_rooms(
         self,
+        transaction_context: IStaticSyncTransactionContext,
         min_price_and_max_price: PriceRangeValidator,
         hotel_id: int = None,
         number_of_guests: int = None,
@@ -140,7 +145,7 @@ class BookingDAO(BaseDAO, BookingDAOPort):
         """
 
         query_result_of_rooms: Result | Coroutine = get_rooms(
-            session=self.session,
+            session=transaction_context.session,
             min_price_and_max_price=min_price_and_max_price,
             hotel_id=hotel_id,
             number_of_guests=number_of_guests,
@@ -173,6 +178,7 @@ class BookingDAO(BaseDAO, BookingDAOPort):
 
     async def get_bookings(
         self,
+        transaction_context: IStaticSyncTransactionContext,
         min_and_max_dts: MinAndMaxDtsValidator,
         number_of_guests: int = None,
         user_id: int | None = None,
@@ -186,7 +192,7 @@ class BookingDAO(BaseDAO, BookingDAOPort):
         """
 
         query_result_of_bookings: Result | Coroutine = get_bookings(
-            session=self.session,
+            session=transaction_context.session,
             user_id=user_id,
             min_and_max_dts=min_and_max_dts,
             number_of_guests=number_of_guests,

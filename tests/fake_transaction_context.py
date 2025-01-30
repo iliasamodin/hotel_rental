@@ -2,9 +2,9 @@ from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 
-class FakeAsyncSession:
+class FakeStaticAsyncTransactionContext:
     """
-    Fake async session to test sql query.
+    Fake context of the database connection.
     """
 
     _sql_query: str
