@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 15s
+  external_labels:
+    monitor: "codelab-monitor"
+
+scrape_configs:
+  - job_name: "hotel_rental_prometheus"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "hotel_rental_app"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["hotel_rental_app:1500"]

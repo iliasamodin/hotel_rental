@@ -10,7 +10,6 @@ from app.main import app  # noqa: F401
 from app.settings import settings
 
 from app.utils.redis.redis_controller import redis_controller
-
 from app.utils.celery.celery_controller import celery_controller
 from app.utils.celery.templates import body_template_for_booking_reminders
 from app.utils.celery.tasks import send_email

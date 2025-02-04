@@ -54,6 +54,7 @@ class Settings(BaseSettings):
 
     # Celery
     FLOWER_PORT: int = 5555
+    HOST_MACHINE_FLOWER_PORT: int = 5555
 
     # Tests
     MODE: Literal["dev", "test", "stage", "prod"] = "prod"
@@ -100,6 +101,15 @@ class Settings(BaseSettings):
     SENTRY_TRACKING: bool = False
     SENTRY_DSN: SecretStr = SecretStr("")
     SENTRY_TRACES_SAMPLE_RATE: float = Field(default=1, ge=0, le=1)
+
+    # Prometheus
+    ENABLE_METRICS: bool = False
+    PROMETHEUS_PORT: int = 9090
+    HOST_MACHINE_PROMETHEUS_PORT: int = 9090
+
+    # Grafana
+    GRAFANA_PORT: int = 3000
+    HOST_MACHINE_GRAFANA_PORT: int = 3000
 
     @property
     def PROJECT_PATH(self):

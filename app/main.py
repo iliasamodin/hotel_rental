@@ -15,8 +15,8 @@ from app.tools import ic, get_data_to_display_in_openapi  # noqa: F401
 from app.logger import logger  # noqa: F401
 
 from app.utils.redis.redis_controller import redis_controller
-
 from app.utils.admin_panel.admin_controller import admin_panel_controller
+from app.utils.prometheus.instrumentator import prometheus_instrumentator
 
 openapi_params = get_data_to_display_in_openapi()
 
@@ -44,6 +44,9 @@ redis_controller.registering_app_to_controller(app=app)
 # Registering admin panel views
 admin_panel_controller.registering_app_to_controller(app=app)
 admin_panel_controller.registering_views()
+
+# Registering prometheus instrumentator
+prometheus_instrumentator.instrument(app).expose(app)
 
 if __name__ == "__main__":
     # Adding the project root directory to the list of module paths

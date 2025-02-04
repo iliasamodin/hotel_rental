@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   hotel_rental_db:
@@ -64,6 +64,7 @@ services:
       DB_HOST: hotel_rental_db
       REDIS_HOST: hotel_rental_redis
       CACHING: 1
+      ENABLE_METRICS: 1
     ports:
       - ${PORT}:${PORT}
     volumes:
@@ -96,6 +97,7 @@ services:
       CACHING: 1
     networks:
       - hotel_rental_network
+    restart: always
     depends_on:
       hotel_rental_db:
         condition: service_healthy
@@ -114,13 +116,47 @@ services:
     environment:
       REDIS_HOST: hotel_rental_redis
     ports:
-      - ${FLOWER_PORT}:${FLOWER_PORT}
+      - ${HOST_MACHINE_FLOWER_PORT}:${FLOWER_PORT}
     networks:
       - hotel_rental_network
+    restart: always
     depends_on:
       hotel_rental_redis:
         condition: service_healthy
     command: poetry run celery -A app.utils.celery.celery_app:celery_app flower --port=${FLOWER_PORT}
+
+  hotel_rental_prometheus:
+    image: prom/prometheus:v3.1.0
+    container_name: hotel_rental_prometheus
+    env_file: 
+      - .env
+    ports:
+      - ${HOST_MACHINE_PROMETHEUS_PORT}:${PROMETHEUS_PORT}
+    volumes:
+      - hotel_rental_prometheus:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - hotel_rental_network
+    restart: always
+    depends_on:
+      hotel_rental_app:
+        condition: service_healthy
+
+  hotel_rental_grafana:
+    image: grafana/grafana:11.5.0
+    container_name: hotel_rental_grafana
+    env_file: 
+      - .env
+    ports:
+      - ${HOST_MACHINE_GRAFANA_PORT}:${GRAFANA_PORT}
+    volumes:
+      - hotel_rental_grafana:/var/lib/grafana
+    networks:
+      - hotel_rental_network
+    restart: always
+    depends_on:
+      hotel_rental_app:
+        condition: service_healthy
 
 volumes:
   hotel_rental_db:
@@ -129,6 +165,10 @@ volumes:
     name: hotel_rental_redis
   hotel_rental_app:
     name: hotel_rental_app
+  hotel_rental_prometheus:
+    name: hotel_rental_prometheus
+  hotel_rental_grafana:
+    name: hotel_rental_grafana
 
 networks:
   hotel_rental_network:

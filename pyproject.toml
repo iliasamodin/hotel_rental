@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hotel-rental"
-version = "0.15.0"
+version = "1.0.0"
 description = ""
 authors = ["Ilia Samodin <broobooot@gmail.com>"]
 readme = "README.md"
@@ -41,6 +41,7 @@ loguru = "^0.7.3"
 orjson = "^3.10.12"
 sentry-sdk = {extras = ["fastapi"], version = "^2.19.2"}
 gunicorn = "^23.0.0"
+prometheus-fastapi-instrumentator = "^7.0.2"
 
 
 [build-system]
