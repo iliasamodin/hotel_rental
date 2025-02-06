@@ -279,6 +279,28 @@ class TestAddBooking:
                 {
                     "check_in_date": "2024-07-29",
                     "check_out_date": "2024-08-10",
+                    "room_id": 0,
+                    "number_of_persons": 1,
+                },
+                cookies_of_first_user,
+                hotels_for_test,
+                rooms_for_test,
+                users_for_test,
+                bookings_for_test,
+                status.HTTP_404_NOT_FOUND,
+                {
+                    "detail": "The room with the specified ID was not found.",
+                    "extras": {
+                        "room_id": 0,
+                    },
+                },
+                "Endpoint test for adding booking to the database for a non-existent room",
+                id="-test-7",
+            ),
+            pytest.param(
+                {
+                    "check_in_date": "2024-07-29",
+                    "check_out_date": "2024-08-10",
                     "room_id": 2,
                     "number_of_persons": 0,
                 },
@@ -295,7 +317,7 @@ class TestAddBooking:
                     },
                 },
                 "Endpoint test for adding booking to the database with incorrect number of person booked",
-                id="-test-7",
+                id="-test-8",
             ),
             pytest.param(
                 {
@@ -321,7 +343,7 @@ class TestAddBooking:
                 },
                 "Endpoint test for adding booking to the database "
                 "with a number of persons exceeding the room capacity",
-                id="-test-8",
+                id="-test-9",
             ),
             pytest.param(
                 {
@@ -346,7 +368,7 @@ class TestAddBooking:
                     ],
                 },
                 "Endpoint test for adding booking to the database with overlapping booking",
-                id="-test-9",
+                id="-test-10",
             ),
             pytest.param(
                 {
@@ -371,7 +393,7 @@ class TestAddBooking:
                     ],
                 },
                 "Endpoint test for adding booking to the database with overlapping booking",
-                id="-test-10",
+                id="-test-11",
             ),
             pytest.param(
                 {
@@ -400,7 +422,7 @@ class TestAddBooking:
                     ],
                 },
                 "Endpoint test for adding booking to the database with overlapping bookings",
-                id="-test-11",
+                id="-test-12",
             ),
             pytest.param(
                 {
@@ -429,7 +451,7 @@ class TestAddBooking:
                     ],
                 },
                 "Endpoint test for adding booking to the database with overlapping bookings",
-                id="-test-12",
+                id="-test-13",
             ),
         ],
     )

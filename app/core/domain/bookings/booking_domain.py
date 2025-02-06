@@ -21,7 +21,7 @@ class AddBookingDomainModel:
         self,
         user_id: int,
         booking: BookingRequestSchema | BookingDTO,
-        room: RoomSchema | RoomDTO,
+        room: RoomSchema | RoomDTO | None,
     ):
         self.user_id = user_id
         self.booking = booking
@@ -34,6 +34,7 @@ class AddBookingDomainModel:
         :return: data for new booking.
         """
 
+        self.check_existence_of_room()
         self.check_consistency_of_rental_period()
         self.check_that_rental_period_is_within_upper_limit()
         self.check_number_of_persons()
@@ -68,6 +69,21 @@ class AddBookingDomainModel:
         )
 
         return booking
+
+    def check_existence_of_room(self) -> None:
+        """
+        Check that the room with the passed id exists in the database.
+
+        :raise: ItemNotExistsError
+        """
+
+        if not self.room:
+            raise ItemNotExistsError(
+                message="The room with the specified ID was not found.",
+                extras={
+                    "room_id": self.booking.room_id,
+                },
+            )
 
     def check_consistency_of_rental_period(self) -> None:
         """
@@ -180,7 +196,7 @@ class DeleteBookingDomainModel:
         Check that the booking with the passed id exists
         in the database.
 
-        :raise: BookingNotExistsError
+        :raise: ItemNotExistsError
         """
 
         if not self.booking:

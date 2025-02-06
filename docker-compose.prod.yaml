@@ -9,7 +9,7 @@ services:
     ports: 
       - ${HOST_MACHINE_DB_PORT}:${DB_PORT}
     volumes:
-      - hotel_rental_db:/var/lib/postgresql/data
+      - ${PATH_OF_BIND_MOUNT}/hotel_rental_db:/var/lib/postgresql/data
     networks:
       - hotel_rental_network
     restart: always
@@ -25,7 +25,7 @@ services:
     ports:
       - ${HOST_MACHINE_REDIS_PORT}:${REDIS_PORT}
     volumes:
-      - hotel_rental_redis:/data
+      - ${PATH_OF_BIND_MOUNT}/hotel_rental_redis:/data
     networks:
       - hotel_rental_network
     restart: always
@@ -44,7 +44,7 @@ services:
     environment:
       DB_HOST: hotel_rental_db
     volumes:
-      - hotel_rental_app:/${APP_HOME_DIR}
+      - ${PATH_OF_BIND_MOUNT}/hotel_rental_app:/logs
     networks:
       - hotel_rental_network
     depends_on:
@@ -68,7 +68,7 @@ services:
     ports:
       - ${PORT}:${PORT}
     volumes:
-      - hotel_rental_app:/${APP_HOME_DIR}
+      - ${PATH_OF_BIND_MOUNT}/hotel_rental_app:/logs
     networks:
       - hotel_rental_network
     restart: always
@@ -133,7 +133,7 @@ services:
     ports:
       - ${HOST_MACHINE_PROMETHEUS_PORT}:${PROMETHEUS_PORT}
     volumes:
-      - hotel_rental_prometheus:/prometheus
+      - ${PATH_OF_BIND_MOUNT}/hotel_rental_prometheus:/prometheus
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - hotel_rental_network
@@ -150,25 +150,13 @@ services:
     ports:
       - ${HOST_MACHINE_GRAFANA_PORT}:${GRAFANA_PORT}
     volumes:
-      - hotel_rental_grafana:/var/lib/grafana
+      - ${PATH_OF_BIND_MOUNT}/hotel_rental_grafana:/var/lib/grafana
     networks:
       - hotel_rental_network
     restart: always
     depends_on:
       hotel_rental_app:
         condition: service_healthy
-
-volumes:
-  hotel_rental_db:
-    name: hotel_rental_db
-  hotel_rental_redis:
-    name: hotel_rental_redis
-  hotel_rental_app:
-    name: hotel_rental_app
-  hotel_rental_prometheus:
-    name: hotel_rental_prometheus
-  hotel_rental_grafana:
-    name: hotel_rental_grafana
 
 networks:
   hotel_rental_network:

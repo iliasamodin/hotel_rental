@@ -12,6 +12,7 @@ load_dotenv()
 class Settings(BaseSettings):
     # APP
     APP_HOME_DIR: str = "hotel_rental"
+    PATH_OF_BIND_MOUNT: str = "hotel_rental"
     WORKERS: int = 4
 
     # API
