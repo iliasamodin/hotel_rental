@@ -1,1 +1,1 @@
-/Users/iliasamodin/Documents/programming/conspectus/FastAPI/_as_course_/hotel_rental/app/main.py
+./app/main.py

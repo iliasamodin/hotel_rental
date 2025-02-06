@@ -13,7 +13,7 @@ services:
     ports: 
       - ${TEST_DB_PORT}:5432
     volumes:
-      - pytest_db:/var/lib/postgresql/data
+      - ${PATH_OF_BIND_MOUNT}/pytest_db:/var/lib/postgresql/data
     networks:
       - pytest_network
     restart: always
@@ -22,10 +22,6 @@ services:
       interval: 10s
       timeout: 10s
       retries: 3
-
-volumes:
-  pytest_db:
-    name: pytest_db
 
 networks:
   pytest_network:

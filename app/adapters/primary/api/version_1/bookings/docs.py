@@ -196,17 +196,21 @@ class AddingBookingEnum(Enum):
     Scheme of responses to a request to add booking.
     """
 
-    SUCCESS: list[BookingResponseSchema] = [
-        BookingResponseSchema(
-            id=1,
-            user_id=1,
-            room_id=1,
-            number_of_persons=1,
-            check_in_dt="2024-07-28T14:00:00Z",
-            check_out_dt="2024-07-29T12:00:00Z",
-            total_cost=24_500,
-        ),
-    ]
+    SUCCESS: BookingResponseSchema = BookingResponseSchema(
+        id=1,
+        user_id=1,
+        room_id=1,
+        number_of_persons=1,
+        check_in_dt="2024-07-28T14:00:00Z",
+        check_out_dt="2024-07-29T12:00:00Z",
+        total_cost=24_500,
+    )
+    NOT_EXISTS_ERR: BaseErrorResponseSchema = BaseErrorResponseSchema(
+        detail="The room with the specified ID was not found.",
+        extras={
+            "room_id": 1,
+        },
+    )
     CONSISTENCY_ERR: BaseErrorResponseSchema = BaseErrorResponseSchema(
         detail="Check-out date must be later than check-in date.",
         extras={

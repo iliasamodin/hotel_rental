@@ -6,6 +6,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession
 from loguru import logger
 
+import traceback
+
 from app.adapters.secondary.db.dao.base.exceptions import (
     TransactionContextAttrAlreadySetError,
     TransactionContextAttrNotSetError,
@@ -61,7 +63,7 @@ class StaticSyncTransactionContext(IStaticSyncTransactionContext):
                     self.close()
 
         except Exception as error:
-            logger.error(error)
+            logger.error(traceback.format_exc())
 
             if reraise and (not skip or (skip and not isinstance(error, skip))):
                 raise reraise
@@ -96,8 +98,8 @@ class StaticSyncTransactionContext(IStaticSyncTransactionContext):
 
             current_session.close()
 
-        except Exception as error:
-            logger.error(error)
+        except Exception:
+            logger.error(traceback.format_exc())
 
 
 class StaticSyncTransactionContextFactory(IStaticSyncTransactionContextFactory):
@@ -159,7 +161,7 @@ class StaticAsyncTransactionContext(IStaticAsyncTransactionContext):
                     await self.close()
 
         except Exception as error:
-            logger.error(error)
+            logger.error(traceback.format_exc())
 
             if reraise and (not skip or (skip and not isinstance(error, skip))):
                 raise reraise
@@ -194,8 +196,8 @@ class StaticAsyncTransactionContext(IStaticAsyncTransactionContext):
 
             await current_session.close()
 
-        except Exception as error:
-            logger.error(error)
+        except Exception:
+            logger.error(traceback.format_exc())
 
 
 class StaticAsyncTransactionContextFactory(IStaticAsyncTransactionContextFactory):
