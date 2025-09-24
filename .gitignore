@@ -9,3 +9,4 @@ __pycache__/
 *.log
 dump.rdb
 celerybeat-schedule.db
+.coverage
